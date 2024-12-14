@@ -1,0 +1,114 @@
+[gd_scene load_steps=21 format=3 uid="uid://v8r4acyx1qu8"]
+
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Inactive.dds" id="1_ba3hy"]
+[ext_resource type="Script" path="res://UI/Main.cs" id="1_epdap"]
+[ext_resource type="Script" path="res://UI/Playfield.cs" id="2_erblk"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected.dds" id="3_lvbaq"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected_2.dds" id="4_k31mn"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Select.dds" id="5_cc61p"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/select_2.dds" id="6_stvhf"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Aimable.dds" id="7_o0y26"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/aimable_2.dds" id="8_s08bp"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Intersection.(Texture).dds" id="9_ffytv"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_b7tnu"]
+resource_name = "Inactive"
+texture = ExtResource("1_ba3hy")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3nus3"]
+resource_name = "Affected"
+texture = ExtResource("3_lvbaq")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tq14b"]
+resource_name = "AffectedBig"
+texture = ExtResource("4_k31mn")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_n1t57"]
+resource_name = "Select"
+texture = ExtResource("5_cc61p")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vlogg"]
+resource_name = "SelectBig"
+texture = ExtResource("6_stvhf")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hje4h"]
+resource_name = "Aimable"
+texture = ExtResource("7_o0y26")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bjqpb"]
+resource_name = "AimableBig"
+texture = ExtResource("8_s08bp")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_11ipo"]
+resource_name = "Intersection"
+texture = ExtResource("9_ffytv")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_ljq28"]
+tile_size = Vector2i(256, 256)
+sources/0 = SubResource("TileSetAtlasSource_b7tnu")
+sources/1 = SubResource("TileSetAtlasSource_3nus3")
+sources/2 = SubResource("TileSetAtlasSource_tq14b")
+sources/3 = SubResource("TileSetAtlasSource_n1t57")
+sources/4 = SubResource("TileSetAtlasSource_vlogg")
+sources/5 = SubResource("TileSetAtlasSource_hje4h")
+sources/6 = SubResource("TileSetAtlasSource_bjqpb")
+sources/7 = SubResource("TileSetAtlasSource_11ipo")
+
+[sub_resource type="LabelSettings" id="LabelSettings_w4g2h"]
+font_size = 42
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_epdap")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+zoom = Vector2(0.5, 0.5)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Playfield" type="TileMapLayer" parent="."]
+scale = Vector2(0.5, 0.5)
+tile_set = SubResource("TileSet_ljq28")
+script = ExtResource("2_erblk")
+
+[node name="GameOverPopup" type="PopupPanel" parent="."]
+title = "Game Over"
+initial_position = 2
+size = Vector2i(800, 200)
+borderless = false
+metadata/Text = ""
+
+[node name="GameOverPopupText" type="Label" parent="GameOverPopup"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 796.0
+offset_bottom = 196.0
+text = "TEST TEXT TEST TEXT TEST TEXT"
+label_settings = SubResource("LabelSettings_w4g2h")
+horizontal_alignment = 1
+vertical_alignment = 1
