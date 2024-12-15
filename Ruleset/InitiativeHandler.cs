@@ -47,13 +47,7 @@ public class InitiativeHandler
     /// <returns>Index of the next Unit</returns>
     public static int GetNextUnitIndex(int size, Func<int, double> getATB, Action<int, double> addATB, Func<int, double> getInitiative)
     {
-        double[] remainingTurns = new double[size];
-
-        for (int i = 0; i < size; i++)
-        {
-            remainingTurns[i] = (1 - getATB(i)) * BASE_INITIATIVE / getInitiative(i);
-        }
-
+        double[] remainingTurns = GetRemainingTurns(size, getATB, getInitiative);
         int closestIndex = remainingTurns.MinIndex();
 
         MoveATBScale(remainingTurns[closestIndex], size, addATB, getInitiative);
@@ -61,6 +55,25 @@ public class InitiativeHandler
         Debug.Assert(getATB(closestIndex) == 1.0);
 
         return closestIndex;
+    }
+
+    /// <summary>
+    /// Geneic-styled function for converting ATB values into turns remained for Unit to move.
+    /// </summary>
+    /// <param name="size">Amount of units to iterate over</param>
+    /// <param name="getATB">Getting ATB value by index</param>
+    /// <param name="getInitiative">Getting Initiative value by index</param>
+    /// <returns></returns>
+    public static double[] GetRemainingTurns(int size, Func<int, double> getATB, Func<int, double> getInitiative)
+    {
+        double[] remainingTurns = new double[size];
+
+        for (int i = 0; i < size; i++)
+        {
+            remainingTurns[i] = (1 - getATB(i)) * BASE_INITIATIVE / getInitiative(i);
+        }
+
+        return remainingTurns;
     }
 
     /// <summary>
