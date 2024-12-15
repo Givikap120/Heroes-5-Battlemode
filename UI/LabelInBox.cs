@@ -1,44 +1,61 @@
-﻿
 using Godot;
 
-public partial class LabelInBox : Node2D
+/// <summary>
+/// Text in box with outline.
+/// Changing any property except Text will require UpdateLayout function to be called
+/// </summary>
+public partial class LabelInBox : Control
 {
-    private Bindable<string> label = new("");
-    public string Label 
-    { 
-        get => label.Value;
-        set => label.Value = value; 
-    }
+    private ColorRect outlineRect = null!;
+    private ColorRect backgroundRect = null!;
+    private Label label = null!;
 
-    public Font Font { get; set; } = null!;
-    public int FontSize { get; set; } = 32;
-    public Color BackgroundColor { get; set; } = Colors.Blue;
-    public Color BorderColor { get; set; } = Colors.Black;
-    public Vector2 Padding { get; set; } = new Vector2(10, 5);
+    public readonly Bindable<string> TextBindable = new("");
 
+    public string Text { get => TextBindable.Value; set => TextBindable.Value = value; }
+    public Vector2I Padding;
+    public int OutlineWidth;
+    public int FontSize;
+
+    // Called when the node enters the scene tree for the first time.
     public override void _Ready()
-    {
-        label.BindValueChanged(_ => QueueRedraw());
+	{
+        outlineRect = GetNode<ColorRect>("OutlineRect");
+        backgroundRect = GetNode<ColorRect>("BackgroundRect");
+        label = GetNode<Label>("Label");
+
+        Text = GetMeta("Text").AsString();
+        Padding = GetMeta("Padding").AsVector2I();
+        OutlineWidth = GetMeta("OutlineWidth").AsInt32();
+        FontSize = GetMeta("FontSize").AsInt32();
+
+        TextBindable.BindValueChanged(_ => UpdateLayout());
+        UpdateLayout();
     }
 
-    public override void _Draw()
+    public void UpdateLayout()
     {
-        if (Font == null || string.IsNullOrEmpty(Label)) return;
+        label.Text = Text;
+        label.LabelSettings.FontSize = FontSize;
 
-        // Calculate text and rectangle sizes
-        var textSize = Font.GetStringSize(Label, HorizontalAlignment.Center, fontSize: FontSize);
-        var rectSize = textSize + Padding * 2;
+        Vector2I outlineSize = new Vector2I(OutlineWidth, OutlineWidth);
 
-        // Draw background rectangle
-        DrawRect(new Rect2(Vector2.Zero, rectSize), BackgroundColor);
+        var textSize = getTextSize(label);
+        var rectSize = textSize + Padding * 2 + outlineSize * 2;
 
-        // Draw border
-        DrawRect(new Rect2(Vector2.Zero, rectSize), BorderColor, filled: false, width: 5);
+        outlineRect.Size = rectSize;
 
-        // Calculate text position and draw text
-        var textPosition = (rectSize - textSize) / 2;
-        textPosition.Y += textSize.Y * 3 / 4; // Adjust for baseline alignment
-        textPosition.X -= Padding.X / 2;     // Center text better
-        DrawString(Font, textPosition, Label, HorizontalAlignment.Center, fontSize: FontSize);
+        backgroundRect.Position = outlineSize;
+        backgroundRect.Size = rectSize - outlineSize * 2;
+
+        label.Size = rectSize;
+
+        Size = rectSize;
+    }
+
+    private Vector2 getTextSize(Label label)
+    {
+        var font = label.LabelSettings.Font;
+        return font.GetStringSize(label.Text, label.HorizontalAlignment, fontSize: label.LabelSettings.FontSize);
     }
 }

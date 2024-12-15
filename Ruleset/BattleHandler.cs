@@ -5,17 +5,22 @@ using System.Linq;
 public class BattleHandler
 {
     private readonly Main parent;
-    private readonly Playfield playfield = null!;
-
-    private readonly InitiativeHandler initiativehandler = new();
+    private Playfield playfield = null!;
 
     private readonly Bindable<Unit?> currentUnit = new(null);
+
+    public readonly InitiativeHandler InitiativeHandler = new();
+
+    public event Action GameStarted = delegate { };
 
     public BattleHandler(Main parent)
     {
         this.parent = parent;
         GD.Seed(0);
+    }
 
+    public void StartGame()
+    {
         playfield = parent.GetNode<Playfield>("Playfield");
 
         if (playfield == null)
@@ -40,6 +45,8 @@ public class BattleHandler
     {
         addPlayer(Player.Preset1());
         addPlayer(Player.Preset2());
+
+        GameStarted.Invoke();
         startTurn();
     }
 
@@ -60,13 +67,13 @@ public class BattleHandler
         else return;
 
         playfield.AddPlayer(player);
-        initiativehandler.AddPlayer(player);
+        InitiativeHandler.AddPlayer(player);
     }
 
     private void startTurn()
     {
         if (currentUnit.Value != null) currentUnit.Value.ATB = 0;
-        var nextUnit = initiativehandler.GetNextUnit();
+        var nextUnit = InitiativeHandler.GetNextUnit();
 
         // Trigger update anyway
         if (currentUnit.Value == nextUnit) currentUnit.TriggerChange();

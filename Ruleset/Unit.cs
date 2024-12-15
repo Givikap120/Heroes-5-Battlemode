@@ -10,6 +10,8 @@ public abstract class Unit
         Player = player; 
     }
 
+    public abstract DrawableCreatureInstance CreateDrawableRepresentation();
+
     /// <summary>
     /// Value between 0 and 1 that determines how far is turn of this Unit
     /// </summary>

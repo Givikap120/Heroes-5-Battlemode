@@ -5,6 +5,10 @@
     public Hero(Player player) : base(player)
     {
     }
+    public override DrawableCreatureInstance CreateDrawableRepresentation()
+    {
+        throw new System.NotImplementedException();
+    }
 
     /// <summary>
     /// Hero always has initiative of 10

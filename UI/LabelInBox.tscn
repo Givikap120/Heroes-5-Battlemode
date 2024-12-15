@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3 uid="uid://bnnii5egdcupx"]
+
+[ext_resource type="Script" path="res://UI/LabelInBox.cs" id="1_2kxeg"]
+[ext_resource type="FontFile" uid="uid://cun338nkg58qk" path="res://Assets/Monotype-Corsiva-Regular.ttf" id="2_tox5f"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_llhyg"]
+font = ExtResource("2_tox5f")
+font_size = 42
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2kxeg")
+metadata/Padding = Vector2i(6, 4)
+metadata/OutlineWidth = 4
+metadata/FontSize = 36
+metadata/Text = "727"
+
+[node name="OutlineRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 50.0
+color = Color(0, 0, 0, 1)
+
+[node name="BackgroundRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 45.0
+offset_bottom = 45.0
+color = Color(0, 0, 1, 1)
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = -4.0
+offset_top = 2.0
+offset_right = 46.0
+offset_bottom = 52.0
+text = "7"
+label_settings = SubResource("LabelSettings_llhyg")
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -148,7 +148,7 @@ public partial class Playfield : TileMapLayer
         }
     }
 
-    private List<DrawableCreatureInstance> creatures = new List<DrawableCreatureInstance>();
+    private readonly List<DrawableCreatureInstance> creatures = [];
 
     public void AddPlayer(Player player)
     {
@@ -159,6 +159,7 @@ public partial class Playfield : TileMapLayer
 
             var newDrawableCreature = item.CreateDrawableRepresentation();
             newDrawableCreature.Scale = new Vector2(1.0f / Scale.X, 1.0f / Scale.Y);
+            newDrawableCreature.Centered = true;
 
             item.CoordsBindable.BindValueChanged(coords =>
             {

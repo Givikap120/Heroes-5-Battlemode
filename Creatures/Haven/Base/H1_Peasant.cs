@@ -20,8 +20,6 @@ public class H1_Peasant : Creature
             Initiative = 8
         };
 
-        Abilities = new List<Ability>
-        {
-        };
+        Abilities = [];
     }
 }

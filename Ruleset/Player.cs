@@ -3,8 +3,8 @@ using System;
 
 public class Player
 {
-    public int Id;
-    public Color Color;
+    public int Id = 0;
+    public Color Color = Colors.Wheat;
     public Hero Hero = null!;
     public CreatureInstance?[] Army = new CreatureInstance?[8];
     // War machine units
@@ -28,7 +28,7 @@ public class Player
 
     public static Player Preset1()
     {
-        Player player = new Player();
+        Player player = new();
 
         player.Army[0] = new CreatureInstance(player, new H1g_Militiaman(), 1);
         player.Army[0]!.Coords = new Vector2I(2, 11);
@@ -41,7 +41,7 @@ public class Player
 
     public static Player Preset2()
     {
-        Player player = new Player();
+        Player player = new();
 
         player.Army[0] = new CreatureInstance(player, new H1g_Militiaman(), 120);
         player.Army[0]!.Coords = new Vector2I(0, 0);

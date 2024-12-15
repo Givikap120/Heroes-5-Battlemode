@@ -21,7 +21,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
     public event Action<CreatureInstance> CreatureDead;
 
-    public DrawableCreatureInstance CreateDrawableRepresentation() => new DrawableCreatureInstance(this);
+    public override DrawableCreatureInstance CreateDrawableRepresentation() => SceneFactory.CreateDrawableCreatureInstance(this);
 
     public override int DecideTileChange(int tileType)
     {
