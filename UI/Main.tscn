@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://v8r4acyx1qu8"]
+[gd_scene load_steps=37 format=3 uid="uid://v8r4acyx1qu8"]
 
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Inactive.dds" id="1_ba3hy"]
 [ext_resource type="Script" path="res://UI/Main.cs" id="1_epdap"]
@@ -6,12 +6,26 @@
 [ext_resource type="Script" path="res://UI/AtbScale.cs" id="2_nprr7"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected.dds" id="3_lvbaq"]
 [ext_resource type="PackedScene" uid="uid://8n6ofgb5vvw4" path="res://UI/DrawableCreatureInstance.tscn" id="3_u6nsl"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/Jogdial.dds" id="4_53i6k"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected_2.dds" id="4_k31mn"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Defend/Normal.dds" id="5_0hpn7"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Select.dds" id="5_cc61p"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Defend/Pushed.dds" id="6_orlvq"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/select_2.dds" id="6_stvhf"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Aimable.dds" id="7_o0y26"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Defend/Disabled.dds" id="7_os8pb"]
+[ext_resource type="Script" path="res://UI/DefendButton.cs" id="8_6s3so"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/aimable_2.dds" id="8_s08bp"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Flee/Disabled.dds" id="8_yvm10"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Special/Disabled.dds" id="9_asxon"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Intersection.(Texture).dds" id="9_ffytv"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Spellbook/Disabled.dds" id="10_aedxe"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Wait/OnJog-Wait-Normal.(Texture).dds" id="11_lwwmb"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Wait/OnJog-Wait-Pushed.(Texture).dds" id="12_vt8v3"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Wait/OnJog-Wait-Disabled.(Texture).dds" id="13_axwku"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-AutoCombat/Disabled.dds" id="14_8yk7i"]
+[ext_resource type="Script" path="res://UI/WaitButton.cs" id="15_3ro7k"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Menu/Disabled.dds" id="15_7agbk"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_b7tnu"]
 resource_name = "Inactive"
@@ -105,13 +119,21 @@ script = ExtResource("2_nprr7")
 [node name="ScrollContainer" type="ScrollContainer" parent="UICanvas/ATBScale"]
 clip_contents = false
 layout_mode = 0
-offset_left = 128.0
-offset_right = 928.0
+offset_left = 131.5
+offset_right = 931.5
 offset_bottom = 128.0
 scale = Vector2(0.8, 0.8)
 vertical_scroll_mode = 3
 
 [node name="FutureUnitsNode" type="HBoxContainer" parent="UICanvas/ATBScale/ScrollContainer"]
+layout_mode = 2
+
+[node name="Control" parent="UICanvas/ATBScale/ScrollContainer/FutureUnitsNode" instance=ExtResource("3_u6nsl")]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+
+[node name="Control2" parent="UICanvas/ATBScale/ScrollContainer/FutureUnitsNode" instance=ExtResource("3_u6nsl")]
+custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
 
 [node name="CurrentUnitNode" parent="UICanvas/ATBScale" instance=ExtResource("3_u6nsl")]
@@ -123,6 +145,81 @@ offset_bottom = 128.0
 grow_horizontal = 1
 grow_vertical = 1
 metadata/BackgroundSize = 1.0
+
+[node name="Jog" type="Control" parent="UICanvas"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 803.0
+offset_top = 355.0
+offset_right = 1059.0
+offset_bottom = 611.0
+scale = Vector2(1.5, 1.5)
+
+[node name="JogSprite" type="Sprite2D" parent="UICanvas/Jog"]
+texture = ExtResource("4_53i6k")
+centered = false
+
+[node name="DefendButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 61.0
+offset_top = 89.0
+offset_right = 143.0
+offset_bottom = 171.0
+texture_normal = ExtResource("5_0hpn7")
+texture_pressed = ExtResource("6_orlvq")
+texture_disabled = ExtResource("7_os8pb")
+script = ExtResource("8_6s3so")
+
+[node name="FleeButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 140.0
+offset_right = 63.0
+offset_bottom = 197.0
+texture_normal = ExtResource("8_yvm10")
+
+[node name="SpecialButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 63.0
+offset_right = 64.0
+offset_bottom = 120.0
+texture_normal = ExtResource("9_asxon")
+
+[node name="SpellbookButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 63.0
+offset_right = 64.0
+offset_bottom = 120.0
+texture_normal = ExtResource("10_aedxe")
+
+[node name="WaitButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 74.0
+offset_top = 26.6667
+offset_right = 131.0
+offset_bottom = 83.6667
+texture_normal = ExtResource("11_lwwmb")
+texture_pressed = ExtResource("12_vt8v3")
+texture_disabled = ExtResource("13_axwku")
+script = ExtResource("15_3ro7k")
+
+[node name="AutoCombatButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 141.0
+offset_top = 64.0
+offset_right = 198.0
+offset_bottom = 121.0
+texture_normal = ExtResource("14_8yk7i")
+
+[node name="MenuButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 141.0
+offset_top = 141.0
+offset_right = 198.0
+offset_bottom = 198.0
+texture_normal = ExtResource("15_7agbk")
 
 [node name="Playfield" type="TileMapLayer" parent="."]
 scale = Vector2(0.5, 0.5)

@@ -54,7 +54,7 @@ public partial class LabelInBox : Control
         Size = rectSize;
     }
 
-    private Vector2 getTextSize(Label label)
+    private static Vector2 getTextSize(Label label)
     {
         var font = label.LabelSettings.Font;
         return font.GetStringSize(label.Text, label.HorizontalAlignment, fontSize: label.LabelSettings.FontSize);

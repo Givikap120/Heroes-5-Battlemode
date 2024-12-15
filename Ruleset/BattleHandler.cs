@@ -30,26 +30,21 @@ public class BattleHandler
             return;
         }
 
-        playfield.OnEmptyCellClicked += emptyCellAction;
-        playfield.OnUnitClicked += unitAction;
-        playfield.OnUnitWithCellClicked += unitWithCellAction;
+        playfield.OnEmptyCellClicked += EmptyCellAction;
+        playfield.OnUnitClicked += UnitAction;
+        playfield.OnUnitWithCellClicked += UnitWithCellAction;
 
         playfield.CurrentUnit = currentUnit;
 
-        test();
-    }
-
-    private Player player1 = null!;
-    private Player player2 = null!;
-
-    private void test()
-    {
         addPlayer(Player.Preset1());
         addPlayer(Player.Preset2());
 
         GameStarted.Invoke();
         startTurn();
     }
+
+    private Player player1 = null!;
+    private Player player2 = null!;
 
     private void addPlayer(Player player)
     {
@@ -71,6 +66,7 @@ public class BattleHandler
         InitiativeHandler.AddPlayer(player);
     }
 
+    #region turn_handling
     private void startTurn()
     {
         if (currentUnit.Value != null) InitiativeHandler.EndTurn(currentUnit.Value);
@@ -81,39 +77,6 @@ public class BattleHandler
         // Trigger update anyway
         if (currentUnit.Value == nextUnit) currentUnit.TriggerChange();
         else currentUnit.Value = nextUnit;
-    }
-
-    private void emptyCellAction(Vector2I cell)
-    {
-        if (currentUnit.Value == null) return;
-
-        if (currentUnit.Value is ICanMove movable)
-        {
-            bool result = movable.MoveTo(cell);
-            if (result) endTurn();
-        }
-
-        return;
-    }
-
-    private void unitAction(Unit unit)
-    {
-        if (currentUnit.Value == null) return;
-    }
-
-    private void unitWithCellAction((Unit unit, Vector2I cell) target)
-    {
-        if (currentUnit.Value == null) return;
-
-        // If the same team - ignore for now
-        if (currentUnit.Value.IsAlly(target.unit))
-            return;
-
-        if (currentUnit.Value is ICanAttackMove attacker && target.unit is IAttackable attackable)
-        {
-            bool result = attacker.AttackWithMove(attackable, target.cell);
-            if (result) endTurn();
-        }
     }
 
     private void endTurn()
@@ -151,4 +114,51 @@ public class BattleHandler
 
         popup.Show();
     }
+    #endregion
+
+    #region actions
+    public void EmptyCellAction(Vector2I cell)
+    {
+        if (currentUnit.Value == null) return;
+
+        if (currentUnit.Value is ICanMove movable)
+        {
+            bool result = movable.MoveTo(cell);
+            if (result) endTurn();
+        }
+
+        return;
+    }
+
+    public void UnitAction(Unit unit)
+    {
+        if (currentUnit.Value == null) return;
+    }
+
+    public void UnitWithCellAction((Unit unit, Vector2I cell) target)
+    {
+        if (currentUnit.Value == null) return;
+
+        // If the same team - ignore for now
+        if (currentUnit.Value.IsAlly(target.unit))
+            return;
+
+        if (currentUnit.Value is ICanAttackMove attacker && target.unit is IAttackable attackable)
+        {
+            bool result = attacker.AttackWithMove(attackable, target.cell);
+            if (result) endTurn();
+        }
+    }
+
+    public void DefendAction()
+    {
+        GD.Print("Defend!");
+    }
+
+    public void WaitAction()
+    {
+        GD.Print("Wait!");
+    }
+
+    #endregion
 }

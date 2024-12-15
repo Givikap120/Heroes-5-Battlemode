@@ -32,9 +32,9 @@ public partial class AtbScale : Control
         double[] atbValues = units.Select(u => u.ATB).ToArray();
         double[] initiatives = units.Select(u => u.Initiative).ToArray();
 
-        Func<int, double> getATB = i => atbValues[i];
-        Action<int, double> addATB = (i, value) => atbValues[i] += value;
-        Func<int, double> getInitiative = i => initiatives[i];
+        double getATB(int i) => atbValues[i];
+        void addATB(int i, double value) => atbValues[i] += value;
+        double getInitiative(int i) => initiatives[i];
 
         // First step is finding out the first and the last creature to move
         double[] remainingTurns = InitiativeHandler.GetRemainingTurns(units.Count, getATB, getInitiative);
