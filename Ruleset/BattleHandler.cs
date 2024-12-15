@@ -124,12 +124,24 @@ public class BattleHandler
         return;
     }
 
-    public void UnitAction(Unit unit)
+    public void UnitAction(IPlayfieldUnit unit)
     {
         if (CurrentUnit.Value == null) return;
+
+        // If the same team - ignore for now
+        if (CurrentUnit.Value.IsAlly(unit))
+            return;
+
+        if (CurrentUnit.Value is ICanAttackMove attacker && unit is IAttackable attackable)
+        {
+            var shootType = attacker.CanShootTarget(attackable);
+            bool result = attacker.AttackRanged(attackable, shootType);
+            if (result) endTurn();
+        }
     }
 
-    public void UnitWithCellAction((Unit unit, Vector2I cell) target)
+
+    public void UnitWithCellAction((IPlayfieldUnit unit, Vector2I cell) target)
     {
         if (CurrentUnit.Value == null) return;
 

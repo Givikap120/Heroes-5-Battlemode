@@ -10,4 +10,7 @@
   <ItemGroup>
     <None Include=".editorconfig" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AbilitiesEffects\Effects\" />
+  </ItemGroup>
 </Project>

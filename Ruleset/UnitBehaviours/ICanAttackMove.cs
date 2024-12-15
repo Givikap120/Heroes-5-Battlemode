@@ -9,6 +9,6 @@ public interface ICanAttackMove : ICanAttack, ICanMove
         bool moveResult = MoveTo(movePosition);
         if (!moveResult) return false;
 
-        return Attack(attackable);
+        return AttackInternal(attackable);
     }
 }

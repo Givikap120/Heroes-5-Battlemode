@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Godot;
 
-public interface IAttackable
+public interface IAttackable : IPlayfieldUnit
 {
     public double Defense { get; }
 

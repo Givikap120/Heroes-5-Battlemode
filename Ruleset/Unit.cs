@@ -1,9 +1,10 @@
+
 /// <summary>
 ///	Entity on the battlefield that can do action and participates in Initiative cycle
 /// </summary>
-public abstract class Unit
+public abstract class Unit : IUnit
 {
-    public readonly Player Player;
+    public Player Player { get; private set; }
 
     public Unit(Player player)
     { 
@@ -29,5 +30,5 @@ public abstract class Unit
 
 public static class UnitExtensions
 {
-    public static bool IsAlly(this Unit a, Unit b) => a.Player.Id == b.Player.Id;
+    public static bool IsAlly(this IUnit a, IUnit b) => a.Player.Id == b.Player.Id;
 }

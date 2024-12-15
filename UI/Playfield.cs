@@ -11,8 +11,8 @@ public partial class Playfield : TileMapLayer
 	public const int SIZE_Y = 12;
 
     public event Action<Vector2I> OnEmptyCellClicked = _ => { };
-    public event Action<Unit> OnUnitClicked = _ => { };
-    public event Action<(Unit unit, Vector2I movePosition)> OnUnitWithCellClicked = _ => { };
+    public event Action<IPlayfieldUnit> OnUnitClicked = _ => { };
+    public event Action<(IPlayfieldUnit unit, Vector2I movePosition)> OnUnitWithCellClicked = _ => { };
 
     public enum TileType
     {
@@ -57,12 +57,12 @@ public partial class Playfield : TileMapLayer
         }
         currentlySelectedTile = null;
 
-        if (CurrentUnit?.Value != null) selectUnit(CurrentUnit.Value);
+        if (CurrentUnit?.Value != null) addUnitActions(CurrentUnit.Value);
     }
 
     private Vector2I? currentlySelectedTile;
     private int currentlySelectedTileType = -1;
-    private Unit? currentlySelectedUnit;
+    private IPlayfieldUnit? currentlySelectedUnit;
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
@@ -96,7 +96,7 @@ public partial class Playfield : TileMapLayer
         highlightTile(tile);
     }
 
-    private void handleHoverOnUnit(Vector2I tile, Vector2 mousePos, Unit unit)
+    private void handleHoverOnUnit(Vector2I tile, Vector2 mousePos, IPlayfieldUnit unit)
     {
         // If there's tile selected - we need to deselect it first
         if (currentlySelectedTile != null)
@@ -108,9 +108,14 @@ public partial class Playfield : TileMapLayer
         if (CurrentUnit.Value!.IsAlly(unit))
             return;
 
-        // Find the relative position of the closest cell except this
-        Vector2I hoverDelta = (Vector2I)(mousePos - MapToLocal(tile)).Normalized().Round();
-        tile += hoverDelta;
+        currentlySelectedTileType = GetCellSourceId(tile);
+
+        if (currentlySelectedTileType == (int)TileType.Inactive)
+        {
+            // Find the relative position of the closest cell except this
+            Vector2I hoverDelta = (Vector2I)(mousePos - MapToLocal(tile)).Normalized().Round();
+            tile += hoverDelta;
+        }
 
         // Highlight tile with delta
         highlightTile(tile);
@@ -145,12 +150,17 @@ public partial class Playfield : TileMapLayer
 
         if (currentlySelectedTile == null)
         {
-            if (currentlySelectedUnit == null) return;
-            else OnUnitClicked(currentlySelectedUnit);
+            return;
         }
         else
         {
+            // If no unit selected - just select cell
             if (currentlySelectedUnit == null) OnEmptyCellClicked(currentlySelectedTile.Value);
+
+            // If unit is the cell selection - cell is not important
+            else if(currentlySelectedUnit.Coords == currentlySelectedTile) OnUnitClicked(currentlySelectedUnit);
+
+            // Else it's double action
             else OnUnitWithCellClicked((currentlySelectedUnit, currentlySelectedTile.Value));
         }
     }
@@ -194,11 +204,20 @@ public partial class Playfield : TileMapLayer
 
     public CreatureInstance? GetPlayfieldEntityAt(Vector2I tile) => creatures.FirstOrDefault(creature => creature.Coords == tile)?.Parent;
 
-    private void selectUnit(Unit? unit)
+    private void addUnitActions(Unit? unit)
     {
-        if (unit == null || unit is not ICanMove movable)
+        if (unit == null)
             return;
 
+        if (unit is ICanMove movable)
+            addMoveVariants(movable);
+
+        if (unit is ICanAttack attacker && attacker.CanAttackRanged)
+            addShootVariants(attacker);
+    }
+
+    private void addMoveVariants(ICanMove movable)
+    {
         var center = movable.Coords;
 
         SetCell(center, (int)TileType.Select, Vector2I.Zero);
@@ -225,6 +244,19 @@ public partial class Playfield : TileMapLayer
                     SetCell(tileCoords, (int)TileType.Affected, Vector2I.Zero);
                 }
             }
+        }
+    }
+
+    private void addShootVariants(ICanAttack shooter)
+    {
+        foreach (var drawable in creatures)
+        {
+            var creature = drawable.Parent;
+
+            if (shooter.CanShootTarget(creature) != ICanAttack.ShootType.None)
+            {
+                SetCell(creature.Coords, (int)TileType.Aimable, Vector2I.Zero);
+            }   
         }
     }
 

@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 
 public abstract class Creature
 {
@@ -19,6 +20,8 @@ public abstract class Creature
 	public CreatureStats Stats;
 
 	public List<Ability> Abilities = null!;
+
+    public bool IsShooter => Abilities.OfType<AbilityShooter>().Any();
 
 	// public List<Spell> Spells;
 }

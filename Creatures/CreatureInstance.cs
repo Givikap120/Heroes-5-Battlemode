@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using static ICanAttack;
 using static Playfield;
 
 public class CreatureInstance : Unit, ICanAttackMove, IAttackable
@@ -25,7 +26,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
     public override int DecideTileChange(int tileType)
     {
-        if (tileType == (int)TileType.Affected)
+        if (tileType == (int)TileType.Affected || tileType == (int)TileType.Aimable)
             return (int)TileType.Select;
 
         return -1;
@@ -35,22 +36,22 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
     public Vector2I Coords { get => CoordsBindable.Value; set => CoordsBindable.Value = value; }
     public double Speed => CurrentStats.Speed;
 
-    public bool CanAttackRanged => true;
+    public bool CanAttackRanged => Creature.IsShooter && CurrentStats.Shots > 0;
 
     public double Defense => CurrentStats.Defense;
 
-    public bool Attack(IAttackable attackable)
+    public bool AttackInternal(IAttackable attackable, double externalMultiplier)
     {
         double baseDamage = GD.RandRange(CurrentStats.MinDamage, CurrentStats.MaxDamage);
 
         double attack = CurrentStats.Attack;
         double defense = attackable.Defense;
 
-        double multiplier = attack >= defense ?
+        double armorMultiplier = attack >= defense ?
             (1 + 0.05 * (attack - defense)) :
             1.0 / (1 + 0.05 * (defense - attack));
 
-        double damage = baseDamage * multiplier * AmountBindable.Value;
+        double damage = baseDamage * externalMultiplier * armorMultiplier * AmountBindable.Value;
 
         // Apply various effects to the damage
         attackable.TakeDamage(damage);
@@ -87,5 +88,27 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
             AmountBindable.Value = 0;
             CreatureDead.Invoke(this);
         }
+    }
+
+    public ShootType CanShootTarget(IAttackable attackable)
+    {
+        if (!CanAttackRanged)
+            return ShootType.None;
+
+        // Don't attack allies
+        if (this.IsAlly(attackable))
+            return ShootType.None;
+
+        double distanceToTarget = (Coords - attackable.Coords).Length();
+
+        // If it's an enemy - it should be at least 1 tile away
+        if (distanceToTarget < 2)
+            return ShootType.None;
+
+        ShootType result = distanceToTarget <= 6 ? ShootType.Strong : ShootType.Weak;
+
+        // IApplicableToShootType.Apply
+
+        return result;
     }
 }

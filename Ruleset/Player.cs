@@ -36,6 +36,9 @@ public class Player
         player.Army[1] = new CreatureInstance(player, new H1_Peasant(), 1);
         player.Army[1]!.Coords = new Vector2I(6, 10);
 
+        player.Army[2] = new CreatureInstance(player, new H2_Archer(), 727);
+        player.Army[2]!.Coords = new Vector2I(0, 11);
+
         return player;
     }
 
