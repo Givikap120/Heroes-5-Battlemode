@@ -35,6 +35,8 @@ public partial class LabelInBox : Control
 
     public void UpdateLayout()
     {
+        if (!IsInstanceValid(this)) return;
+
         label.Text = Text;
         label.LabelSettings.FontSize = FontSize;
 

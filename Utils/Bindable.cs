@@ -4,7 +4,7 @@ public class Bindable<T>
 {
     public Bindable(T value)
     {
-        _value = value;
+        this.value = value;
     }
 
     public event Action<T> ValueChanged = _ => { };
@@ -12,24 +12,24 @@ public class Bindable<T>
     public void BindValueChanged(Action<T> action, bool triggerImmediately = false)
     {
         ValueChanged = action;
-        if (triggerImmediately) action.Invoke(_value);
+        if (triggerImmediately) action.Invoke(value);
     }
 
     public void TriggerChange()
     {
-        ValueChanged.Invoke(_value);
+        ValueChanged.Invoke(value);
     }
 
-    private T _value;
+    private T value;
 
     public T Value
     {
-        get => _value;
+        get => value;
         set
         {
-            if (!Equals(_value, value))
+            if (!Equals(this.value, value))
             {
-                _value = value;
+                this.value = value;
                 ValueChanged.Invoke(value);
             }
         }

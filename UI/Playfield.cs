@@ -26,15 +26,7 @@ public partial class Playfield : TileMapLayer
         Intersection
     }
 
-    private Bindable<Unit?> currentUnit = null!;
-    public Bindable<Unit?> CurrentUnit {
-        get => currentUnit;
-        set
-        {
-            currentUnit = value;
-            currentUnit.BindValueChanged(selectUnit, true);
-        } 
-    }
+    public Bindable<Unit?> CurrentUnit = null!;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -44,13 +36,14 @@ public partial class Playfield : TileMapLayer
         Main parent = GetNode<Main>("/root/Main");
         var battleHandler = parent.BattleHandler;
 
+        CurrentUnit = battleHandler.CurrentUnit;
+
         battleHandler.PlayerAdded += AddPlayer;
+        battleHandler.NewTurnStarted += ResetPlayfield;
 
         OnEmptyCellClicked += battleHandler.EmptyCellAction;
         OnUnitClicked += battleHandler.UnitAction;
         OnUnitWithCellClicked += battleHandler.UnitWithCellAction;
-
-        CurrentUnit = battleHandler.CurrentUnit;
     }
 
     public void ResetPlayfield()
@@ -63,6 +56,8 @@ public partial class Playfield : TileMapLayer
             }
         }
         currentlySelectedTile = null;
+
+        if (CurrentUnit?.Value != null) selectUnit(CurrentUnit.Value);
     }
 
     private Vector2I? currentlySelectedTile;
@@ -73,7 +68,7 @@ public partial class Playfield : TileMapLayer
 	public override void _Process(double delta)
 	{
         // Don't update UI if there's no unit selected
-        if (currentUnit?.Value == null)
+        if (CurrentUnit?.Value == null)
             return;
 
         var mousePos = ToLocal(GetGlobalMousePosition());
@@ -110,7 +105,7 @@ public partial class Playfield : TileMapLayer
             currentlySelectedTile = null;
         }
 
-        if (currentUnit.Value!.IsAlly(unit))
+        if (CurrentUnit.Value!.IsAlly(unit))
             return;
 
         // Find the relative position of the closest cell except this
@@ -133,7 +128,7 @@ public partial class Playfield : TileMapLayer
         }
 
         // Set Tile
-        int newTileType = currentUnit.Value!.DecideTileChange(currentlySelectedTileType);
+        int newTileType = CurrentUnit.Value!.DecideTileChange(currentlySelectedTileType);
 
         // If tile is gonna be changed - do this
         if (newTileType > 0)
@@ -143,7 +138,7 @@ public partial class Playfield : TileMapLayer
         }
     }
 
-    public override void _UnhandledInput(InputEvent @event)
+    public override void _Input(InputEvent @event)
     {
         if (@event is not InputEventMouseButton mouseEvent || mouseEvent.ButtonIndex != MouseButton.Left || !mouseEvent.Pressed)
             return;
@@ -176,7 +171,6 @@ public partial class Playfield : TileMapLayer
             item.CoordsBindable.BindValueChanged(coords =>
             {
                 newDrawableCreature.Position = MapToLocal(coords);
-                ResetPlayfield();
             }, true);
 
             creatures.Add(newDrawableCreature);

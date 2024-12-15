@@ -42,24 +42,45 @@ public partial class AtbScale : Control
         int lastToMove = remainingTurns.MaxIndex();
 
         // We're skipping first because we're adding it to the big display
-        currentNode.Parent = (CreatureInstance)units[currentToMove];
+        rebuildBigDisplay(units[currentToMove]);
 
         // Clear all nodes from futureNodes container before adding new
-        foreach (var child in futureNodes.GetChildren())
-        {
-            futureNodes.RemoveChild(child);
-            child.QueueFree();
-        }
+        clearFutureNodes();
 
         // Add up until the last one
         while (currentToMove != lastToMove)
         {
             atbValues[currentToMove] = 0.0;
             currentToMove = InitiativeHandler.GetNextUnitIndex(atbValues.Length, getATB, addATB, getInitiative);
-
-            var drawableUnit = units[currentToMove].CreateDrawableRepresentation();
-            drawableUnit.BackgroundSize = 1.0;
-            futureNodes.AddChild(drawableUnit);
+            addFutureNode(units[currentToMove]);
         }
+    }
+
+    private void rebuildBigDisplay(Unit unit)
+    {
+        // Remove old
+        RemoveChild(currentNode);
+        currentNode.QueueFree();
+
+        // Add new
+        currentNode = unit.CreateDrawableRepresentation();
+        currentNode.BackgroundSize = 1.0;
+        AddChild(currentNode);
+    }
+
+    private void clearFutureNodes()
+    {
+        foreach (var child in futureNodes.GetChildren())
+        {
+            futureNodes.RemoveChild(child);
+            child.QueueFree();
+        }
+    }
+
+    private void addFutureNode(Unit unit)
+    {
+        var drawableUnit = unit.CreateDrawableRepresentation();
+        drawableUnit.BackgroundSize = 1.0;
+        futureNodes.AddChild(drawableUnit);
     }
 }

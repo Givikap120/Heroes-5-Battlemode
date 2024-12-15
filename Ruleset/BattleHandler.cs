@@ -11,13 +11,23 @@ public class BattleHandler
     public readonly InitiativeHandler InitiativeHandler;
 
     public event Action<Player> PlayerAdded = delegate { };
+
     public event Action GameStarted = delegate { };
+    public event Action GameEnded;
+
     public event Action NewTurnStarted = delegate { };
 
     public BattleHandler(Main parent)
     {
-        InitiativeHandler = new(this);
         this.parent = parent;
+
+        InitiativeHandler = new(this);
+        GameEnded = delegate 
+        {
+            CurrentUnit.Value = null;
+            NewTurnStarted.Invoke(); }
+        ;
+
         GD.Seed(0);
     }
 
@@ -56,13 +66,8 @@ public class BattleHandler
 
     private void startNewTurn()
     {
-        var nextUnit = InitiativeHandler.GetNextUnit();
-
+        CurrentUnit.Value = InitiativeHandler.GetNextUnit();
         NewTurnStarted.Invoke();
-
-        // Trigger update anyway
-        if (CurrentUnit.Value == nextUnit) CurrentUnit.TriggerChange();
-        else CurrentUnit.Value = nextUnit;
     }
 
     private void endTurn(bool isWait = false)
@@ -94,6 +99,8 @@ public class BattleHandler
     private void callGameOverWindow(string text)
     {
         GD.Print($"Game Over. {text}");
+        GameEnded.Invoke();
+
         var popup = parent.GetNode<PopupPanel>("GameOverPopup");
 
         var label = popup.GetNode<Label>("GameOverPopupText");
