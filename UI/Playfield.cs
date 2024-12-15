@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Godot.TextEdit;
 
 
 public partial class Playfield : TileMapLayer
@@ -39,6 +40,17 @@ public partial class Playfield : TileMapLayer
 	public override void _Ready()
 	{
         ResetPlayfield();
+
+        Main parent = GetNode<Main>("/root/Main");
+        var battleHandler = parent.BattleHandler;
+
+        battleHandler.PlayerAdded += AddPlayer;
+
+        OnEmptyCellClicked += battleHandler.EmptyCellAction;
+        OnUnitClicked += battleHandler.UnitAction;
+        OnUnitWithCellClicked += battleHandler.UnitWithCellAction;
+
+        CurrentUnit = battleHandler.CurrentUnit;
     }
 
     public void ResetPlayfield()

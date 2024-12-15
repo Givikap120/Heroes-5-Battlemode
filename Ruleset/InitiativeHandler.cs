@@ -9,6 +9,11 @@ public class InitiativeHandler
 
     public readonly List<Unit> Units = [];
 
+    public InitiativeHandler(BattleHandler parent)
+    {
+        parent.PlayerAdded += AddPlayer;
+;    }
+
     public void AddPlayer(Player player)
     {
         foreach (Unit? unit in player.Army) 
@@ -34,7 +39,7 @@ public class InitiativeHandler
         (i, value) => Units[i].ATB += value,
         i => Units[i].Initiative)];
 
-    public static void EndTurn(Unit currentUnit) => currentUnit.ATB = 0.0;
+    public static void EndTurn(Unit currentUnit, bool isWait = false) => currentUnit.ATB = isWait ? 0.5 : 0.0;
 
     /// <summary>
     /// Generic-styled ATB algorithm that finds the next Unit and moves ATB scale to it.

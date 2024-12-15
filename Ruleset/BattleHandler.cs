@@ -5,42 +5,29 @@ using System.Linq;
 public class BattleHandler
 {
     private readonly Main parent;
-    private Playfield playfield = null!;
 
-    private readonly Bindable<Unit?> currentUnit = new(null);
+    public readonly Bindable<Unit?> CurrentUnit = new(null);
 
-    public readonly InitiativeHandler InitiativeHandler = new();
+    public readonly InitiativeHandler InitiativeHandler;
 
+    public event Action<Player> PlayerAdded = delegate { };
     public event Action GameStarted = delegate { };
     public event Action NewTurnStarted = delegate { };
 
     public BattleHandler(Main parent)
     {
+        InitiativeHandler = new(this);
         this.parent = parent;
         GD.Seed(0);
     }
 
     public void StartGame()
     {
-        playfield = parent.GetNode<Playfield>("Playfield");
-
-        if (playfield == null)
-        {
-            GD.PrintErr("Playfield node not found!");
-            return;
-        }
-
-        playfield.OnEmptyCellClicked += EmptyCellAction;
-        playfield.OnUnitClicked += UnitAction;
-        playfield.OnUnitWithCellClicked += UnitWithCellAction;
-
-        playfield.CurrentUnit = currentUnit;
-
         addPlayer(Player.Preset1());
         addPlayer(Player.Preset2());
 
         GameStarted.Invoke();
-        startTurn();
+        startNewTurn();
     }
 
     private Player player1 = null!;
@@ -62,24 +49,23 @@ public class BattleHandler
         }
         else return;
 
-        playfield.AddPlayer(player);
-        InitiativeHandler.AddPlayer(player);
+        PlayerAdded.Invoke(player);
     }
 
     #region turn_handling
-    private void startTurn()
+
+    private void startNewTurn()
     {
-        if (currentUnit.Value != null) InitiativeHandler.EndTurn(currentUnit.Value);
         var nextUnit = InitiativeHandler.GetNextUnit();
 
         NewTurnStarted.Invoke();
 
         // Trigger update anyway
-        if (currentUnit.Value == nextUnit) currentUnit.TriggerChange();
-        else currentUnit.Value = nextUnit;
+        if (CurrentUnit.Value == nextUnit) CurrentUnit.TriggerChange();
+        else CurrentUnit.Value = nextUnit;
     }
 
-    private void endTurn()
+    private void endTurn(bool isWait = false)
     {
         // Check if any player have won
         int player1ArmyCount = player1.Army.Where(creature => creature != null).Count();
@@ -100,7 +86,8 @@ public class BattleHandler
         }
         else
         {
-            startTurn();
+            InitiativeHandler.EndTurn(CurrentUnit.Value!, isWait);
+            startNewTurn();
         }
     }
 
@@ -119,9 +106,9 @@ public class BattleHandler
     #region actions
     public void EmptyCellAction(Vector2I cell)
     {
-        if (currentUnit.Value == null) return;
+        if (CurrentUnit.Value == null) return;
 
-        if (currentUnit.Value is ICanMove movable)
+        if (CurrentUnit.Value is ICanMove movable)
         {
             bool result = movable.MoveTo(cell);
             if (result) endTurn();
@@ -132,18 +119,18 @@ public class BattleHandler
 
     public void UnitAction(Unit unit)
     {
-        if (currentUnit.Value == null) return;
+        if (CurrentUnit.Value == null) return;
     }
 
     public void UnitWithCellAction((Unit unit, Vector2I cell) target)
     {
-        if (currentUnit.Value == null) return;
+        if (CurrentUnit.Value == null) return;
 
         // If the same team - ignore for now
-        if (currentUnit.Value.IsAlly(target.unit))
+        if (CurrentUnit.Value.IsAlly(target.unit))
             return;
 
-        if (currentUnit.Value is ICanAttackMove attacker && target.unit is IAttackable attackable)
+        if (CurrentUnit.Value is ICanAttackMove attacker && target.unit is IAttackable attackable)
         {
             bool result = attacker.AttackWithMove(attackable, target.cell);
             if (result) endTurn();
@@ -152,12 +139,12 @@ public class BattleHandler
 
     public void DefendAction()
     {
-        GD.Print("Defend!");
+        endTurn();
     }
 
     public void WaitAction()
     {
-        GD.Print("Wait!");
+        endTurn(true);
     }
 
     #endregion
