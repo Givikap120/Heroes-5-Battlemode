@@ -12,6 +12,7 @@ public class BattleHandler
     public readonly InitiativeHandler InitiativeHandler = new();
 
     public event Action GameStarted = delegate { };
+    public event Action NewTurnStarted = delegate { };
 
     public BattleHandler(Main parent)
     {
@@ -74,6 +75,8 @@ public class BattleHandler
     {
         if (currentUnit.Value != null) InitiativeHandler.EndTurn(currentUnit.Value);
         var nextUnit = InitiativeHandler.GetNextUnit();
+
+        NewTurnStarted.Invoke();
 
         // Trigger update anyway
         if (currentUnit.Value == nextUnit) currentUnit.TriggerChange();

@@ -11,6 +11,8 @@ public partial class DrawableCreatureInstance : Control
     private double? backgroundSize = null;
     private CreatureInstance parent = null!;
     public Vector2I Coords => parent.Coords;
+    private Vector2I sizeI => new(creatureIconTexture?.GetWidth() ?? 0, creatureIconTexture?.GetHeight() ?? 0);
+    private Vector2 sizeTrunc => new(creatureIconTexture?.GetWidth() ?? 0, creatureIconTexture?.GetHeight() ?? 0);
 
     public bool Centered
     {
@@ -40,12 +42,27 @@ public partial class DrawableCreatureInstance : Control
         set
         {
             if (parent == value) return;
+            unbindFromParent();
+
             parent = value;
+
+            // Need to load this synchronously so we have the size at init time
+            loadIcon(parent.Creature.IconPath);
+
             updateFromParent();
         }
     }
 
-    public Vector2I SizeI => new((int)Size.X, (int)Size.Y);
+    private Texture2D creatureIconTexture = null!;
+
+    private void loadIcon(string path)
+    {
+        
+        creatureIconTexture = ResourceLoader.Load<Texture2D>(path);
+        Size = new Vector2(creatureIconTexture.GetWidth(), creatureIconTexture.GetHeight());
+    }
+
+    
 
     /// <summary>
     /// For some reason IsNodeReady() can be true even if _Ready() is not called yet.
@@ -71,14 +88,19 @@ public partial class DrawableCreatureInstance : Control
         if (parent != null) updateFromParent();
     }
 
+    private void unbindFromParent()
+    {
+        if (parent == null) return;
+        parent.AmountBindable.ValueChanged -= amount => amountLabel.Text = amount.ToString();
+    }
+
     private void updateFromParent()
     {
         if (!isLoadingComplete) return;
 
-        parent.AmountBindable.BindValueChanged(amount => amountLabel.Text = amount.ToString());
+        parent.AmountBindable.ValueChanged += amount => amountLabel.Text = amount.ToString();
 
-        iconSprite.Texture = ResourceLoader.Load<Texture2D>(parent.Creature.IconPath);
-        Size = new Vector2(iconSprite.Texture.GetWidth(), iconSprite.Texture.GetHeight());
+        iconSprite.Texture = creatureIconTexture;
 
         Color baseColor = parent.Player.Color;
         Color tintColor = baseColor * 0.5f;
@@ -113,16 +135,22 @@ public partial class DrawableCreatureInstance : Control
 
         // Adjust background size
         var backgroundTexture = (GradientTexture2D)backgroundSprite.Texture;
-        backgroundTexture.Width = (int)(Size.X * BackgroundSize);
-        backgroundTexture.Height = (int)(Size.Y * BackgroundSize);
+        backgroundTexture.Width = (int)(sizeTrunc.X * BackgroundSize);
+        backgroundTexture.Height = (int)(sizeTrunc.Y * BackgroundSize);
 
         // We also need to offset background if there's no centration
         if (centered == false)
         {
-            Vector2 sizeTrunc = SizeI;
             backgroundSprite.Position = sizeTrunc * (float)(1 - BackgroundSize) / 2;
         }
 
-        amountLabel.Position = Centered ? Vector2.Zero : Size - amountLabel.Size;
+        amountLabel.Position = Centered ? Vector2.Zero : sizeTrunc - amountLabel.Size;
+    }
+    public override Vector2 _GetMinimumSize() => sizeTrunc;
+
+    public override void _ExitTree()
+    {
+        unbindFromParent();
+        base._ExitTree();
     }
 }

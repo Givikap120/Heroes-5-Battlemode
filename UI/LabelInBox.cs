@@ -38,10 +38,11 @@ public partial class LabelInBox : Control
         label.Text = Text;
         label.LabelSettings.FontSize = FontSize;
 
-        Vector2I outlineSize = new Vector2I(OutlineWidth, OutlineWidth);
+        Vector2I outlineSize = new(OutlineWidth, OutlineWidth);
 
         var textSize = getTextSize(label);
         var rectSize = textSize + Padding * 2 + outlineSize * 2;
+        rectSize.X = Mathf.Max(rectSize.X, rectSize.Y); // At least square
 
         outlineRect.Size = rectSize;
 
