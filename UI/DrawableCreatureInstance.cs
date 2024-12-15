@@ -144,7 +144,7 @@ public partial class DrawableCreatureInstance : Control
             backgroundSprite.Position = sizeTrunc * (float)(1 - BackgroundSize) / 2;
         }
 
-        amountLabel.Position = Centered ? Vector2.Zero : sizeTrunc - amountLabel.Size;
+        amountLabel.Position = Centered ? (sizeTrunc / 2 - amountLabel.Size) : sizeTrunc - amountLabel.Size;
     }
     public override Vector2 _GetMinimumSize() => sizeTrunc;
 
