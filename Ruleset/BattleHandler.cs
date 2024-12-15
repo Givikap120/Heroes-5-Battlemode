@@ -72,7 +72,7 @@ public class BattleHandler
 
     private void startTurn()
     {
-        if (currentUnit.Value != null) currentUnit.Value.ATB = 0;
+        if (currentUnit.Value != null) InitiativeHandler.EndTurn(currentUnit.Value);
         var nextUnit = InitiativeHandler.GetNextUnit();
 
         // Trigger update anyway

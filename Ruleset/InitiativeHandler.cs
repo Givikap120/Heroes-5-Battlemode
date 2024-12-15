@@ -2,13 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 public class InitiativeHandler
 {
     public const double BASE_INITIATIVE = 10;
 
-    public readonly List<Unit> List = [];
+    public readonly List<Unit> Units = [];
 
     public void AddPlayer(Player player)
     {
@@ -19,7 +18,7 @@ public class InitiativeHandler
             Debug.Assert(double.IsNaN(unit.ATB));
 
             unit.ATB = GD.RandRange(0, 0.25);
-            List.Add(unit);
+            Units.Add(unit);
         }
 
         player.CreatureDead += handleUnitDead;
@@ -27,27 +26,56 @@ public class InitiativeHandler
 
     private void handleUnitDead(Unit unit)
     {
-        List.RemoveAll(u => u == unit);
+        Units.RemoveAll(u => u == unit);
     }
 
-    public Unit GetNextUnit()
+    public Unit GetNextUnit() => Units[GetNextUnitIndex(Units.Count,
+        i => Units[i].ATB,
+        (i, value) => Units[i].ATB += value,
+        i => Units[i].Initiative)];
+
+    public static void EndTurn(Unit currentUnit) => currentUnit.ATB = 0.0;
+
+    /// <summary>
+    /// Generic-styled ATB algorithm that finds the next Unit and moves ATB scale to it.
+    /// Created to allow simulation outside of real Unit values.
+    /// </summary>
+    /// <param name="size">Amount of units to iterate over</param>
+    /// <param name="getATB">Getting ATB value by index</param>
+    /// <param name="addATB">Adding ATB value by index</param>
+    /// <param name="getInitiative">Getting Initiative value by index</param>
+    /// <returns>Index of the next Unit</returns>
+    public static int GetNextUnitIndex(int size, Func<int, double> getATB, Action<int, double> addATB, Func<int, double> getInitiative)
     {
-        var remainingTurns = List.Select(u => (1 - u.ATB) * BASE_INITIATIVE / u.Initiative).ToArray();
+        double[] remainingTurns = new double[size];
+
+        for (int i = 0; i < size; i++)
+        {
+            remainingTurns[i] = (1 - getATB(i)) * BASE_INITIATIVE / getInitiative(i);
+        }
+
         int closestIndex = remainingTurns.MinIndex();
 
-        moveATBScale(remainingTurns[closestIndex]);
+        MoveATBScale(remainingTurns[closestIndex], size, addATB, getInitiative);
 
-        Debug.Assert(List[closestIndex].ATB == 1.0);
+        Debug.Assert(getATB(closestIndex) == 1.0);
 
-        return List[closestIndex];
+        return closestIndex;
     }
 
-    private void moveATBScale(double turns)
+    /// <summary>
+    /// Generic-styled ATB moving function.
+    /// </summary>
+    /// <param name="turns">Amount of (normalized) turns to move ATB scale by</param>
+    /// <param name="size">Amount of units to iterate over</param>
+    /// <param name="addATB">Adding ATB value by index</param>
+    /// <param name="getInitiative">Getting Initiative value by index</param>
+    public static void MoveATBScale(double turns, int size, Action<int, double> addATB, Func<int, double> getInitiative)
     {
-        foreach (var unit in List)
+        for (int i = 0; i < size; i++)
         {
-            double movedAmount = turns * unit.Initiative / BASE_INITIATIVE;
-            unit.ATB += movedAmount;
+            double movedAmount = turns * getInitiative(i) / BASE_INITIATIVE;
+            addATB(i, movedAmount);
         }
     }
 }
