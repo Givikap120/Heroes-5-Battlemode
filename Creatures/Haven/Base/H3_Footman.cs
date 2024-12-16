@@ -15,12 +15,13 @@
             MaxDamage = 4,
             HitPoints = 16,
             Speed = 4,
-            Initiative = 8
+            Initiative = 8,
+            Power = 201
         };
 
         Abilities = 
         [
-            // Enraged
+            new AbilityEnraged(),
             new AbilityLargeShield(),
             new AbilityBash()
         ];

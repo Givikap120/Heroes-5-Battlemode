@@ -13,6 +13,8 @@
         Stats.HitPoints = 10;
         Stats.Initiative = 8;
 
+        Stats.Power = 203;
+
         Abilities.Add(new AbilityNoRangePenalty());
     }
 }

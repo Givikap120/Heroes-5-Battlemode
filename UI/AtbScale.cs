@@ -18,8 +18,8 @@ public partial class AtbScale : Control
         currentNode = GetNode<DrawableCreatureInstance>("CurrentUnitNode");
         futureNodes = GetNode<HBoxContainer>("ScrollContainer/FutureUnitsNode");
 
-        initiativeHandler = parent.BattleHandler.InitiativeHandler;
-        parent.BattleHandler.NewTurnStarted += _ => updateAtbScale();
+        initiativeHandler = BattleHandler.Instance.InitiativeHandler;
+        BattleHandler.Instance.NewTurnStarted += _ => updateAtbScale();
 
         updateAtbScale();
     }

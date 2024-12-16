@@ -12,6 +12,8 @@
         Stats.MaxDamage = 5;
         Stats.HitPoints = 26;
 
+        Stats.Power = 287;
+
         //Abilities.Add(ShieldAllies);
     }
 }

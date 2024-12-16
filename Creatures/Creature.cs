@@ -23,5 +23,13 @@ public abstract class Creature
 
     public bool IsShooter => Abilities.OfType<AbilityShooter>().Any();
 
-	// public List<Spell> Spells;
+    // public List<Spell> Spells;
+
+    public void BindToInstance(CreatureInstance instance)
+    {
+        foreach (var ability in Abilities.OfType<IBindableToInstance>())
+        {
+            ability.ParentInstance = instance;
+        }
+    }
 }

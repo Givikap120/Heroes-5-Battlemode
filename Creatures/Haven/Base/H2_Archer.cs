@@ -17,6 +17,7 @@
             Speed = 4,
             Initiative = 9,
             Shots = 10,
+            Power = 140
         };
 
         Abilities = 

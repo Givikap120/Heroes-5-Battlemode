@@ -17,7 +17,8 @@ public class H1_Peasant : Creature
             MaxDamage = 1,
             HitPoints = 3,
             Speed = 4,
-            Initiative = 8
+            Initiative = 8,
+            Power = 41
         };
 
         Abilities = [];

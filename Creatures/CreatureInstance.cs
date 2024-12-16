@@ -14,22 +14,27 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
     public int AttackedOnThisTurn { get; set; }
 
-    public event Action<CreatureInstance> CreatureDead;
+    public event Action<CreatureInstance> CreatureDead = delegate { };
 
-    public CreatureInstance(BattleHandler battleHandler, Player player, Creature creature, int amount = 1)
+    public CreatureInstance(BattleHandler? battleHandler, Player player, Creature creature, int amount = 1)
         : base(player)
 	{
         Creature = creature;
 		AmountBindable = new(amount);
 		CurrentStats = creature.Stats;
 
-        battleHandler.NewTurnStarted += handleTurnUpdate;
+        creature.BindToInstance(this);
 
-        CreatureDead = _ => 
+        if (battleHandler != null) 
         {
-            battleHandler.NewTurnStarted -= handleTurnUpdate;
-            player.TriggerUnitDead(this);
-        };
+            battleHandler.NewTurnStarted += handleTurnUpdate;
+
+            CreatureDead = _ =>
+            {
+                battleHandler.NewTurnStarted -= handleTurnUpdate;
+                player.TriggerUnitDead(this);
+            };
+        }
     }
     public override DrawableCreatureInstance CreateDrawableRepresentation() => SceneFactory.CreateDrawableCreatureInstance(this);
 

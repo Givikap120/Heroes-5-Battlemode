@@ -7,6 +7,9 @@ public struct CreatureStats
     public double HitPoints;
     public double Speed;
     public double Initiative;
+
     public int Shots;
-    public int Mana; 
+    public int Mana;
+
+    public double Power;
 }

@@ -12,6 +12,8 @@
         Stats.HitPoints = 10;
         Stats.Initiative = 8;
 
+        Stats.Power = 199;
+
         Abilities.Add(new AbilityPreciseShot());
     }
 }

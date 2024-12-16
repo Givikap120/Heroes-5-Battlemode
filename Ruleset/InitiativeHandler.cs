@@ -26,7 +26,7 @@ public class InitiativeHandler
             Units.Add(unit);
         }
 
-        player.CreatureDead += handleUnitDead;
+        player.CreatureDied += handleUnitDead;
     }
 
     private void handleUnitDead(Unit unit)

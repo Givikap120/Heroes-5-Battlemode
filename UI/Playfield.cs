@@ -35,8 +35,7 @@ public partial class Playfield : TileMapLayer
 	{
         ResetPlayfield();
 
-        Main parent = GetNode<Main>("/root/Main");
-        var battleHandler = parent.BattleHandler;
+        var battleHandler = BattleHandler.Instance;
 
         CurrentUnit = battleHandler.CurrentUnit;
 
@@ -190,7 +189,7 @@ public partial class Playfield : TileMapLayer
             AddChild(newDrawableCreature);
         }
 
-        player.CreatureDead += handleCreatureDead;
+        player.CreatureDied += handleCreatureDead;
     }
 
     private void handleCreatureDead(CreatureInstance creature)

@@ -10,6 +10,8 @@
         Stats.MaxDamage = 2;
         Stats.HitPoints = 6;
 
+        Stats.Power = 72;
+
         Abilities.Add(new AbilityAssault());
     }
 }

@@ -8,7 +8,8 @@ public class Player
     public int Id = 0;
     public Color Color = Colors.Wheat;
     public Hero Hero = null!;
-    public CreatureInstance?[] Army = new CreatureInstance?[8];
+    public readonly CreatureInstance?[] Army = new CreatureInstance?[8];
+    private readonly CreatureInstance?[] initialArmy = new CreatureInstance?[8];
     // War machine units
 
     private readonly BattleHandler battleHandler;
@@ -16,21 +17,23 @@ public class Player
     public Player(BattleHandler battleHandler)
     {
         this.battleHandler = battleHandler;
-
-        CreatureDead = creature =>
-        {
-            int index = Array.FindIndex(Army, c => c == creature);
-            if (index >= 0) Army[index] = null;
-        };
     }
 
     /// <summary>
     /// Fires when creature in this player's army is dead.
     /// It's automatically removed from army of this player after event is handled.
     /// </summary>
-    public event Action<CreatureInstance> CreatureDead;
+    public event Action<CreatureInstance> CreatureDied = delegate { };
 
-    public void TriggerUnitDead(CreatureInstance creature) => CreatureDead.Invoke(creature);
+    public void TriggerUnitDead(CreatureInstance creature) => CreatureDied.Invoke(creature);
+
+    public double CalculateInitialArmyPower() => initialArmy.Select(c => c?.CalculatePower() ?? 0).Sum();
+
+    public CreatureInstance GetInitialStackFor(CreatureInstance creature)
+    {
+        int index = Army.FirstIndex(c => c == creature);
+        return initialArmy[index]!;
+    }
 
     private CreatureInstance addCreatureToPlayer(Creature creature, int amount, Vector2I coords, int slot = -1)
     {
@@ -45,6 +48,14 @@ public class Player
         };
 
         Army[slot] = instance;
+
+        // Make a copy without attachment to BattleHandler
+        var instanceCopy = new CreatureInstance(null, this, creature, amount)
+        {
+            Coords = coords
+        };
+
+        initialArmy[slot] = instanceCopy;
 
         return instance;
     }

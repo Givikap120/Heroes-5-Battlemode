@@ -4,6 +4,8 @@ using System.Linq;
 
 public class BattleHandler
 {
+    public static BattleHandler Instance { get; private set; } = null!;
+
     private readonly Main parent;
 
     public readonly Bindable<Unit?> CurrentUnit = new(null);
@@ -17,6 +19,8 @@ public class BattleHandler
 
     public event Action<Unit?> NewTurnStarted = delegate { };
 
+    public event Action<CreatureInstance> CreatureDied = delegate { };
+
     public BattleHandler(Main parent)
     {
         this.parent = parent;
@@ -29,6 +33,8 @@ public class BattleHandler
         ;
 
         GD.Seed(0);
+
+        Instance = this;
     }
 
     public void StartGame()
@@ -59,6 +65,7 @@ public class BattleHandler
         }
         else return;
 
+        player.CreatureDied += CreatureDied.Invoke;
         PlayerAdded.Invoke(player);
     }
 
@@ -73,8 +80,8 @@ public class BattleHandler
     private void endTurn(bool isWait = false)
     {
         // Check if any player have won
-        int player1ArmyCount = player1.Army.Where(creature => creature != null).Count();
-        int player2ArmyCount = player2.Army.Where(creature => creature != null).Count();
+        int player1ArmyCount = player1.Army.Where(creature => creature != null && creature.Amount > 0).Count();
+        int player2ArmyCount = player2.Army.Where(creature => creature != null && creature.Amount > 0).Count();
 
         // Check win condition
         if (player1ArmyCount == 0 && player2ArmyCount == 0) // Draw

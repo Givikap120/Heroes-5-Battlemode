@@ -11,6 +11,8 @@
         Stats.MaxDamage = 5;
         Stats.HitPoints = 26;
 
+        Stats.Power = 299;
+
         Abilities.RemoveAll(ability => ability.GetType() == typeof(AbilityBash));
         //Abilities.Add(Cleave);
     }
