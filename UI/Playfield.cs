@@ -146,20 +146,27 @@ public partial class Playfield : TileMapLayer
         if (@event is not InputEventMouseButton mouseEvent || mouseEvent.ButtonIndex != MouseButton.Left || !mouseEvent.Pressed)
             return;
 
-        if (currentlySelectedTile == null)
+        Vector2I? selectedOrCurrent = currentlySelectedTile;
+
+        if (CurrentUnit.Value is IPlayfieldUnit playfieldUnit)
+        {
+            selectedOrCurrent ??= playfieldUnit.Coords;
+        }
+
+        if (selectedOrCurrent == null)
         {
             return;
         }
         else
         {
             // If no unit selected - just select cell
-            if (currentlySelectedUnit == null) OnEmptyCellClicked(currentlySelectedTile.Value);
+            if (currentlySelectedUnit == null) OnEmptyCellClicked(selectedOrCurrent.Value);
 
             // If unit is the cell selection - cell is not important
-            else if(currentlySelectedUnit.Coords == currentlySelectedTile) OnUnitClicked(currentlySelectedUnit);
+            else if(currentlySelectedUnit.Coords == selectedOrCurrent) OnUnitClicked(currentlySelectedUnit);
 
             // Else it's double action
-            else OnUnitWithCellClicked((currentlySelectedUnit, currentlySelectedTile.Value));
+            else OnUnitWithCellClicked((currentlySelectedUnit, selectedOrCurrent.Value));
         }
     }
 
