@@ -21,7 +21,9 @@ public abstract class Creature
 
 	public List<IAbility> Abilities = null!;
 
-    public bool IsShooter => Abilities.OfType<AbilityShooter>().Any();
+    public bool HasAbility<T>() => Abilities.OfType<T>().Any();
+
+    public bool IsShooter => HasAbility<AbilityShooter>();
 
     // public List<Spell> Spells;
 

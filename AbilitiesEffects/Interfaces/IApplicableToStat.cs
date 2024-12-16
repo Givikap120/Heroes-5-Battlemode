@@ -1,3 +1,3 @@
-public interface IApplicableToStats : IAbility
+public interface IApplicableToStats
 {
 }

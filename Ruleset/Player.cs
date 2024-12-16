@@ -1,5 +1,6 @@
 ﻿using Godot;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -11,6 +12,8 @@ public class Player
     public readonly CreatureInstance?[] Army = new CreatureInstance?[8];
     private readonly CreatureInstance?[] initialArmy = new CreatureInstance?[8];
     // War machine units
+
+    public IEnumerable<CreatureInstance> AliveArmy => Army.Where(c => c != null && c.Amount > 0).Cast<CreatureInstance>();
 
     private readonly BattleHandler battleHandler;
 

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using static ICanAttack;
 using static Playfield;
 
 public class CreatureInstance : Unit, ICanAttackMove, IAttackable
@@ -12,6 +11,17 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
     public Bindable<int> AmountBindable;
     public Bindable<Vector2I> CoordsBindable = new(new Vector2I(-1, -1));
     public CreatureStats CurrentStats;
+
+    public List<Effect> Effects = [];
+
+    public bool HasEffect<T>() => Effects.OfType<T>().Any();
+
+    public IEnumerable<T> ModifiersOfType<T>()
+    {
+        IEnumerable<T> abilities = Creature.Abilities.OfType<T>();
+        IEnumerable<T> effects = Effects.OfType<T>();
+        return abilities.Concat(effects);
+    }
 
     public int AttackedOnThisTurn { get; set; }
 
@@ -118,7 +128,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
             return false;
 
         // Effects before attack
-        foreach (var ability in Creature.Abilities.OfType<IApplicableBeforeAttack>())
+        foreach (var ability in ModifiersOfType<IApplicableBeforeAttack>())
             parameters = ability.Apply(this, target, parameters);
 
 
@@ -137,7 +147,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
             counterAttacker.Attack(this, isCounterattack: true);
 
         // Effects after attack
-        foreach (var ability in Creature.Abilities.OfType<IApplicableAfterAttack>())
+        foreach (var ability in ModifiersOfType<IApplicableAfterAttack>())
             ability.Apply(this, target, parameters, attackResult);
 
         return true;
@@ -146,7 +156,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
     public AttackResult TakeDamage(double damage, AttackType attackType)
     {
         // Effects on damage
-        foreach (var ability in Creature.Abilities.OfType<IApplicableToRecievedDamage>())
+        foreach (var ability in ModifiersOfType<IApplicableToRecievedDamage>())
             damage = ability.Apply(damage, attackType);
 
         AttackResult result = new AttackResult();

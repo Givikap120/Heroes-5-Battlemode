@@ -14,7 +14,7 @@
 
         Stats.Power = 287;
 
-        //Abilities.Add(ShieldAllies);
+        Abilities.Add(new AbilityShieldAllies());
     }
 }
 
