@@ -139,6 +139,9 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
         double damage = parameters.BaseDamage * armorMultiplier * parameters.AttackType.GetMultiplier() * Amount;
 
+        if (parameters.AttackType.IsRanged())
+            CurrentStats.Shots--;
+
         // Attack
         var attackResult = target.TakeDamage(damage, parameters.AttackType);
 
