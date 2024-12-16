@@ -123,7 +123,7 @@ public partial class DrawableCreatureInstance : Control
 
         backgroundSprite.Texture = gradientTexture;
 
-        amountLabel.Text = parent.AmountBindable.Value.ToString();
+        amountLabel.Text = parent.Amount.ToString();
 
         updatePositions();
     }

@@ -20,5 +20,5 @@ public interface ICanAttack : IUnit
     /// <param name="attackable">Target.</param>
     /// <param name="multiplier">Multiplier to damage.</param>
     /// <returns></returns>
-    public bool Attack(IAttackable attackable, bool allowRanged = true, bool allowCounterattack = true);
+    public bool Attack(IAttackable attackable, bool allowRanged = true, bool isCounterattack = false);
 }

@@ -3,6 +3,7 @@ using System;
 
 public interface IAttackable : IPlayfieldUnit
 {
+    public double TotalHP { get; }
     public double Defense { get; }
 
     /// <summary>

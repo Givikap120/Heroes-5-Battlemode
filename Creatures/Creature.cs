@@ -19,7 +19,7 @@ public abstract class Creature
 
 	public CreatureStats Stats;
 
-	public List<Ability> Abilities = null!;
+	public List<IAbility> Abilities = null!;
 
     public bool IsShooter => Abilities.OfType<AbilityShooter>().Any();
 

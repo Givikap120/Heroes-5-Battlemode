@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static ICanAttack;
 using static Playfield;
 
@@ -40,11 +41,15 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         AttackedOnThisTurn = 0;
     }
 
-    public override double Initiative => CurrentStats.Initiative;
     public Vector2I Coords { get => CoordsBindable.Value; set => CoordsBindable.Value = value; }
+    public int Amount { get => AmountBindable.Value; set => AmountBindable.Value = value; }
+
+    public override double Initiative => CurrentStats.Initiative;
     public double Speed => CurrentStats.Speed;
 
     public double Defense => CurrentStats.Defense;
+
+    public double TotalHP => CurrentStats.HitPoints + (Amount - 1) * Creature.Stats.HitPoints;
 
     public override int DecideTileChange(int tileType)
     {
@@ -72,30 +77,31 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         return !isBlocked;
     }
 
-    public bool Attack(IAttackable attackable, bool allowRanged, bool allowCounterattack)
+    public bool Attack(IAttackable target, bool allowRanged, bool isCounterattack)
     {
-        if (AmountBindable.Value == 0) return false;
+        if (Amount <= 0) return false;
 
         double baseDamage = GD.RandRange(CurrentStats.MinDamage, CurrentStats.MaxDamage);
 
         double attack = CurrentStats.Attack;
-        double defense = attackable.Defense;
+        double defense = target.Defense;
 
         double armorMultiplier = attack >= defense ?
             (1 + 0.05 * (attack - defense)) :
             1.0 / (1 + 0.05 * (defense - attack));
 
         double shootingMultiplier = 1.0;
+        bool isRanged = false;
 
         if (Creature.IsShooter)
         {
-            ShootType shootType = CanShootTarget(attackable);
+            ShootType shootType = CanShootTarget(target);
 
-            if (shootType == ShootType.None)
+            if ((shootType == ShootType.None) || (!allowRanged && shootType != ShootType.Melee))
                 return false;
 
-            if (!allowRanged && shootType != ShootType.Melee)
-                return false;
+            if (shootType != ShootType.Melee)
+                isRanged = true;
 
             shootingMultiplier = shootType switch
             {
@@ -106,15 +112,20 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
             };
         }
 
-        double damage = baseDamage * armorMultiplier * shootingMultiplier * AmountBindable.Value;
+        double damage = baseDamage * armorMultiplier * shootingMultiplier * Amount;
 
-        bool willCounterAttack = allowCounterattack && attackable.WillCounterattack(this);
+        bool willCounterAttack = !isCounterattack && target.WillCounterattack(this);
+
+        foreach (var ability in Creature.Abilities.OfType<IApplicableBeforeAttack>())
+        {
+            willCounterAttack &= ability.Apply(this, target, isRanged, isCounterattack);
+        }
 
         // Apply various effects to the damage
-        attackable.TakeDamage(damage);
+        target.TakeDamage(damage);
 
-        if (willCounterAttack && attackable is ICanAttack counterAttacker)
-            counterAttacker.Attack(this, allowCounterattack: false);
+        if (willCounterAttack && target is ICanAttack counterAttacker)
+            counterAttacker.Attack(this, isCounterattack: true);
 
         return true;
     }
@@ -132,20 +143,20 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         {
             int deaths = (int)(damage / Creature.Stats.HitPoints);
 
-            AmountBindable.Value -= deaths;
+            Amount -= deaths;
             damage -= deaths * Creature.Stats.HitPoints;
         }
 
         // If current creature is dead - restore HP
         if (CurrentStats.HitPoints == 0)
         {
-            AmountBindable.Value--;
+            Amount--;
             CurrentStats.HitPoints = Creature.Stats.HitPoints - damage;
         }
 
-        if (AmountBindable.Value <= 0)
+        if (Amount <= 0)
         {
-            AmountBindable.Value = 0;
+            Amount = 0;
             CreatureDead.Invoke(this);
         }
 

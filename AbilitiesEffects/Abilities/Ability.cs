@@ -1,3 +1,3 @@
-public abstract class Ability
+public interface IAbility
 {
 }

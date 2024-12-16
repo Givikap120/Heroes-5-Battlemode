@@ -16,7 +16,7 @@ public abstract class Unit : IUnit
     /// <summary>
     /// Value between 0 and 1 that determines how far is turn of this Unit
     /// </summary>
-    public double ATB = double.NaN;
+    public double ATB { get; set; } = double.NaN;
 
     public abstract double Initiative { get; }
 

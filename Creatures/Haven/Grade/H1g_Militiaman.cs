@@ -13,7 +13,7 @@ public class H1g_Militiaman : H1_Peasant
         Stats.MaxDamage = 2;
         Stats.HitPoints = 6;
 
-        //Abilities.Add(new AbilityBash());
+        Abilities.Add(new AbilityBash());
     }
 }
 

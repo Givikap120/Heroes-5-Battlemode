@@ -1,6 +1,3 @@
-using System;
-
-public interface IApplicableToStats
+public interface IApplicableToStats : IAbility
 {
-	abstract void Apply();
 }
