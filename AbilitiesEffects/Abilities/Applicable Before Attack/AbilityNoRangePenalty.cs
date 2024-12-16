@@ -2,9 +2,9 @@
 {
     public AttackParameters Apply(CreatureInstance owner, IAttackable target, AttackParameters parameters)
     {
-        if (parameters.ShootType == ICanAttack.ShootType.Weak)
+        if (parameters.ShootType == ShootType.Weak)
         {
-            parameters.ShootType = ICanAttack.ShootType.Strong;
+            parameters.ShootType = ShootType.Strong;
         }
             
         return parameters;

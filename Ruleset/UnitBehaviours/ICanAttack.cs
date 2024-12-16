@@ -4,14 +4,6 @@ public interface ICanAttack : IUnit
 {
     public bool CanAttackRanged(IEnumerable<IPlayfieldUnit> units);
 
-    public enum ShootType
-    {
-        None,
-        Melee,
-        Weak,
-        Strong
-    }
-
     public ShootType CanShootTarget(IAttackable attackable);
 
     /// <summary>

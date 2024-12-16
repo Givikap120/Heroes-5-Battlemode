@@ -94,10 +94,9 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
             parameters.ShootType = CanShootTarget(target);
 
             if (!allowRanged && parameters.ShootType != ShootType.None)
-                parameters.ShootType = ShootType.Melee;
+                parameters.ShootType = ShootType.MeleeWithPenalty;
 
-            if (parameters.ShootType != ShootType.Melee)
-                parameters.IsRanged = true;
+            parameters.IsRanged = parameters.ShootType.IsRanged();
         }
 
         return parameters;
@@ -122,15 +121,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
             (1 + 0.05 * (parameters.Attack - parameters.Defense)) :
             1.0 / (1 + 0.05 * (parameters.Defense - parameters.Attack));
 
-        double shootingMultiplier = Creature.IsShooter ? parameters.ShootType switch
-        {
-            ShootType.Melee => 0.5,
-            ShootType.Weak => 0.5,
-            ShootType.Strong => 1.0,
-            _ => 0.0
-        } : 1.0;
-
-        double damage = parameters.BaseDamage * armorMultiplier * shootingMultiplier * Amount;
+        double damage = parameters.BaseDamage * armorMultiplier * parameters.ShootType.GetMultiplier() * Amount;
 
         // Attack
         target.TakeDamage(damage);
@@ -181,9 +172,6 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
     public ShootType CanShootTarget(IAttackable attackable)
     {
-        if (!Creature.IsShooter || CurrentStats.Shots == 0)
-            return ShootType.None;
-
         // Don't attack allies
         if (this.IsAlly(attackable))
             return ShootType.None;
@@ -192,7 +180,10 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
         // If it's an enemy - it should be at least 1 tile away
         if (distanceToTarget < 2)
-            return ShootType.Melee;
+            return Creature.IsShooter ? ShootType.MeleeWithPenalty : ShootType.Melee;
+
+        if (CurrentStats.Shots == 0)
+            return ShootType.None;
 
         ShootType result = distanceToTarget <= 6 ? ShootType.Strong : ShootType.Weak;
 

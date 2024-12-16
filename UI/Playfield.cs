@@ -256,7 +256,7 @@ public partial class Playfield : TileMapLayer
         {
             var creature = drawable.Parent;
 
-            if (shooter.CanShootTarget(creature) != ICanAttack.ShootType.None)
+            if (shooter.CanShootTarget(creature).IsRanged())
             {
                 SetCell(creature.Coords, (int)TileType.Aimable, Vector2I.Zero);
             }   
