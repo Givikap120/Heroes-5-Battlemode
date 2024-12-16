@@ -15,7 +15,7 @@ public class BattleHandler
     public event Action GameStarted = delegate { };
     public event Action GameEnded;
 
-    public event Action NewTurnStarted = delegate { };
+    public event Action<Unit?> NewTurnStarted = delegate { };
 
     public BattleHandler(Main parent)
     {
@@ -25,7 +25,7 @@ public class BattleHandler
         GameEnded = delegate 
         {
             CurrentUnit.Value = null;
-            NewTurnStarted.Invoke(); }
+            NewTurnStarted.Invoke(null); }
         ;
 
         GD.Seed(0);
@@ -33,8 +33,8 @@ public class BattleHandler
 
     public void StartGame()
     {
-        addPlayer(Player.Preset1());
-        addPlayer(Player.Preset2());
+        addPlayer(Player.Preset1(this));
+        addPlayer(Player.Preset2(this));
 
         GameStarted.Invoke();
         startNewTurn();
@@ -67,7 +67,7 @@ public class BattleHandler
     private void startNewTurn()
     {
         CurrentUnit.Value = InitiativeHandler.GetNextUnit();
-        NewTurnStarted.Invoke();
+        NewTurnStarted.Invoke(CurrentUnit.Value);
     }
 
     private void endTurn(bool isWait = false)
@@ -134,8 +134,7 @@ public class BattleHandler
 
         if (CurrentUnit.Value is ICanAttackMove attacker && unit is IAttackable attackable)
         {
-            var shootType = attacker.CanShootTarget(attackable);
-            bool result = attacker.AttackRanged(attackable, shootType);
+            bool result = attacker.Attack(attackable);
             if (result) endTurn();
         }
     }

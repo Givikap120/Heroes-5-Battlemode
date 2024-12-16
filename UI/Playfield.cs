@@ -2,9 +2,6 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Godot.TextEdit;
-
-
 public partial class Playfield : TileMapLayer
 {
 	public const int SIZE_X = 10;
@@ -28,8 +25,13 @@ public partial class Playfield : TileMapLayer
 
     public Bindable<Unit?> CurrentUnit = null!;
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
+    private Vector2I? currentlySelectedTile;
+    private int currentlySelectedTileType = -1;
+    private IPlayfieldUnit? currentlySelectedUnit;
+    private readonly List<DrawableCreatureInstance> creatures = [];
+
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
 	{
         ResetPlayfield();
 
@@ -39,7 +41,7 @@ public partial class Playfield : TileMapLayer
         CurrentUnit = battleHandler.CurrentUnit;
 
         battleHandler.PlayerAdded += AddPlayer;
-        battleHandler.NewTurnStarted += ResetPlayfield;
+        battleHandler.NewTurnStarted += _ => ResetPlayfield();
 
         OnEmptyCellClicked += battleHandler.EmptyCellAction;
         OnUnitClicked += battleHandler.UnitAction;
@@ -60,12 +62,8 @@ public partial class Playfield : TileMapLayer
         if (CurrentUnit?.Value != null) addUnitActions(CurrentUnit.Value);
     }
 
-    private Vector2I? currentlySelectedTile;
-    private int currentlySelectedTileType = -1;
-    private IPlayfieldUnit? currentlySelectedUnit;
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _Process(double delta)
 	{
         // Don't update UI if there's no unit selected
         if (CurrentUnit?.Value == null)
@@ -165,8 +163,6 @@ public partial class Playfield : TileMapLayer
         }
     }
 
-    private readonly List<DrawableCreatureInstance> creatures = [];
-
     public void AddPlayer(Player player)
     {
         foreach (var item in player.Army)
@@ -212,7 +208,7 @@ public partial class Playfield : TileMapLayer
         if (unit is ICanMove movable)
             addMoveVariants(movable);
 
-        if (unit is ICanAttack attacker && attacker.CanAttackRanged)
+        if (unit is ICanAttack attacker && attacker.CanAttackRanged(creatures.Select(d => d.Parent)))
             addShootVariants(attacker);
     }
 

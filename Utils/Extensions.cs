@@ -7,7 +7,7 @@ public static class EnumerableExtensions
     public static int MaxIndex<TSource>(this IEnumerable<TSource> source) where TSource : IComparable<TSource>
     {
         if (source == null || !source.Any())
-            throw new ArgumentException("Enumerable is null or empty");
+            return -1;
 
         int maxIndex = 0;
         int currentIndex = 0;
@@ -29,7 +29,7 @@ public static class EnumerableExtensions
     public static int MinIndex<TSource>(this IEnumerable<TSource> source) where TSource : IComparable<TSource>
     {
         if (source == null || !source.Any())
-            throw new ArgumentException("Enumerable is null or empty");
+            return -1;
 
         int minIndex = 0;
         int currentIndex = 0;
@@ -46,5 +46,28 @@ public static class EnumerableExtensions
         }
 
         return minIndex;
+    }
+
+    public static int FirstIndex<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> pred)
+    {
+        if (source == null || !source.Any())
+            return -1;
+
+        int currentIndex = 0;
+        foreach (TSource value in source)
+        {
+            if (pred(value))
+                return currentIndex;
+
+            currentIndex++;
+        }
+
+        return -1;
+    }
+
+    public static bool IsNeighboring(this Vector2I cell, Vector2I other)
+    {
+        Vector2I delta = (cell - other).Abs();
+        return Math.Max(delta.X, delta.Y) == 1;
     }
 }

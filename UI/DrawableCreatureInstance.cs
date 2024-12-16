@@ -88,17 +88,19 @@ public partial class DrawableCreatureInstance : Control
         if (parent != null) updateFromParent();
     }
 
+    private void updateCreatureAmount(int newAmount) => amountLabel.Text = newAmount.ToString();
+
     private void unbindFromParent()
     {
         if (parent == null) return;
-        parent.AmountBindable.ValueChanged -= amount => amountLabel.Text = amount.ToString();
+        parent.AmountBindable.ValueChanged -= updateCreatureAmount;
     }
 
     private void updateFromParent()
     {
         if (!isLoadingComplete) return;
 
-        parent.AmountBindable.ValueChanged += amount => amountLabel.Text = amount.ToString();
+        parent.AmountBindable.ValueChanged += updateCreatureAmount;
 
         iconSprite.Texture = creatureIconTexture;
 
