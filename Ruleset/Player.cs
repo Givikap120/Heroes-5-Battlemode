@@ -53,9 +53,9 @@ public class Player
     {
         var player = new Player(battleHandler);
 
-        player.addCreatureToPlayer(new H1g_Militiaman(), 1, new Vector2I(2, 11));
-        player.addCreatureToPlayer(new H1_Peasant(), 1, new Vector2I(6, 10));
+        player.addCreatureToPlayer(new H3_Footman(), 666, new Vector2I(0, 10));
         player.addCreatureToPlayer(new H2_Archer(), 727, new Vector2I(0, 11));
+        player.addCreatureToPlayer(new H1_Peasant(), 1337, new Vector2I(1, 10));
 
         return player;
     }
@@ -65,8 +65,9 @@ public class Player
         var player = new Player(battleHandler);
 
         player.addCreatureToPlayer(new H2a_Crossbowman(), 120, new Vector2I(0, 0));
-        player.addCreatureToPlayer(new H2g_Marksman(), 228, new Vector2I(3, 1));
-        player.addCreatureToPlayer(new H1a_Landlord(), 335, new Vector2I(5, 0));
+        player.addCreatureToPlayer(new H2g_Marksman(), 228, new Vector2I(3, 0));
+        player.addCreatureToPlayer(new H3g_Swordsman(), 100, new Vector2I(1, 1));
+        player.addCreatureToPlayer(new H3a_Vindicator(), 100, new Vector2I(2, 1));
 
         return player;
     }
