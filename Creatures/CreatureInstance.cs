@@ -188,15 +188,13 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         if (this.IsAlly(attackable))
             return ShootType.None;
 
-        double distanceToTarget = (Coords - attackable.Coords).Length();
+        double distanceToTarget = attackable.DistanceTo(this);
 
         // If it's an enemy - it should be at least 1 tile away
         if (distanceToTarget < 2)
             return ShootType.Melee;
 
         ShootType result = distanceToTarget <= 6 ? ShootType.Strong : ShootType.Weak;
-
-        // IApplicableToShootType.Apply
 
         return result;
     }

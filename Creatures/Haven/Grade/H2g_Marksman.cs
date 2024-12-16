@@ -12,7 +12,7 @@
         Stats.HitPoints = 10;
         Stats.Initiative = 8;
 
-        Abilities.Add(new AbilityBash());
+        Abilities.Add(new AbilityPreciseShot());
     }
 }
 

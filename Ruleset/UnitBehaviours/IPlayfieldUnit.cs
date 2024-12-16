@@ -8,4 +8,5 @@ public interface IPlayfieldUnit : IUnit
 public static class PlayfieldUnitExtension
 {
     public static bool IsNeighboring(this IPlayfieldUnit unit, IPlayfieldUnit other) => unit.Coords.IsNeighboring(other.Coords);
+    public static double DistanceTo(this IPlayfieldUnit unit, IPlayfieldUnit other) => (unit.Coords - other.Coords).Length();
 }
