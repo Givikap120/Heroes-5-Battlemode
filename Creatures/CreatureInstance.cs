@@ -77,59 +77,71 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         return !isBlocked;
     }
 
+    private AttackParameters calculateParameters(IAttackable target, bool allowRanged, bool isCounterattack)
+    {
+        var parameters = new AttackParameters
+        {
+            IsCounterAttack = isCounterattack,
+            BaseDamage = GD.RandRange(CurrentStats.MinDamage, CurrentStats.MaxDamage),
+            WillCounterAttack = !isCounterattack && target.WillCounterattack(this),
+
+            Attack = CurrentStats.Attack,
+            Defense = target.Defense
+        };
+
+        if (Creature.IsShooter)
+        {
+            parameters.ShootType = CanShootTarget(target);
+
+            if (!allowRanged && parameters.ShootType != ShootType.None)
+                parameters.ShootType = ShootType.Melee;
+
+            if (parameters.ShootType != ShootType.Melee)
+                parameters.IsRanged = true;
+        }
+
+        return parameters;
+    }
+
     public bool Attack(IAttackable target, bool allowRanged, bool isCounterattack)
     {
         if (Amount <= 0) return false;
 
-        double baseDamage = GD.RandRange(CurrentStats.MinDamage, CurrentStats.MaxDamage);
+        AttackParameters parameters = calculateParameters(target, allowRanged, isCounterattack);
 
-        double attack = CurrentStats.Attack;
-        double defense = target.Defense;
-
-        double armorMultiplier = attack >= defense ?
-            (1 + 0.05 * (attack - defense)) :
-            1.0 / (1 + 0.05 * (defense - attack));
-
-        double shootingMultiplier = 1.0;
-        bool isRanged = false;
-
-        if (Creature.IsShooter)
-        {
-            ShootType shootType = CanShootTarget(target);
-
-            if ((shootType == ShootType.None) || (!allowRanged && shootType != ShootType.Melee))
-                return false;
-
-            if (shootType != ShootType.Melee)
-                isRanged = true;
-
-            shootingMultiplier = shootType switch
-            {
-                ShootType.Melee => 0.5,
-                ShootType.Weak => 0.5,
-                ShootType.Strong => 1.0,
-                _ => 0.0
-            };
-        }
-
-        double damage = baseDamage * armorMultiplier * shootingMultiplier * Amount;
-
-        bool willCounterAttack = !isCounterattack && target.WillCounterattack(this);
+        if (parameters.ShootType == ShootType.None)
+            return false;
 
         // Effects before attack
         foreach (var ability in Creature.Abilities.OfType<IApplicableBeforeAttack>())
-            willCounterAttack &= ability.Apply(this, target, isRanged, isCounterattack);
+            parameters = ability.Apply(this, target, parameters);
+
+
+        // Calculating attack with parameters
+        double armorMultiplier = parameters.Attack >= parameters.Defense ?
+            (1 + 0.05 * (parameters.Attack - parameters.Defense)) :
+            1.0 / (1 + 0.05 * (parameters.Defense - parameters.Attack));
+
+        double shootingMultiplier = Creature.IsShooter ? parameters.ShootType switch
+        {
+            ShootType.Melee => 0.5,
+            ShootType.Weak => 0.5,
+            ShootType.Strong => 1.0,
+            _ => 0.0
+        } : 1.0;
+
+        double damage = parameters.BaseDamage * armorMultiplier * shootingMultiplier * Amount;
 
         // Attack
         target.TakeDamage(damage);
 
         // Counterattack
-        if (willCounterAttack && target is ICanAttack counterAttacker)
+        if (parameters.WillCounterAttack && target is ICanAttack counterAttacker)
             counterAttacker.Attack(this, isCounterattack: true);
 
         // Effects after attack
         foreach (var ability in Creature.Abilities.OfType<IApplicableAfterAttack>())
-            ability.Apply(this, target, isRanged, isCounterattack);
+            ability.Apply(this, target, parameters);
 
         return true;
     }

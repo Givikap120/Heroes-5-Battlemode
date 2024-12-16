@@ -64,8 +64,8 @@ public class Player
     {
         var player = new Player(battleHandler);
 
-        player.addCreatureToPlayer(new H1g_Militiaman(), 120, new Vector2I(0, 0));
-        player.addCreatureToPlayer(new H1g_Militiaman(), 228, new Vector2I(3, 1));
+        player.addCreatureToPlayer(new H2a_Crossbowman(), 120, new Vector2I(0, 0));
+        player.addCreatureToPlayer(new H2g_Marksman(), 228, new Vector2I(3, 1));
         player.addCreatureToPlayer(new H1a_Landlord(), 335, new Vector2I(5, 0));
 
         return player;

@@ -1,13 +1,14 @@
 ﻿public class AbilityBash : IChanceAbility, IApplicableBeforeAttack
 {
-    public bool Apply(CreatureInstance owner, IAttackable target, bool isRanged, bool isCounterAttack)
+    public AttackParameters Apply(CreatureInstance owner, IAttackable target, AttackParameters parameters)
     {
-        if (isCounterAttack) return true;
+        if (parameters.IsCounterAttack) return parameters;
 
         bool isSuccesful = IChanceAbility.TryTriggerProc(owner.TotalHP, target.TotalHP, 1.5);
-        if (!isSuccesful) return true;
+        if (!isSuccesful) return parameters;
 
         target.ATB = 0;
-        return false;
+        parameters.WillCounterAttack = false;
+        return parameters;
     }
 }
