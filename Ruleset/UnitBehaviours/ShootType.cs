@@ -1,24 +1,24 @@
-﻿public enum ShootType
+﻿public enum AttackType
 {
     None,
     Melee,
     MeleeWithPenalty,
-    Weak,
-    Strong
+    RangedWeak,
+    RangedStrong
 }
 
-public static class ShootTypeExtensions
+public static class AttackTypeExtensions
 {
-    public static bool IsMelee(this ShootType type) => type == ShootType.Melee || type == ShootType.MeleeWithPenalty;
+    public static bool IsMelee(this AttackType type) => type == AttackType.Melee || type == AttackType.MeleeWithPenalty;
 
-    public static bool IsRanged(this ShootType type) => type == ShootType.Weak || type == ShootType.Strong;
+    public static bool IsRanged(this AttackType type) => type == AttackType.RangedWeak || type == AttackType.RangedStrong;
 
-    public static double GetMultiplier(this ShootType type) => type switch
+    public static double GetMultiplier(this AttackType type) => type switch
     {
-        ShootType.Melee => 1.0,
-        ShootType.MeleeWithPenalty => 0.5,
-        ShootType.Weak => 0.5,
-        ShootType.Strong => 1.0,
+        AttackType.Melee => 1.0,
+        AttackType.MeleeWithPenalty => 0.5,
+        AttackType.RangedWeak => 0.5,
+        AttackType.RangedStrong => 1.0,
         _ => 0.0
     };
 }

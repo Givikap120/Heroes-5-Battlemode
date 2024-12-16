@@ -91,12 +91,12 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
         if (Creature.IsShooter)
         {
-            parameters.ShootType = CanShootTarget(target);
+            parameters.AttackType = CanShootTarget(target);
 
-            if (!allowRanged && parameters.ShootType != ShootType.None)
-                parameters.ShootType = ShootType.MeleeWithPenalty;
+            if (!allowRanged && parameters.AttackType != AttackType.None)
+                parameters.AttackType = AttackType.MeleeWithPenalty;
 
-            parameters.IsRanged = parameters.ShootType.IsRanged();
+            parameters.IsRanged = parameters.AttackType.IsRanged();
         }
 
         return parameters;
@@ -108,7 +108,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
         AttackParameters parameters = calculateParameters(target, allowRanged, isCounterattack);
 
-        if (parameters.ShootType == ShootType.None)
+        if (parameters.AttackType == AttackType.None)
             return false;
 
         // Effects before attack
@@ -121,7 +121,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
             (1 + 0.05 * (parameters.Attack - parameters.Defense)) :
             1.0 / (1 + 0.05 * (parameters.Defense - parameters.Attack));
 
-        double damage = parameters.BaseDamage * armorMultiplier * parameters.ShootType.GetMultiplier() * Amount;
+        double damage = parameters.BaseDamage * armorMultiplier * parameters.AttackType.GetMultiplier() * Amount;
 
         // Attack
         target.TakeDamage(damage);
@@ -170,22 +170,22 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         AttackedOnThisTurn++;
     }
 
-    public ShootType CanShootTarget(IAttackable attackable)
+    public AttackType CanShootTarget(IAttackable attackable)
     {
         // Don't attack allies
         if (this.IsAlly(attackable))
-            return ShootType.None;
+            return AttackType.None;
 
         double distanceToTarget = attackable.DistanceTo(this);
 
         // If it's an enemy - it should be at least 1 tile away
         if (distanceToTarget < 2)
-            return Creature.IsShooter ? ShootType.MeleeWithPenalty : ShootType.Melee;
+            return Creature.IsShooter ? AttackType.MeleeWithPenalty : AttackType.Melee;
 
         if (CurrentStats.Shots == 0)
-            return ShootType.None;
+            return AttackType.None;
 
-        ShootType result = distanceToTarget <= 6 ? ShootType.Strong : ShootType.Weak;
+        AttackType result = distanceToTarget <= 6 ? AttackType.RangedStrong : AttackType.RangedWeak;
 
         return result;
     }

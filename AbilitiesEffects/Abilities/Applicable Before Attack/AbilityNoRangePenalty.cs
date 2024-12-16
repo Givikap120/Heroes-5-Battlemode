@@ -2,9 +2,9 @@
 {
     public AttackParameters Apply(CreatureInstance owner, IAttackable target, AttackParameters parameters)
     {
-        if (parameters.ShootType == ShootType.Weak)
+        if (parameters.AttackType == AttackType.RangedWeak)
         {
-            parameters.ShootType = ShootType.Strong;
+            parameters.AttackType = AttackType.RangedStrong;
         }
             
         return parameters;

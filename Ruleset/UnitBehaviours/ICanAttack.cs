@@ -4,7 +4,7 @@ public interface ICanAttack : IUnit
 {
     public bool CanAttackRanged(IEnumerable<IPlayfieldUnit> units);
 
-    public ShootType CanShootTarget(IAttackable attackable);
+    public AttackType CanShootTarget(IAttackable attackable);
 
     /// <summary>
     /// Attacks the target.

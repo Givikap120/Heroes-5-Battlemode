@@ -10,7 +10,7 @@ public struct AttackParameters
     public double Attack;
     public double Defense;
 
-    public ShootType ShootType = ShootType.Melee;
+    public AttackType AttackType = AttackType.Melee;
 
     public AttackParameters()
     {
