@@ -12,7 +12,7 @@ public interface IAttackable : IPlayfieldUnit
     /// </summary>
     /// <param name="damage">Amount of damage dealt</param>
     /// <param name="attackType">Type of damage. Used in abilities handling</param>
-    public void TakeDamage(double damage, AttackType attackType);
+    public AttackResult TakeDamage(double damage, AttackType attackType);
 
     public int AttackedOnThisTurn { get; set; }
 

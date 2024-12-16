@@ -14,7 +14,7 @@
         Stats.Power = 299;
 
         Abilities.RemoveAll(ability => ability.GetType() == typeof(AbilityBash));
-        //Abilities.Add(Cleave);
+        Abilities.Add(new AbilityCleave());
     }
 }
 

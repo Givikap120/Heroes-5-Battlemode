@@ -1,4 +1,4 @@
 ﻿public interface IApplicableAfterAttack : IAbility
 {
-    public void Apply(CreatureInstance owner, IAttackable target, AttackParameters parameters);
+    public void Apply(CreatureInstance owner, IAttackable target, AttackParameters parameters, AttackResult result);
 }

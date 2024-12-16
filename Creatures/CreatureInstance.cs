@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using static ICanAttack;
 using static Playfield;
@@ -129,7 +130,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         double damage = parameters.BaseDamage * armorMultiplier * parameters.AttackType.GetMultiplier() * Amount;
 
         // Attack
-        target.TakeDamage(damage, parameters.AttackType);
+        var attackResult = target.TakeDamage(damage, parameters.AttackType);
 
         // Counterattack
         if (parameters.WillCounterAttack && target is ICanAttack counterAttacker)
@@ -137,16 +138,20 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
         // Effects after attack
         foreach (var ability in Creature.Abilities.OfType<IApplicableAfterAttack>())
-            ability.Apply(this, target, parameters);
+            ability.Apply(this, target, parameters, attackResult);
 
         return true;
     }
 
-    public void TakeDamage(double damage, AttackType attackType)
+    public AttackResult TakeDamage(double damage, AttackType attackType)
     {
         // Effects on damage
         foreach (var ability in Creature.Abilities.OfType<IApplicableToRecievedDamage>())
             damage = ability.Apply(damage, attackType);
+
+        AttackResult result = new AttackResult();
+
+        double incomingDamage = damage;
 
         // Try to damage HP first
         double absorbedWithHP = Math.Min(damage, CurrentStats.HitPoints);
@@ -157,26 +162,32 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         // If there's still damage to do - it will kill creatures
         if (damage > 0)
         {
-            int deaths = (int)(damage / Creature.Stats.HitPoints);
+            result.Killed = (int)(damage / Creature.Stats.HitPoints);
+            result.Killed = Math.Min(result.Killed, Amount);
 
-            Amount -= deaths;
-            damage -= deaths * Creature.Stats.HitPoints;
+            Amount -= result.Killed;
+            damage -= result.Killed * Creature.Stats.HitPoints;
         }
 
         // If current creature is dead - restore HP
-        if (CurrentStats.HitPoints == 0)
+        if (CurrentStats.HitPoints == 0 && Amount > 0)
         {
             Amount--;
             CurrentStats.HitPoints = Creature.Stats.HitPoints - damage;
+            damage = 0;
         }
 
-        if (Amount <= 0)
+        Debug.Assert(Amount >= 0);
+        result.DamageDealt = incomingDamage - damage;
+
+        if (Amount == 0)
         {
-            Amount = 0;
             CreatureDead.Invoke(this);
         }
 
         AttackedOnThisTurn++;
+
+        return result;
     }
 
     public AttackType CanShootTarget(IAttackable attackable)
