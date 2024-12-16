@@ -124,7 +124,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         double damage = parameters.BaseDamage * armorMultiplier * parameters.AttackType.GetMultiplier() * Amount;
 
         // Attack
-        target.TakeDamage(damage);
+        target.TakeDamage(damage, parameters.AttackType);
 
         // Counterattack
         if (parameters.WillCounterAttack && target is ICanAttack counterAttacker)
@@ -137,8 +137,12 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         return true;
     }
 
-    public void TakeDamage(double damage)
+    public void TakeDamage(double damage, AttackType attackType)
     {
+        // Effects on damage
+        foreach (var ability in Creature.Abilities.OfType<IApplicableToRecievedDamage>())
+            damage = ability.Apply(damage, attackType);
+
         // Try to damage HP first
         double absorbedWithHP = Math.Min(damage, CurrentStats.HitPoints);
 

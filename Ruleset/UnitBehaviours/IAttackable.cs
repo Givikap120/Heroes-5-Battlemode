@@ -11,7 +11,8 @@ public interface IAttackable : IPlayfieldUnit
     /// Don't forget to increment AttackedOnThisTurn.
     /// </summary>
     /// <param name="damage">Amount of damage dealt</param>
-    public void TakeDamage(double damage);
+    /// <param name="attackType">Type of damage. Used in abilities handling</param>
+    public void TakeDamage(double damage, AttackType attackType);
 
     public int AttackedOnThisTurn { get; set; }
 

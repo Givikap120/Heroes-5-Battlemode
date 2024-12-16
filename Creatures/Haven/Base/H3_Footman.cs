@@ -20,8 +20,8 @@
 
         Abilities = 
         [
-            // Enlraged
-            // Large Shield
+            // Enraged
+            new AbilityLargeShield(),
             new AbilityBash()
         ];
     }
