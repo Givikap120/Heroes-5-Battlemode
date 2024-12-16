@@ -1,4 +1,4 @@
-﻿public class AbilityBash : IAbility, IApplicableBeforeAttack, IChanceAbility
+﻿public class AbilityBash : IChanceAbility, IApplicableBeforeAttack
 {
     public bool Apply(CreatureInstance owner, IAttackable target, bool isRanged, bool isCounterAttack)
     {

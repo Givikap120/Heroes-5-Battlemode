@@ -49,7 +49,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
     public double Defense => CurrentStats.Defense;
 
-    public double TotalHP => CurrentStats.HitPoints + (Amount - 1) * Creature.Stats.HitPoints;
+    public double TotalHP => Amount > 0 ? CurrentStats.HitPoints + (Amount - 1) * Creature.Stats.HitPoints : 0;
 
     public override int DecideTileChange(int tileType)
     {
@@ -116,16 +116,20 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
         bool willCounterAttack = !isCounterattack && target.WillCounterattack(this);
 
+        // Effects before attack
         foreach (var ability in Creature.Abilities.OfType<IApplicableBeforeAttack>())
-        {
             willCounterAttack &= ability.Apply(this, target, isRanged, isCounterattack);
-        }
 
-        // Apply various effects to the damage
+        // Attack
         target.TakeDamage(damage);
 
+        // Counterattack
         if (willCounterAttack && target is ICanAttack counterAttacker)
             counterAttacker.Attack(this, isCounterattack: true);
+
+        // Effects after attack
+        foreach (var ability in Creature.Abilities.OfType<IApplicableAfterAttack>())
+            ability.Apply(this, target, isRanged, isCounterattack);
 
         return true;
     }
