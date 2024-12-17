@@ -19,10 +19,12 @@ public partial class AtbScale : Control
         futureNodes = GetNode<HBoxContainer>("ScrollContainer/FutureUnitsNode");
 
         initiativeHandler = BattleHandler.Instance.InitiativeHandler;
-        BattleHandler.Instance.NewTurnStarted += _ => updateAtbScale();
+        BattleHandler.Instance.NewTurnStarted += _ => updateAtbScaleAsync();
 
         updateAtbScale();
     }
+
+    private void updateAtbScaleAsync() => CallDeferred(nameof(updateAtbScale));
 
     private void updateAtbScale()
     {

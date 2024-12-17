@@ -1,8 +1,10 @@
 
+using Godot;
+
 /// <summary>
 ///	Entity on the battlefield that can do action and participates in Initiative cycle
 /// </summary>
-public abstract class Unit : IUnit
+public abstract partial class Unit : GodotObject, IUnit
 {
     public Player Player { get; private set; }
 

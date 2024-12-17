@@ -7,10 +7,6 @@ public partial class Playfield : TileMapLayer
 	public const int SIZE_X = 10;
 	public const int SIZE_Y = 12;
 
-    public event Action<Vector2I> OnEmptyCellClicked = _ => { };
-    public event Action<IPlayfieldUnit> OnUnitClicked = _ => { };
-    public event Action<(IPlayfieldUnit unit, Vector2I movePosition)> OnUnitWithCellClicked = _ => { };
-
     public enum TileType
     {
         Inactive,
@@ -41,10 +37,6 @@ public partial class Playfield : TileMapLayer
 
         battleHandler.PlayerAdded += AddPlayer;
         battleHandler.NewTurnStarted += _ => ResetPlayfield();
-
-        OnEmptyCellClicked += battleHandler.EmptyCellAction;
-        OnUnitClicked += battleHandler.UnitAction;
-        OnUnitWithCellClicked += battleHandler.UnitWithCellAction;
     }
 
     public void ResetPlayfield()
@@ -58,7 +50,7 @@ public partial class Playfield : TileMapLayer
         }
         currentlySelectedTile = null;
 
-        if (CurrentUnit?.Value != null) addUnitActions(CurrentUnit.Value);
+        if (CurrentUnit?.Value != null && CurrentUnit.Value.Player.UIDrawControls) addUnitActions(CurrentUnit.Value);
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -159,13 +151,13 @@ public partial class Playfield : TileMapLayer
         else
         {
             // If no unit selected - just select cell
-            if (currentlySelectedUnit == null) OnEmptyCellClicked(selectedOrCurrent.Value);
+            if (currentlySelectedUnit == null) BattleHandler.Instance.EmptyCellAction(selectedOrCurrent.Value);
 
             // If unit is the cell selection - cell is not important
-            else if(currentlySelectedUnit.Coords == selectedOrCurrent) OnUnitClicked(currentlySelectedUnit);
+            else if(currentlySelectedUnit.Coords == selectedOrCurrent) BattleHandler.Instance.UnitAction(currentlySelectedUnit);
 
             // Else it's double action
-            else OnUnitWithCellClicked((currentlySelectedUnit, selectedOrCurrent.Value));
+            else BattleHandler.Instance.UnitWithCellAction(currentlySelectedUnit, selectedOrCurrent.Value);
         }
     }
 
@@ -179,17 +171,20 @@ public partial class Playfield : TileMapLayer
             var newDrawableCreature = item.CreateDrawableRepresentation();
             newDrawableCreature.Scale = new Vector2(1.0f / Scale.X, 1.0f / Scale.Y);
             newDrawableCreature.Centered = true;
+            newDrawableCreature.Position = MapToLocal(item.Coords);
 
-            item.CoordsBindable.BindValueChanged(coords =>
-            {
-                newDrawableCreature.Position = MapToLocal(coords);
-            }, true);
+            item.CoordsBindable.ValueChanged += _ => CallDeferred(nameof(updateCreaturePosition), newDrawableCreature);
 
             creatures.Add(newDrawableCreature);
             AddChild(newDrawableCreature);
         }
 
-        player.CreatureDied += handleCreatureDead;
+        player.CreatureDied += creature => CallDeferred(nameof(handleCreatureDead), creature);
+    }
+
+    private void updateCreaturePosition(DrawableCreatureInstance drawable)
+    {
+        drawable.Position = MapToLocal(drawable.Parent.Coords);
     }
 
     private void handleCreatureDead(CreatureInstance creature)
@@ -214,7 +209,7 @@ public partial class Playfield : TileMapLayer
         if (unit is ICanMove movable)
             addMoveVariants(movable);
 
-        if (unit is ICanAttack attacker && attacker.CanAttackRanged(creatures.Select(d => d.Parent)))
+        if (unit is ICanAttack attacker && attacker.CanAttackRanged())
             addShootVariants(attacker);
     }
 
@@ -230,11 +225,9 @@ public partial class Playfield : TileMapLayer
 
     private void addShootVariants(ICanAttack shooter)
     {
-        foreach (var drawable in creatures)
+        foreach (var creature in BattleHandler.Instance.GetEnemyPlayer(shooter.Player)!.AliveArmy)
         {
-            var creature = drawable.Parent;
-
-            if (shooter.CanShootTarget(creature).IsRanged())
+            if (shooter.GetAttackType(creature).IsRanged())
             {
                 SetCell(creature.Coords, (int)TileType.Aimable, Vector2I.Zero);
             }   

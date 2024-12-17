@@ -11,15 +11,16 @@ public class Player
     public Hero Hero = null!;
     public readonly CreatureInstance?[] Army = new CreatureInstance?[8];
     private readonly CreatureInstance?[] initialArmy = new CreatureInstance?[8];
-    // War machine units
 
     public IEnumerable<CreatureInstance> AliveArmy => Army.Where(c => c != null && c.Amount > 0).Cast<CreatureInstance>();
 
-    private readonly BattleHandler battleHandler;
+    protected readonly BattleHandler BattleHandler;
+
+    public virtual bool UIDrawControls => true;
 
     public Player(BattleHandler battleHandler)
     {
-        this.battleHandler = battleHandler;
+        BattleHandler = battleHandler;
     }
 
     /// <summary>
@@ -38,14 +39,14 @@ public class Player
         return initialArmy[index]!;
     }
 
-    private CreatureInstance addCreatureToPlayer(Creature creature, int amount, Vector2I coords, int slot = -1)
+    public CreatureInstance AddCreatureToPlayer(Creature creature, int amount, Vector2I coords, int slot = -1)
     {
         if (slot == -1)
             slot = Army.FirstIndex(c => c is null);
 
         Debug.Assert(slot != -1 && Army[slot] == null);
 
-        var instance = new CreatureInstance(battleHandler, this, creature, amount)
+        var instance = new CreatureInstance(BattleHandler, this, creature, amount)
         {
             Coords = coords
         };
@@ -62,30 +63,18 @@ public class Player
 
         return instance;
     }
+}
 
-    public static Player Preset1(BattleHandler battleHandler)
+public static class PlayerExtensions
+{
+    public static bool IsTileOccupiedByPlayer(this Player player, Vector2I tile)
     {
-        var player = new Player(battleHandler);
-        
-        player.addCreatureToPlayer(new H2_Archer(), 727, new Vector2I(0, 11));
-        player.addCreatureToPlayer(new H5_Priest(), 69, new Vector2I(1, 11));
-        player.addCreatureToPlayer(new H3_Footman(), 666, new Vector2I(0, 10));
-        player.addCreatureToPlayer(new H1_Peasant(), 1337, new Vector2I(1, 10));
+        foreach (var unit in player.AliveArmy)
+        {
+            if (unit.Coords == tile)
+                return true;
+        }
 
-        return player;
-    }
-
-    public static Player Preset2(BattleHandler battleHandler)
-    {
-        var player = new Player(battleHandler);
-
-        player.addCreatureToPlayer(new H2a_Crossbowman(), 120, new Vector2I(0, 0));
-        player.addCreatureToPlayer(new H2g_Marksman(), 228, new Vector2I(3, 0));
-        player.addCreatureToPlayer(new H3g_Swordsman(), 100, new Vector2I(1, 1));
-        player.addCreatureToPlayer(new H3a_Vindicator(), 100, new Vector2I(2, 1));
-        player.addCreatureToPlayer(new H5g_Cleric(), 30, new Vector2I(1, 0));
-        player.addCreatureToPlayer(new H5a_Zealot(), 30, new Vector2I(2, 0));
-
-        return player;
+        return false;
     }
 }

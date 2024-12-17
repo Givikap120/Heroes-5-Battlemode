@@ -73,4 +73,23 @@ public static class CoordExtensions
         Vector2I delta = (cell - other).Abs();
         return Math.Max(delta.X, delta.Y) == 1;
     }
+
+    public static Vector2I[] GetNeighboring(this Vector2I cell)
+    {
+        Vector2I[] neighbors = new Vector2I[8];
+
+        int index = 0;
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                if (i == 0 && j == 0) continue;
+
+                neighbors[index] = new Vector2I(cell.X + i, cell.Y - j);
+                index++;
+            }
+        }
+
+        return neighbors;
+    }
 }

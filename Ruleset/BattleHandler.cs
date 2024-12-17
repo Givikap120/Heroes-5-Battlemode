@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections;
 using System.Linq;
 
 public class BattleHandler
@@ -39,8 +40,8 @@ public class BattleHandler
 
     public void StartGame()
     {
-        addPlayer(Player.Preset1(this));
-        addPlayer(Player.Preset2(this));
+        addPlayer(PlayerFactory.Preset1(this));
+        addPlayer(PlayerFactory.Preset2(this, true));
 
         GameStarted.Invoke();
         startNewTurn();
@@ -67,6 +68,17 @@ public class BattleHandler
 
         player.CreatureDied += CreatureDied.Invoke;
         PlayerAdded.Invoke(player);
+    }
+
+    public bool IsTileOccupied(Vector2I tile) => player1.IsTileOccupiedByPlayer(tile) || player2.IsTileOccupiedByPlayer(tile);
+
+    public Player? GetEnemyPlayer(Player player)
+    {
+        if (player == player1)
+            return player2;
+        else if (player == player2)
+            return player1;
+        return null;
     }
 
     #region turn_handling
@@ -139,7 +151,7 @@ public class BattleHandler
         if (CurrentUnit.Value.IsAlly(unit))
             return;
 
-        if (CurrentUnit.Value is ICanAttackMove attacker && unit is IAttackable attackable)
+        if (CurrentUnit.Value is ICanMoveAttack attacker && unit is IAttackable attackable)
         {
             bool result = attacker.Attack(attackable);
             if (result) endTurn();
@@ -147,17 +159,17 @@ public class BattleHandler
     }
 
 
-    public void UnitWithCellAction((IPlayfieldUnit unit, Vector2I cell) target)
+    public void UnitWithCellAction(IPlayfieldUnit unit, Vector2I cell)
     {
         if (CurrentUnit.Value == null) return;
 
         // If the same team - ignore for now
-        if (CurrentUnit.Value.IsAlly(target.unit))
+        if (CurrentUnit.Value.IsAlly(unit))
             return;
 
-        if (CurrentUnit.Value is ICanAttackMove attacker && target.unit is IAttackable attackable)
+        if (CurrentUnit.Value is ICanMoveAttack attacker && unit is IAttackable attackable)
         {
-            bool result = attacker.AttackWithMove(attackable, target.cell);
+            bool result = attacker.AttackWithMove(attackable, cell);
             if (result) endTurn();
         }
     }

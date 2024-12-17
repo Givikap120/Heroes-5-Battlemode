@@ -1,5 +1,17 @@
 ﻿using System;
 
+public readonly struct ValueChangedEvent<T>
+{
+    public readonly T OldValue;
+    public readonly T NewValue;
+
+    public ValueChangedEvent(T oldValue, T newValue)
+    {
+        OldValue = oldValue;
+        NewValue = newValue;
+    }
+}
+
 public class Bindable<T>
 {
     public Bindable(T value)
@@ -7,17 +19,17 @@ public class Bindable<T>
         this.value = value;
     }
 
-    public event Action<T> ValueChanged = _ => { };
+    public event Action<ValueChangedEvent<T>> ValueChanged = delegate { };
 
-    public void BindValueChanged(Action<T> action, bool triggerImmediately = false)
+    public void BindValueChanged(Action<ValueChangedEvent<T>> action, bool triggerImmediately = false)
     {
         ValueChanged = action;
-        if (triggerImmediately) action.Invoke(value);
+        if (triggerImmediately) action.Invoke(new ValueChangedEvent<T>(value, value));
     }
 
     public void TriggerChange()
     {
-        ValueChanged.Invoke(value);
+        ValueChanged.Invoke(new ValueChangedEvent<T>(value, value));
     }
 
     private T value;
@@ -29,9 +41,12 @@ public class Bindable<T>
         {
             if (!Equals(this.value, value))
             {
+                var valueChangedEvent = new ValueChangedEvent<T>(this.value, value);
                 this.value = value;
-                ValueChanged.Invoke(value);
+                ValueChanged.Invoke(valueChangedEvent);
             }
         }
     }
+
+    public void SetSilent(T value) => this.value = value;
 }

@@ -1,7 +1,7 @@
-﻿using static ICanAttack;
-
-public struct AttackParameters
+﻿public struct AttackParameters
 {
+    public int Amount;
+
     public bool IsCounterAttack;
     public bool IsRanged;
     public bool WillCounterAttack;

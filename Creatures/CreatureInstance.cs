@@ -5,12 +5,12 @@ using System.Diagnostics;
 using System.Linq;
 using static Playfield;
 
-public class CreatureInstance : Unit, ICanAttackMove, IAttackable
+public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasRandomDamage
 {
     public readonly Creature Creature;
-    public Bindable<int> AmountBindable;
-    public Bindable<Vector2I> CoordsBindable = new(new Vector2I(-1, -1));
     public CreatureStats CurrentStats;
+    public Bindable<int> AmountBindable { get; set; }
+    public Bindable<Vector2I> CoordsBindable { get; set; } = new(new Vector2I(-1, -1));
 
     public List<Effect> Effects = [];
 
@@ -24,7 +24,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
     }
 
     public int AttackedOnThisTurn { get; set; }
-
+    
     public event Action<CreatureInstance> CreatureDead = delegate { };
 
     public CreatureInstance(BattleHandler? battleHandler, Player player, Creature creature, int amount = 1)
@@ -67,6 +67,8 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
     public double TotalHP => Amount > 0 ? CurrentStats.HitPoints + (Amount - 1) * Creature.Stats.HitPoints : 0;
 
+    public double AverageDamage => (CurrentStats.MinDamage + CurrentStats.MaxDamage) / 2;
+
     public override int DecideTileChange(int tileType)
     {
         if (tileType == (int)TileType.Affected || tileType == (int)TileType.Aimable)
@@ -75,10 +77,12 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         return -1;
     }
 
-    public bool CanAttackRanged(IEnumerable<IPlayfieldUnit> units)
+    public bool CanAttackRanged()
     {
         if (!Creature.IsShooter || CurrentStats.Shots == 0)
             return false;
+
+        var units = BattleHandler.Instance.GetEnemyPlayer(Player)!.AliveArmy;
 
         bool isBlocked = false;
         foreach (var unit in units)
@@ -93,10 +97,11 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         return !isBlocked;
     }
 
-    private AttackParameters calculateParameters(IAttackable target, bool allowRanged, bool isCounterattack)
+    public AttackParameters CalculateParameters(IAttackable target, bool allowRanged, bool isCounterattack)
     {
         var parameters = new AttackParameters
         {
+            Amount = Amount,
             IsCounterAttack = isCounterattack,
             BaseDamage = GD.RandRange(CurrentStats.MinDamage, CurrentStats.MaxDamage),
             WillCounterAttack = !isCounterattack && target.WillCounterattack(this),
@@ -107,7 +112,7 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
 
         if (Creature.IsShooter)
         {
-            parameters.AttackType = CanShootTarget(target);
+            parameters.AttackType = GetAttackType(target);
 
             if (!allowRanged && parameters.AttackType != AttackType.None)
                 parameters.AttackType = AttackType.MeleeWithPenalty;
@@ -115,95 +120,14 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
             parameters.IsRanged = parameters.AttackType.IsRanged();
         }
 
-        return parameters;
-    }
-
-    public bool Attack(IAttackable target, bool allowRanged, bool isCounterattack)
-    {
-        if (Amount <= 0) return false;
-
-        AttackParameters parameters = calculateParameters(target, allowRanged, isCounterattack);
-
-        if (parameters.AttackType == AttackType.None)
-            return false;
-
         // Effects before attack
         foreach (var ability in ModifiersOfType<IApplicableBeforeAttack>())
             parameters = ability.Apply(this, target, parameters);
 
-
-        // Calculating attack with parameters
-        double armorMultiplier = parameters.Attack >= parameters.Defense ?
-            (1 + 0.05 * (parameters.Attack - parameters.Defense)) :
-            1.0 / (1 + 0.05 * (parameters.Defense - parameters.Attack));
-
-        double damage = parameters.BaseDamage * armorMultiplier * parameters.AttackType.GetMultiplier() * Amount;
-
-        if (parameters.AttackType.IsRanged())
-            CurrentStats.Shots--;
-
-        // Attack
-        var attackResult = target.TakeDamage(damage, parameters.AttackType);
-
-        // Counterattack
-        if (parameters.WillCounterAttack && target is ICanAttack counterAttacker)
-            counterAttacker.Attack(this, isCounterattack: true);
-
-        // Effects after attack
-        foreach (var ability in ModifiersOfType<IApplicableAfterAttack>())
-            ability.Apply(this, target, parameters, attackResult);
-
-        return true;
+        return parameters;
     }
 
-    public AttackResult TakeDamage(double damage, AttackType attackType)
-    {
-        // Effects on damage
-        foreach (var ability in ModifiersOfType<IApplicableToRecievedDamage>())
-            damage = ability.Apply(damage, attackType);
-
-        AttackResult result = new AttackResult();
-
-        double incomingDamage = damage;
-
-        // Try to damage HP first
-        double absorbedWithHP = Math.Min(damage, CurrentStats.HitPoints);
-
-        damage -= absorbedWithHP;
-        CurrentStats.HitPoints -= absorbedWithHP;
-
-        // If there's still damage to do - it will kill creatures
-        if (damage > 0)
-        {
-            result.Killed = (int)(damage / Creature.Stats.HitPoints);
-            result.Killed = Math.Min(result.Killed, Amount);
-
-            Amount -= result.Killed;
-            damage -= result.Killed * Creature.Stats.HitPoints;
-        }
-
-        // If current creature is dead - restore HP
-        if (CurrentStats.HitPoints == 0 && Amount > 0)
-        {
-            Amount--;
-            CurrentStats.HitPoints = Creature.Stats.HitPoints - damage;
-            damage = 0;
-        }
-
-        Debug.Assert(Amount >= 0);
-        result.DamageDealt = incomingDamage - damage;
-
-        if (Amount == 0)
-        {
-            CreatureDead.Invoke(this);
-        }
-
-        AttackedOnThisTurn++;
-
-        return result;
-    }
-
-    public AttackType CanShootTarget(IAttackable attackable)
+    public AttackType GetAttackType(IAttackable attackable)
     {
         // Don't attack allies
         if (this.IsAlly(attackable))
@@ -215,11 +139,170 @@ public class CreatureInstance : Unit, ICanAttackMove, IAttackable
         if (distanceToTarget < 2)
             return Creature.IsShooter ? AttackType.MeleeWithPenalty : AttackType.Melee;
 
-        if (CurrentStats.Shots == 0)
+        if (!CanAttackRanged() || CurrentStats.Shots == 0)
             return AttackType.None;
 
         AttackType result = distanceToTarget <= 6 ? AttackType.RangedStrong : AttackType.RangedWeak;
 
         return result;
     }
+
+    public double CalculateDamageFromParameters(AttackParameters parameters)
+    {
+        // Calculating attack with parameters
+        double armorMultiplier = parameters.Attack >= parameters.Defense ?
+            (1 + 0.05 * (parameters.Attack - parameters.Defense)) :
+            1.0 / (1 + 0.05 * (parameters.Defense - parameters.Attack));
+
+        double damage = parameters.BaseDamage * armorMultiplier * parameters.AttackType.GetMultiplier() * parameters.Amount;
+        return damage;
+    }
+
+    public void AttackFromParameters(IAttackable target, AttackParameters parameters, bool triggerEvents = true)
+    {
+        double damage = CalculateDamageFromParameters(parameters);
+
+        if (parameters.AttackType.IsRanged())
+            CurrentStats.Shots--;
+
+        // Attack
+        var attackResult = target.TakeDamage(damage, parameters.AttackType, triggerEvents);
+
+        // Counterattack
+        if (parameters.WillCounterAttack && target is ICanAttack counterAttacker)
+            counterAttacker.Attack(this, isCounterattack: true, triggerEvents: triggerEvents);
+
+        // Effects after attack
+        foreach (var ability in ModifiersOfType<IApplicableAfterAttack>())
+            ability.Apply(this, target, parameters, attackResult);
+    }
+
+    public bool Attack(IAttackable target, bool allowRanged, bool isCounterattack, bool triggerEvents = true)
+    {
+        if (Amount <= 0) return false;
+
+        AttackParameters parameters = CalculateParameters(target, allowRanged, isCounterattack);
+
+        if (parameters.AttackType == AttackType.None)
+            return false;
+
+        AttackFromParameters(target, parameters, triggerEvents);
+
+        return true;
+    }
+
+    public AttackResult CalculateAttackResult(double damage, AttackType attackType)
+    {
+        // Effects on damage
+        foreach (var ability in ModifiersOfType<IApplicableToRecievedDamage>())
+            damage = ability.Apply(damage, attackType);
+
+        var result = new AttackResult();
+
+        double incomingDamage = damage;
+
+        // Try to damage HP first
+        double absorbedWithHP = Math.Min(damage, CurrentStats.HitPoints);
+
+        damage -= absorbedWithHP;
+
+        // If there's still damage to do - it will kill creatures
+        if (damage > 0)
+        {
+            result.Killed = (int)(damage / Creature.Stats.HitPoints);
+            result.Killed = Math.Min(result.Killed, Amount);
+
+            damage -= result.Killed * Creature.Stats.HitPoints;
+        }
+
+        if (absorbedWithHP == CurrentStats.HitPoints && result.Killed < Amount)
+        {
+            result.Killed++;
+            damage = 0;
+        }
+
+        result.DamageDealt = incomingDamage - damage;
+
+        return result;
+    }
+
+    public void ApplyDamage(AttackResult result, bool triggerEvents = true)
+    {
+        CurrentStats.HitPoints += result.Killed * Creature.Stats.HitPoints;
+        CurrentStats.HitPoints -= result.DamageDealt;
+
+        if (triggerEvents) Amount -= result.Killed;
+        else AmountBindable.SetSilent(Amount - result.Killed);
+
+
+        Debug.Assert(Amount >= 0);
+
+        if (triggerEvents && Amount == 0)
+        {
+            CreatureDead.Invoke(this);
+        }
+
+        AttackedOnThisTurn++;
+    }
+
+    private Vector2I? savedCoords = null;
+
+    public void SavePosition()
+    {
+        savedCoords = Coords;
+    }
+
+    public void LoadPosition(bool silent = false)
+    {
+        if (savedCoords != null)
+        {
+            if (silent) CoordsBindable.SetSilent(savedCoords.Value);
+            else Coords = savedCoords.Value;
+        }
+    }
+
+    private CreatureInstanceState? savedState;
+
+    public void SaveState()
+    {
+        savedState = new CreatureInstanceState
+        {
+            Amount = Amount,
+            AttackedOnThisTurn = AttackedOnThisTurn,
+            Stats = CurrentStats,
+            ATB = ATB
+        };
+
+        // TODO: copy effects
+    }
+
+    public void LoadState(bool silent = false)
+    {
+        if (savedState == null)
+            return;
+
+        AttackedOnThisTurn = savedState.Value.AttackedOnThisTurn;
+        ATB = savedState.Value.ATB;
+        CurrentStats = savedState.Value.Stats;
+
+        if (silent)
+        {
+            AmountBindable.SetSilent(savedState.Value.Amount);
+        }
+        else
+        {
+            Amount = savedState.Value.Amount;
+        }
+
+        // TODO: load effects
+    }
+}
+
+public struct CreatureInstanceState
+{
+    public int Amount;
+    public int AttackedOnThisTurn;
+    public CreatureStats Stats;
+    public double ATB;
+    public List<Effect>? Effects; // This is nullable because you REALLY woudln't want copying effects unless absolutely necessary
 }

@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
-
-public interface ICanAttack : IUnit
+﻿public interface ICanAttack : IUnit
 {
-    public bool CanAttackRanged(IEnumerable<IPlayfieldUnit> units);
+    public bool CanAttackRanged();
 
-    public AttackType CanShootTarget(IAttackable attackable);
+    public AttackType GetAttackType(IAttackable attackable);
+
+    public AttackParameters CalculateParameters(IAttackable target, bool allowRanged = true, bool isCounterattack = false);
+
+    public double CalculateDamageFromParameters(AttackParameters parameters);
+
+    public void AttackFromParameters(IAttackable target, AttackParameters parameters, bool triggerEvents = true);
 
     /// <summary>
     /// Attacks the target.
@@ -12,5 +16,8 @@ public interface ICanAttack : IUnit
     /// <param name="attackable">Target.</param>
     /// <param name="multiplier">Multiplier to damage.</param>
     /// <returns></returns>
-    public bool Attack(IAttackable attackable, bool allowRanged = true, bool isCounterattack = false);
+    public bool Attack(IAttackable target, bool allowRanged = true, bool isCounterattack = false, bool triggerEvents = true);
+
+    public void SaveState();
+    public void LoadState(bool silent = false);
 }

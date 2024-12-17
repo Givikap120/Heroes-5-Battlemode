@@ -2,6 +2,7 @@
 
 public interface IPlayfieldUnit : IUnit
 {
+    public Bindable<Vector2I> CoordsBindable { get; set; }
     public Vector2I Coords { get; set; }
 }
 

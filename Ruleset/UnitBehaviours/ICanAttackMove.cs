@@ -1,12 +1,12 @@
 ﻿using Godot;
 
-public interface ICanAttackMove : ICanAttack, ICanMove
+public interface ICanMoveAttack : ICanMove, ICanAttack
 {
-    public bool AttackWithMove(IAttackable attackable, Vector2I movePosition)
+    public bool AttackWithMove(IAttackable attackable, Vector2I movePosition, bool triggetEvents = true)
     {
-        bool moveResult = MoveTo(movePosition);
+        bool moveResult = MoveTo(movePosition, triggetEvents);
         if (Coords != movePosition && !moveResult) return false;
 
-        return Attack(attackable);
+        return Attack(attackable, triggetEvents);
     }
 }

@@ -1,18 +1,18 @@
-﻿using Godot;
-using System;
-
-public interface IAttackable : IPlayfieldUnit
+﻿public interface IAttackable : IPlayfieldUnit
 {
     public double TotalHP { get; }
     public double Defense { get; }
 
-    /// <summary>
-    /// Handle dealing damage to IAttackable.
-    /// Don't forget to increment AttackedOnThisTurn.
-    /// </summary>
-    /// <param name="damage">Amount of damage dealt</param>
-    /// <param name="attackType">Type of damage. Used in abilities handling</param>
-    public AttackResult TakeDamage(double damage, AttackType attackType);
+    public AttackResult CalculateAttackResult(double damage, AttackType attackType);
+
+    public void ApplyDamage(AttackResult result, bool triggerEvents = true);
+
+    public AttackResult TakeDamage(double damage, AttackType attackType, bool triggerEvents = true)
+    {
+        AttackResult result = CalculateAttackResult(damage, attackType);
+        ApplyDamage(result, triggerEvents);
+        return result;
+    }
 
     public int AttackedOnThisTurn { get; set; }
 
@@ -34,4 +34,7 @@ public interface IAttackable : IPlayfieldUnit
         // For Abilities OfType<IApplicableToCounterAttack> .Apply(result)
         return result;
     }
+
+    public void SaveState();
+    public void LoadState(bool silent = false);
 }

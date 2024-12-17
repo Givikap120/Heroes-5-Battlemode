@@ -9,15 +9,21 @@ public interface ICanMove : IPlayfieldUnit
 
     public bool CanMoveTo(Vector2I target)
     {
+        if (!IsInPlayfield(target))
+            return false;
+
         double maxDistance = Speed * Speed;
         double distanceSquared = target.DistanceSquaredTo(Coords);
         return distanceSquared > 0 && distanceSquared <= maxDistance;
     }
 
-    public bool MoveTo(Vector2I target)
+    public bool MoveTo(Vector2I target, bool triggerEvents = true)
     {
         if (!CanMoveTo(target)) return false;
-        Coords = target;
+
+        if (triggerEvents) Coords = target;
+        else CoordsBindable.SetSilent(target);
+
         return true;
     }
 
@@ -48,4 +54,9 @@ public interface ICanMove : IPlayfieldUnit
 
         return result;
     }
+
+
+    public void SavePosition();
+
+    public void LoadPosition(bool silent = false);
 }
