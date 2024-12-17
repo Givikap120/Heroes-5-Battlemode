@@ -64,7 +64,10 @@ public static class EnumerableExtensions
 
         return -1;
     }
+}
 
+public static class CoordExtensions
+{
     public static bool IsNeighboring(this Vector2I cell, Vector2I other)
     {
         Vector2I delta = (cell - other).Abs();

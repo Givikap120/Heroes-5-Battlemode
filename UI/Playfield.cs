@@ -220,32 +220,11 @@ public partial class Playfield : TileMapLayer
 
     private void addMoveVariants(ICanMove movable)
     {
-        var center = movable.Coords;
+        SetCell(movable.Coords, (int)TileType.Select, Vector2I.Zero);
 
-        SetCell(center, (int)TileType.Select, Vector2I.Zero);
-
-        int maxDistance = (int)(Math.Ceiling(movable.Speed));
-        int maxDistanceSqr = (int)(movable.Speed * movable.Speed);
-
-        var tileCoords = Vector2I.Zero;
-
-        for (int dx = -maxDistance; dx <= maxDistance; dx++)
+        foreach (var emptyTile in movable.GetPossibleMoveOptions(c => GetPlayfieldEntityAt(c) != null))
         {
-            tileCoords.X = center.X + dx;
-
-            for (int dy = -maxDistance; dy <= maxDistance; dy++)
-            {
-                tileCoords.Y = center.Y + dy;
-
-                if (!IsInPlayfield(tileCoords) || GetPlayfieldEntityAt(tileCoords) != null)
-                    continue;
-
-                int distanceSqr = tileCoords.DistanceSquaredTo(center);
-                if (distanceSqr <= maxDistanceSqr && distanceSqr > 0)
-                {
-                    SetCell(tileCoords, (int)TileType.Affected, Vector2I.Zero);
-                }
-            }
+            SetCell(emptyTile, (int)TileType.Affected, Vector2I.Zero);
         }
     }
 
