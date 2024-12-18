@@ -1,4 +1,4 @@
-﻿public abstract class AbilityApplicableAfterCreatureDeath : IBindableToInstance
+﻿public abstract class AbilityApplicableAfterCreatureDeath : Ability, IBindableToInstance
 {
     private CreatureInstance? parentInstance;
     public CreatureInstance? ParentInstance 

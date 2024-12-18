@@ -41,7 +41,8 @@ public static class AIExtensions
         double initiativeMultiplier = stack.CurrentStats.Initiative / 10;
 
         double abilitiesMultiplier = 1.0;
-        // For each ability .DamagePotentialMultiplier
+        foreach (var ability in stack.Creature.Abilities)
+            abilitiesMultiplier *= ability.OffensePotentialMultiplier;
 
         return stack.AverageDamage * attackMultiplier * initiativeMultiplier * abilitiesMultiplier * stack.Amount;
     }
@@ -52,7 +53,8 @@ public static class AIExtensions
         double defenseMultiplier = 1 + 0.05 * stack.CurrentStats.Defense;
 
         double abilitiesMultiplier = 1.0;
-        // For each ability .DefensePotentialMultiplier
+        foreach (var ability in stack.Creature.Abilities)
+            abilitiesMultiplier *= ability.DefensePotentialMultiplier;
 
         return hp * defenseMultiplier * abilitiesMultiplier;
     }

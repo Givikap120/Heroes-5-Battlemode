@@ -1,9 +1,11 @@
-﻿public class AbilityLargeShield : IAbility, IApplicableToRecievedDamage
+﻿public class AbilityLargeShield : Ability, IApplicableToRecievedDamage
 {
     public double Apply(double damage, AttackType attackType)
     {
         if (attackType.IsRanged()) damage *= 0.5;
         return damage;
     }
+
+    public override double DefensePotentialMultiplier => 1.3;
 }
 

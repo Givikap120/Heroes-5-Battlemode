@@ -1,4 +1,4 @@
-﻿public class AbilityNoMeleePenalty : IAbility, IApplicableBeforeAttack
+﻿public class AbilityNoMeleePenalty : Ability, IApplicableBeforeAttack
 {
     public AttackParameters Apply(CreatureInstance owner, IAttackable target, AttackParameters parameters)
     {
@@ -9,4 +9,6 @@
             
         return parameters;
     }
+
+    public override double OffensePotentialMultiplier => 1.25;
 }

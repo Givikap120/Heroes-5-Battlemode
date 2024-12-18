@@ -18,4 +18,6 @@ public class AbilityEnraged : AbilityApplicableAfterCreatureDeath
         owner.CurrentStats.Attack += attackBonus;
         CurrentAttackBonus += attackBonus;
     }
+
+    public override double OffensePotentialMultiplier => 1.1;
 }

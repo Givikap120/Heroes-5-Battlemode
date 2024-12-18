@@ -11,4 +11,6 @@
             WasUsed = false;
         }
     }
+
+    public override double OffensePotentialMultiplier => 2.0;
 }

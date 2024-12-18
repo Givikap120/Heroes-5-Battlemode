@@ -36,6 +36,7 @@ public class AbilityShieldAllies : AbilityApplicableAfterTurnBegin
             if (creature.IsNeighboring(owner))
                 creature.Effects.Add(new EffectShieldAllies());
         }
-
     }
+
+    public override double DefensePotentialMultiplier => 1.1;
 }

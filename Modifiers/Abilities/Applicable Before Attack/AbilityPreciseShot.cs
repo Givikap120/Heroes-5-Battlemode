@@ -1,4 +1,4 @@
-﻿public class AbilityPreciseShot : IAbility, IApplicableBeforeAttack
+﻿public class AbilityPreciseShot : Ability, IApplicableBeforeAttack
 {
     public AttackParameters Apply(CreatureInstance owner, IAttackable target, AttackParameters parameters)
     {
@@ -10,4 +10,6 @@
             
         return parameters;
     }
+
+    public override double OffensePotentialMultiplier => 1.1;
 }

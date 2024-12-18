@@ -1,4 +1,4 @@
-﻿public abstract class AbilityApplicableAfterTurnBegin : IBindableToInstance
+﻿public abstract class AbilityApplicableAfterTurnBegin : Ability, IBindableToInstance
 {
     private CreatureInstance? parentInstance;
     public CreatureInstance? ParentInstance

@@ -1,4 +1,4 @@
-﻿public abstract class AbilityProcableOnce : IAbility
+﻿public abstract class AbilityProcableOnce : Ability
 {
     public bool WasUsed;
 }

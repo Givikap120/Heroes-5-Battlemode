@@ -15,4 +15,6 @@
         owner.Attack(target, parameters.IsRanged, false);
         WasUsed = false;
     }
+
+    public override double OffensePotentialMultiplier => 1.25;
 }

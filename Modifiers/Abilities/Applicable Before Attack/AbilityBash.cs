@@ -1,4 +1,4 @@
-﻿public class AbilityBash : IChanceAbility, IApplicableBeforeAttack
+﻿public class AbilityBash : Ability, IChanceAbility, IApplicableBeforeAttack
 {
     public AttackParameters Apply(CreatureInstance owner, IAttackable target, AttackParameters parameters)
     {
@@ -11,4 +11,7 @@
         parameters.WillCounterAttack = false;
         return parameters;
     }
+
+    public override double OffensePotentialMultiplier => 1.1;
+    public override double DefensePotentialMultiplier => 1.15;
 }
