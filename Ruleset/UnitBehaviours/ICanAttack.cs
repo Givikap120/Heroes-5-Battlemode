@@ -17,7 +17,4 @@
     /// <param name="multiplier">Multiplier to damage.</param>
     /// <returns></returns>
     public bool Attack(IAttackable target, bool allowRanged = true, bool isCounterattack = false, bool triggerEvents = true);
-
-    public void SaveState();
-    public void LoadState(bool silent = false);
 }

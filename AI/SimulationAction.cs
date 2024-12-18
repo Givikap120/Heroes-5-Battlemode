@@ -8,7 +8,7 @@
     }
 
     public abstract void MakeMove();
-    public abstract void CalculateStateValue();
+    public abstract void CalculateStateValue(bool useDynamic = true);
 
     public double StateValue = double.NaN;
 }

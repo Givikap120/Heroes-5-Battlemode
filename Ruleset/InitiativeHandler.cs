@@ -5,8 +5,6 @@ using System.Diagnostics;
 
 public class InitiativeHandler
 {
-    public const double BASE_INITIATIVE = 10;
-
     public readonly List<Unit> Units = [];
 
     public InitiativeHandler(BattleHandler parent)
@@ -75,7 +73,7 @@ public class InitiativeHandler
 
         for (int i = 0; i < size; i++)
         {
-            remainingTurns[i] = (1 - getATB(i)) * BASE_INITIATIVE / getInitiative(i);
+            remainingTurns[i] = (1 - getATB(i)) * Unit.BASE_INITIATIVE / getInitiative(i);
         }
 
         return remainingTurns;
@@ -92,7 +90,7 @@ public class InitiativeHandler
     {
         for (int i = 0; i < size; i++)
         {
-            double movedAmount = turns * getInitiative(i) / BASE_INITIATIVE;
+            double movedAmount = turns * getInitiative(i) / Unit.BASE_INITIATIVE;
             addATB(i, movedAmount);
         }
     }

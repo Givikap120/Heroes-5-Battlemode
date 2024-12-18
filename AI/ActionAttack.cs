@@ -9,15 +9,15 @@
     }
     public override void MakeMove() => BattleHandler.Instance.UnitAction(Target);
 
-    public override void CalculateStateValue()
+    public override void CalculateStateValue(bool useDynamic = true)
     {
-        Attacker.SaveState();
-        Target.SaveState();
+        var attackerState = Attacker.SaveState();
+        var targetState = Target.SaveState();
 
         AIExtensions.AttackAverage(Attacker, Target);
-        StateValue = AIExtensions.CalculateStateValue(CurrentUnit);
+        StateValue = AIExtensions.CalculateStateValue(CurrentUnit, useDynamic);
 
-        Attacker.LoadState(silent: true);
-        Target.LoadState(silent: true);
+        Attacker.LoadState(attackerState);
+        Target.LoadState(targetState);
     }
 }

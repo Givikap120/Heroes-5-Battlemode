@@ -15,6 +15,8 @@ public abstract partial class Unit : GodotObject, IUnit
 
     public abstract DrawableCreatureInstance CreateDrawableRepresentation();
 
+    public const double BASE_INITIATIVE = 10;
+
     /// <summary>
     /// Value between 0 and 1 that determines how far is turn of this Unit
     /// </summary>
@@ -28,9 +30,14 @@ public abstract partial class Unit : GodotObject, IUnit
     /// <param name="tileType"></param>
     /// <returns></returns>
     public abstract int DecideTileChange(int tileType);
+
+    public abstract UnitState SaveState();
+    public abstract void LoadState(UnitState savedState, bool silent = true);
 }
 
 public static class UnitExtensions
 {
     public static bool IsAlly(this IUnit a, IUnit b) => a.Player.Id == b.Player.Id;
+
+    public static double GetRemainingTurnsToMove(this Unit unit) => (1 - unit.ATB) * Unit.BASE_INITIATIVE / unit.Initiative;
 }

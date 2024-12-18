@@ -14,19 +14,17 @@ public class ActionMoveAndAttack : SimulationAction
 
     public override void MakeMove() => BattleHandler.Instance.UnitWithCellAction(Target, Coords);
 
-    public override void CalculateStateValue()
+    public override void CalculateStateValue(bool useDynamic = true)
     {
-        MovableAttacker.SavePosition();
-        MovableAttacker.SaveState();
-        Target.SaveState();
+        var attackerState = MovableAttacker.SaveState();
+        var targetState = Target.SaveState();
 
         MovableAttacker.MoveTo(Coords, triggerEvents: false);
         AIExtensions.AttackAverage(MovableAttacker, Target);
-        StateValue = AIExtensions.CalculateStateValue(CurrentUnit);
+        StateValue = AIExtensions.CalculateStateValue(CurrentUnit, useDynamic);
 
-        MovableAttacker.LoadPosition(silent: true);
-        MovableAttacker.LoadState(silent: true);
-        Target.LoadState(silent: true);
+        MovableAttacker.LoadState(attackerState);
+        Target.LoadState(targetState);
     }
 
 }

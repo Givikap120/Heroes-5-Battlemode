@@ -245,64 +245,49 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
         AttackedOnThisTurn++;
     }
 
-    private Vector2I? savedCoords = null;
-
-    public void SavePosition()
+    public override UnitState SaveState()
     {
-        savedCoords = Coords;
-    }
-
-    public void LoadPosition(bool silent = false)
-    {
-        if (savedCoords != null)
-        {
-            if (silent) CoordsBindable.SetSilent(savedCoords.Value);
-            else Coords = savedCoords.Value;
-        }
-    }
-
-    private CreatureInstanceState? savedState;
-
-    public void SaveState()
-    {
-        savedState = new CreatureInstanceState
+        var savedState = new UnitState
         {
             Amount = Amount,
             AttackedOnThisTurn = AttackedOnThisTurn,
-            Stats = CurrentStats,
-            ATB = ATB
+            CreatureStats = CurrentStats,
+            ATB = ATB,
+            Coords = Coords
         };
 
         // TODO: copy effects
+
+        return savedState;
     }
 
-    public void LoadState(bool silent = false)
+    public override void LoadState(UnitState savedState, bool silent = true)
     {
-        if (savedState == null)
-            return;
-
-        AttackedOnThisTurn = savedState.Value.AttackedOnThisTurn;
-        ATB = savedState.Value.ATB;
-        CurrentStats = savedState.Value.Stats;
+        AttackedOnThisTurn = savedState.AttackedOnThisTurn;
+        ATB = savedState.ATB;
+        CurrentStats = savedState.CreatureStats!.Value;
 
         if (silent)
         {
-            AmountBindable.SetSilent(savedState.Value.Amount);
+            CoordsBindable.SetSilent(savedState.Coords);
+            AmountBindable.SetSilent(savedState.Amount);
         }
         else
         {
-            Amount = savedState.Value.Amount;
+            Coords = savedState.Coords;
+            Amount = savedState.Amount;
         }
 
         // TODO: load effects
     }
 }
 
-public struct CreatureInstanceState
+public struct UnitState
 {
     public int Amount;
     public int AttackedOnThisTurn;
-    public CreatureStats Stats;
+    public CreatureStats? CreatureStats;
     public double ATB;
+    public Vector2I Coords;
     public List<Effect>? Effects; // This is nullable because you REALLY woudln't want copying effects unless absolutely necessary
 }

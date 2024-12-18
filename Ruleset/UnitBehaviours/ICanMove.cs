@@ -27,7 +27,7 @@ public interface ICanMove : IPlayfieldUnit
         return true;
     }
 
-    public List<Vector2I> GetPossibleMoveOptions(Func<Vector2I, bool> isOccupied)
+    public List<Vector2I> GetPossibleMoveOptions()
     {
         List<Vector2I> result = [];
 
@@ -41,7 +41,7 @@ public interface ICanMove : IPlayfieldUnit
         {
             for (currentTile.Y = Coords.Y - maxDistance; currentTile.Y <= lastTile.Y; currentTile.Y++)
             {
-                if (!IsInPlayfield(currentTile) || isOccupied(currentTile))
+                if (!IsInPlayfield(currentTile) || BattleHandler.Instance.IsTileOccupied(currentTile))
                     continue;
 
                 int distanceSqr = currentTile.DistanceSquaredTo(Coords);
@@ -54,9 +54,4 @@ public interface ICanMove : IPlayfieldUnit
 
         return result;
     }
-
-
-    public void SavePosition();
-
-    public void LoadPosition(bool silent = false);
 }

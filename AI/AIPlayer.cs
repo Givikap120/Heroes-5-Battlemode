@@ -16,9 +16,9 @@ public class AIPlayer : Player
 
     public override bool UIDrawControls => false;
 
-    private void makeMove(Unit unit)
+    private static void makeMove(Unit unit)
     {
-        var actions = getAllPossibleActions(unit);
+        var actions = GetAllPossibleActions(unit);
 
         foreach (SimulationAction action in actions)
             action.CalculateStateValue();
@@ -32,36 +32,36 @@ public class AIPlayer : Player
         });
     }
 
-    private List<SimulationAction> getAllPossibleActions(Unit currentUnit)
+    public static List<SimulationAction> GetAllPossibleActions(Unit currentUnit)
     {
         List<SimulationAction> actions = [];
 
         actions.Add(new ActionDefend(currentUnit));
         actions.Add(new ActionWait(currentUnit));
-        addAttackActions(actions, currentUnit);
-        addMoveAndAttackActions(actions, currentUnit);
-        addMoveActions(actions, currentUnit);
+        AddAttackActions(actions, currentUnit);
+        AddMoveAndAttackActions(actions, currentUnit);
+        AddMoveActions(actions, currentUnit);
 
         return actions;
     }
 
-    private void addMoveActions(List<SimulationAction> actions, Unit currentUnit)
+    public static void AddMoveActions(List<SimulationAction> actions, Unit currentUnit)
     {
         if (currentUnit is not ICanMove movable)
             return;
 
-        foreach (var cell in movable.GetPossibleMoveOptions(BattleHandler.IsTileOccupied))
+        foreach (var cell in movable.GetPossibleMoveOptions())
         {
             actions.Add(new ActionMove(movable, cell));
         }
     }
 
-    private void addAttackActions(List<SimulationAction> actions, Unit currentUnit)
+    public static void AddAttackActions(List<SimulationAction> actions, Unit currentUnit)
     {
         if (currentUnit is not ICanAttack attacker)
             return;
 
-        Player enemy = BattleHandler.GetEnemyPlayer(this)!;
+        Player enemy = BattleHandler.Instance.GetEnemyPlayer(currentUnit.Player)!;
 
         if (!attacker.CanAttackRanged())
             return;
@@ -73,19 +73,19 @@ public class AIPlayer : Player
         }
     }
 
-    private void addMoveAndAttackActions(List<SimulationAction> actions, Unit currentUnit)
+    public static void AddMoveAndAttackActions(List<SimulationAction> actions, Unit currentUnit)
     {
         if (currentUnit is not ICanMoveAttack attacker)
             return;
 
-        Player enemy = BattleHandler.GetEnemyPlayer(this)!;
+        Player enemy = BattleHandler.Instance.GetEnemyPlayer(currentUnit.Player)!;
 
         foreach (var target in enemy.AliveArmy)
         {
             var tilesAroundEnemy = target.Coords.GetNeighboring();
             foreach (var tile in tilesAroundEnemy)
             {
-                if (attacker.CanMoveTo(tile) && !BattleHandler.IsTileOccupied(tile))
+                if (attacker.CanMoveTo(tile) && !BattleHandler.Instance.IsTileOccupied(tile))
                     actions.Add(new ActionMoveAndAttack(attacker, tile, target));
             }
         }

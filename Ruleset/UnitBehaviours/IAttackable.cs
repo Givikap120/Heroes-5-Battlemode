@@ -16,6 +16,8 @@
 
     public int AttackedOnThisTurn { get; set; }
 
+    public bool CanCounterattack() => AttackedOnThisTurn == 0;
+
     public bool WillCounterattack(ICanAttack attacker)
     {
         // Can't attack - can't counterattack
@@ -29,12 +31,9 @@
         bool isNeighbor = playfieldUnit.IsNeighboring(this);
 
         // Can only counterattack neighbors and only once in the turn
-        bool result = isNeighbor && AttackedOnThisTurn == 0;
+        bool result = isNeighbor && CanCounterattack();
 
         // For Abilities OfType<IApplicableToCounterAttack> .Apply(result)
         return result;
     }
-
-    public void SaveState();
-    public void LoadState(bool silent = false);
 }

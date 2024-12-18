@@ -1,4 +1,4 @@
-﻿public class Hero : Unit
+﻿public partial class Hero : Unit
 {
     public int Level;
 
@@ -16,6 +16,16 @@
     public override double Initiative => 10;
 
     public override int DecideTileChange(int tileType)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override UnitState SaveState()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void LoadState(UnitState savedState, bool silent = true)
     {
         throw new System.NotImplementedException();
     }

@@ -217,7 +217,7 @@ public partial class Playfield : TileMapLayer
     {
         SetCell(movable.Coords, (int)TileType.Select, Vector2I.Zero);
 
-        foreach (var emptyTile in movable.GetPossibleMoveOptions(c => GetPlayfieldEntityAt(c) != null))
+        foreach (var emptyTile in movable.GetPossibleMoveOptions())
         {
             SetCell(emptyTile, (int)TileType.Affected, Vector2I.Zero);
         }

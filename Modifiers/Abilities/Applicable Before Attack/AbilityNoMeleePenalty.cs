@@ -10,5 +10,7 @@
         return parameters;
     }
 
-    public override double OffensePotentialMultiplier => 1.25;
+    public const double OFFENSE_ESTIMATION_MULTIPLIER = 1.25;
+
+    public override double OffensePotentialMultiplier => OFFENSE_ESTIMATION_MULTIPLIER;
 }

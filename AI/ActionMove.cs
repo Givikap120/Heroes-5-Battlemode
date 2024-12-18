@@ -11,13 +11,13 @@ public class ActionMove : SimulationAction
 
     public override void MakeMove() => BattleHandler.Instance.EmptyCellAction(Coords);
 
-    public override void CalculateStateValue()
+    public override void CalculateStateValue(bool useDynamic = true)
     {
-        Movable.SavePosition();
+        var savedPosition = Movable.Coords;
 
         Movable.MoveTo(Coords, triggerEvents: false);
-        StateValue = AIExtensions.CalculateStateValue(CurrentUnit);
+        StateValue = AIExtensions.CalculateStateValue(CurrentUnit, useDynamic);
 
-        Movable.LoadPosition(silent: true);
+        Movable.CoordsBindable.SetSilent(savedPosition);
     }
 }
