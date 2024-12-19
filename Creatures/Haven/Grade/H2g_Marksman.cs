@@ -2,9 +2,11 @@
 {
     public H2g_Marksman()
     {
-        Name = "Crossbowman";
-        IconPath = "res://Assets/Creatures/Heaven/Grade/ico_Marksman_128.dds";
+        Name = "Marksman";
+        Faction = "Haven";
         Grade = GradeType.Grade;
+
+        AutoSetIconPath();
 
         Stats.Defense = 4;
 

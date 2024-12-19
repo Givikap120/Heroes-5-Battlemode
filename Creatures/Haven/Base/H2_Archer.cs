@@ -3,9 +3,11 @@
     public H2_Archer()
     {
         Name = "Archer";
-        IconPath = "res://Assets/Creatures/Heaven/Base/ico_Archer_128.dds";
+        Faction = "Haven";
         Tier = 2;
         Grade = GradeType.Base;
+
+        AutoSetIconPath();
 
         Stats = new CreatureStats
         {

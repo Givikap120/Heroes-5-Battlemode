@@ -4,11 +4,11 @@
 
     public AttackType GetAttackType(IAttackable attackable);
 
-    public AttackParameters CalculateParameters(IAttackable target, bool allowRanged = true, bool isCounterattack = false);
+    public AttackParameters CalculateParameters(IAttackable target, bool triggerEvents, bool allowRanged = true, bool isCounterattack = false);
 
     public double CalculateDamageFromParameters(AttackParameters parameters);
 
-    public void AttackFromParameters(IAttackable target, AttackParameters parameters, bool triggerEvents = true);
+    public void AttackFromParameters(IAttackable target, AttackParameters parameters);
 
     /// <summary>
     /// Attacks the target.
@@ -16,5 +16,5 @@
     /// <param name="attackable">Target.</param>
     /// <param name="multiplier">Multiplier to damage.</param>
     /// <returns></returns>
-    public bool Attack(IAttackable target, bool allowRanged = true, bool isCounterattack = false, bool triggerEvents = true);
+    public bool Attack(IAttackable target, bool triggerEvents, bool allowRanged = true, bool isCounterattack = false);
 }

@@ -3,8 +3,10 @@
     public H3a_Vindicator()
     {
         Name = "Vindicator";
-        IconPath = "res://Assets/Creatures/Heaven/Altgrade/Vindicator.(Texture).dds";
+        Faction = "Haven";
         Grade = GradeType.Altgrade;
+
+        AutoSetIconPath();
 
         Stats.Attack = 8;
 

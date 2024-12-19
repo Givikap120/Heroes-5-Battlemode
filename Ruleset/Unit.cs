@@ -13,7 +13,8 @@ public abstract partial class Unit : GodotObject, IUnit
         Player = player; 
     }
 
-    public abstract DrawableCreatureInstance CreateDrawableRepresentation();
+    public abstract string IconPath { get; set; }
+    public abstract DrawableUnit CreateDrawableRepresentation();
 
     public const double BASE_INITIATIVE = 10;
 

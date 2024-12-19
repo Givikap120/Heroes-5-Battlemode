@@ -1,41 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://8n6ofgb5vvw4"]
+[gd_scene load_steps=4 format=3 uid="uid://c87qaue4yy03b"]
 
 [ext_resource type="Script" path="res://UI/DrawableCreatureInstance.cs" id="1_jptlw"]
-[ext_resource type="Texture2D" path="res://Assets/Creatures/Heaven/Grade/ico_ArchAngel_128.dds" id="1_t6y75"]
+[ext_resource type="PackedScene" uid="uid://8n6ofgb5vvw4" path="res://UI/DrawableUnit.tscn" id="1_r8ftk"]
 [ext_resource type="PackedScene" uid="uid://bnnii5egdcupx" path="res://UI/LabelInBox.tscn" id="2_3pg62"]
 
-[sub_resource type="Gradient" id="Gradient_14v0s"]
-colors = PackedColorArray(0, 1, 0, 1, 0, 0.498039, 0, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_w1g6w"]
-gradient = SubResource("Gradient_14v0s")
-width = 128
-height = 128
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 1)
-
-[node name="Control" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="Control" instance=ExtResource("1_r8ftk")]
 script = ExtResource("1_jptlw")
-metadata/Centered = false
-metadata/BackgroundSize = 0.81
 
-[node name="BackgroundSprite" type="Sprite2D" parent="."]
-texture = SubResource("GradientTexture2D_w1g6w")
-centered = false
-
-[node name="IconSprite" type="Sprite2D" parent="."]
-texture = ExtResource("1_t6y75")
-centered = false
-
-[node name="AmountLabel" parent="." instance=ExtResource("2_3pg62")]
-layout_mode = 0
+[node name="AmountLabel" parent="." index="2" instance=ExtResource("2_3pg62")]
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0

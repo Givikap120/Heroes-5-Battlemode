@@ -15,16 +15,21 @@ public class InitiativeHandler
     public void AddPlayer(Player player)
     {
         foreach (Unit? unit in player.Army) 
-        { 
-            if (unit == null) continue;
-
-            Debug.Assert(double.IsNaN(unit.ATB));
-
-            unit.ATB = GD.RandRange(0, 0.25);
-            Units.Add(unit);
+        {
+            if (unit != null) addUnit(unit);
         }
 
+        addUnit(player.Hero);
+
         player.CreatureDied += handleUnitDead;
+    }
+
+    private void addUnit(Unit unit)
+    {
+        Debug.Assert(double.IsNaN(unit.ATB));
+
+        unit.ATB = GD.RandRange(0, 0.25);
+        Units.Add(unit);
     }
 
     private void handleUnitDead(Unit unit)

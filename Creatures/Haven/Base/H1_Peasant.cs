@@ -5,9 +5,11 @@ public class H1_Peasant : Creature
     public H1_Peasant()
     {
         Name = "Peasant";
-        IconPath = "res://Assets/Creatures/Heaven/Base/ico_Peasant_128.dds";
+        Faction = "Haven";
         Tier = 1;
         Grade = GradeType.Base;
+
+        AutoSetIconPath();
 
         Stats = new CreatureStats
         {

@@ -1,32 +1,70 @@
-﻿public partial class Hero : Unit
+﻿using System.Diagnostics;
+using static Playfield;
+
+public partial class Hero : Unit, ICanAttack
 {
     public int Level;
+
+    public override string IconPath { get; set; } = "";
 
     public Hero(Player player) : base(player)
     {
     }
-    public override DrawableCreatureInstance CreateDrawableRepresentation()
-    {
-        throw new System.NotImplementedException();
-    }
+
+    public override DrawableUnit CreateDrawableRepresentation() => SceneFactory.CreateDrawableUnit(this);
 
     /// <summary>
     /// Hero always has initiative of 10
     /// </summary>
     public override double Initiative => 10;
 
-    public override int DecideTileChange(int tileType)
-    {
-        throw new System.NotImplementedException();
-    }
+    public override int DecideTileChange(int tileType) => tileType == (int)TileType.Aimable ? (int)TileType.Select : -1;
 
     public override UnitState SaveState()
     {
-        throw new System.NotImplementedException();
+        return new UnitState();
     }
 
     public override void LoadState(UnitState savedState, bool silent = true)
     {
-        throw new System.NotImplementedException();
+    }
+
+    public bool CanAttackRanged() => true;
+
+    public AttackType GetAttackType(IAttackable attackable) => AttackType.Hero;
+
+    public AttackParameters CalculateParameters(IAttackable target, bool triggerEvents, bool allowRanged = true, bool isCounterattack = false)
+    {
+        Debug.Assert(target.Tier >= 1 && target.Tier <= 8);
+
+        int tierIndex = target.Tier - 1;
+
+        double[] minDamage = [ 2, 1.0, 0.8, 0.5, 0.3, 0.2, 0.1, 0.01]; // Damage for lvl 1
+        double[] maxDamage = [12, 9.0, 6.5, 4.5, 3.0, 2.0, 1.5, 0.15]; // Damage for lvl 31
+
+        double killsPerLevel = (maxDamage[tierIndex] - minDamage[tierIndex]) / 30;
+        double kills = minDamage[tierIndex] + (Level - 1) * killsPerLevel;
+        double damage = kills * target.MaxHP;
+
+        return new AttackParameters
+        {
+            TriggerEvents = triggerEvents,
+            BaseDamage = damage
+        };
+    }
+
+    public double CalculateDamageFromParameters(AttackParameters parameters) => parameters.BaseDamage;
+
+    public void AttackFromParameters(IAttackable target, AttackParameters parameters)
+    {
+        double damage = CalculateDamageFromParameters(parameters);
+        target.TakeDamage(damage, parameters.AttackType, parameters.TriggerEvents);
+    }
+
+    public bool Attack(IAttackable target, bool triggerEvents, bool allowRanged = true, bool isCounterattack = false)
+    {
+        AttackParameters parameters = CalculateParameters(target, triggerEvents: triggerEvents);
+        AttackFromParameters(target, parameters);
+        return true;
     }
 }

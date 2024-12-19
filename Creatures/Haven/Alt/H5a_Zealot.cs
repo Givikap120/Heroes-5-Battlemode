@@ -3,8 +3,10 @@
     public H5a_Zealot()
     {
         Name = "Zealot";
-        IconPath = "res://Assets/Creatures/Heaven/Altgrade/Zealot.(Texture).dds";
+        Faction = "Haven";
         Grade = GradeType.Altgrade;
+
+        AutoSetIconPath();
 
         Stats.Attack = 20;
         Stats.Defense = 14;

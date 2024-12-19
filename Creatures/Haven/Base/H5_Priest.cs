@@ -3,9 +3,11 @@
     public H5_Priest()
     {
         Name = "Priest";
-        IconPath = "res://Assets/Creatures/Heaven/Base/ico_Priest_128.dds";
+        Faction = "Haven";
         Tier = 5;
         Grade = GradeType.Base;
+
+        AutoSetIconPath();
 
         Stats = new CreatureStats
         {

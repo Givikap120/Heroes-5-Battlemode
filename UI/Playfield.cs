@@ -168,7 +168,7 @@ public partial class Playfield : TileMapLayer
             if (item == null)
                 continue;
 
-            var newDrawableCreature = item.CreateDrawableRepresentation();
+            var newDrawableCreature = (DrawableCreatureInstance)item.CreateDrawableRepresentation();
             newDrawableCreature.Scale = new Vector2(1.0f / Scale.X, 1.0f / Scale.Y);
             newDrawableCreature.Centered = true;
             newDrawableCreature.Position = MapToLocal(item.Coords);
@@ -184,7 +184,7 @@ public partial class Playfield : TileMapLayer
 
     private void updateCreaturePosition(DrawableCreatureInstance drawable)
     {
-        drawable.Position = MapToLocal(drawable.Parent.Coords);
+        drawable.Position = MapToLocal(drawable.ParentCreature.Coords);
     }
 
     private void handleCreatureDead(CreatureInstance creature)
@@ -199,7 +199,7 @@ public partial class Playfield : TileMapLayer
         creatures.RemoveAll(c => c.Parent == creature);
     }
 
-    public CreatureInstance? GetPlayfieldEntityAt(Vector2I tile) => creatures.FirstOrDefault(creature => creature.Coords == tile)?.Parent;
+    public CreatureInstance? GetPlayfieldEntityAt(Vector2I tile) => creatures.FirstOrDefault(creature => creature.Coords == tile)?.ParentCreature;
 
     private void addUnitActions(Unit? unit)
     {

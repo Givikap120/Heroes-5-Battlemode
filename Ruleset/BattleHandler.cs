@@ -151,9 +151,9 @@ public class BattleHandler
         if (CurrentUnit.Value.IsAlly(unit))
             return;
 
-        if (CurrentUnit.Value is ICanMoveAttack attacker && unit is IAttackable attackable)
+        if (CurrentUnit.Value is ICanAttack attacker && unit is IAttackable attackable)
         {
-            bool result = attacker.Attack(attackable);
+            bool result = attacker.Attack(attackable, triggerEvents: true);
             if (result) endTurn();
         }
     }

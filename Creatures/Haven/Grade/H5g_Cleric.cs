@@ -3,8 +3,10 @@
     public H5g_Cleric()
     {
         Name = "Cleric";
-        IconPath = "res://Assets/Creatures/Heaven/Grade/ico_Cleric_128.dds";
+        Faction = "Haven";
         Grade = GradeType.Grade;
+
+        AutoSetIconPath();
 
         Stats.Attack = 16;
         Stats.Defense = 16;

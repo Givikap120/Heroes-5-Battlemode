@@ -12,7 +12,7 @@
         if (!isSuccesful) return;
 
         WasUsed = true;
-        owner.Attack(target, parameters.IsRanged, false);
+        owner.Attack(target, parameters.IsRanged, false, parameters.TriggerEvents);
         WasUsed = false;
     }
 

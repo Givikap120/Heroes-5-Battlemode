@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://UI/Playfield.cs" id="2_erblk"]
 [ext_resource type="Script" path="res://UI/AtbScale.cs" id="2_nprr7"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected.dds" id="3_lvbaq"]
-[ext_resource type="PackedScene" uid="uid://8n6ofgb5vvw4" path="res://UI/DrawableCreatureInstance.tscn" id="3_u6nsl"]
+[ext_resource type="PackedScene" uid="uid://8n6ofgb5vvw4" path="res://UI/DrawableUnit.tscn" id="3_u6nsl"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/Jogdial.dds" id="4_53i6k"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected_2.dds" id="4_k31mn"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Defend/Normal.dds" id="5_0hpn7"]

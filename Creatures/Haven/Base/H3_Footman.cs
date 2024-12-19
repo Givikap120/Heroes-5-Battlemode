@@ -3,9 +3,11 @@
     public H3_Footman()
     {
         Name = "Footman";
-        IconPath = "res://Assets/Creatures/Heaven/Base/ico_Footman_128.dds";
+        Faction = "Haven";
         Tier = 3;
         Grade = GradeType.Base;
+
+        AutoSetIconPath();
 
         Stats = new CreatureStats
         {

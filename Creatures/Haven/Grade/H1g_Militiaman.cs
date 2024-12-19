@@ -3,8 +3,10 @@
     public H1g_Militiaman()
     {
         Name = "Militiaman";
-        IconPath = "res://Assets/Creatures/Heaven/Grade/ico_Militiaman_128.dds";
+        Faction = "Haven";
         Grade = GradeType.Grade;
+
+        AutoSetIconPath();
 
         Stats.Defense = 2;
         Stats.MaxDamage = 2;

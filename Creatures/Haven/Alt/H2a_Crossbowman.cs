@@ -3,8 +3,10 @@
     public H2a_Crossbowman()
     {
         Name = "Crossbowman";
-        IconPath = "res://Assets/Creatures/Heaven/Altgrade/Crossbowman.(Texture).dds";
+        Faction = "Haven";
         Grade = GradeType.Altgrade;
+
+        AutoSetIconPath();
 
         Stats.Attack = 5;
         Stats.Defense = 4;

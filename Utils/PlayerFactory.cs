@@ -8,6 +8,12 @@ public static class PlayerFactory
     {
         var player = CreatePlayer(battleHandler, isAI);
 
+        player.Hero = new Hero(player)
+        {
+            Level = 25,
+            IconPath = "res://Assets/Heroes/Haven/Heaven_Freyda_128x128.(Texture).dds"
+        };
+
         player.AddCreatureToPlayer(new H2_Archer(), 727, new Vector2I(0, 11));
         player.AddCreatureToPlayer(new H5_Priest(), 69, new Vector2I(1, 11));
         player.AddCreatureToPlayer(new H3_Footman(), 666, new Vector2I(0, 10));
@@ -19,6 +25,12 @@ public static class PlayerFactory
     public static Player Preset2(BattleHandler battleHandler, bool isAI = false)
     {
         var player = CreatePlayer(battleHandler, isAI);
+
+        player.Hero = new Hero(player)
+        {
+            Level = 25,
+            IconPath = "res://Assets/Heroes/Haven/Heaven_Godric_128x128.(Texture).dds"
+        };
 
         player.AddCreatureToPlayer(new H2a_Crossbowman(), 120, new Vector2I(0, 0));
         player.AddCreatureToPlayer(new H2g_Marksman(), 228, new Vector2I(3, 0));

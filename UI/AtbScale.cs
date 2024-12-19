@@ -5,7 +5,7 @@ using System.Linq;
 
 public partial class AtbScale : Control
 {
-    private DrawableCreatureInstance currentNode= null!;
+    private DrawableUnit currentNode= null!;
     private HBoxContainer futureNodes = null!;
 
     private InitiativeHandler initiativeHandler = null!;
@@ -15,7 +15,7 @@ public partial class AtbScale : Control
 	{
         Main parent = GetNode<Main>("/root/Main");
 
-        currentNode = GetNode<DrawableCreatureInstance>("CurrentUnitNode");
+        currentNode = GetNode<DrawableUnit>("CurrentUnitNode");
         futureNodes = GetNode<HBoxContainer>("ScrollContainer/FutureUnitsNode");
 
         initiativeHandler = BattleHandler.Instance.InitiativeHandler;

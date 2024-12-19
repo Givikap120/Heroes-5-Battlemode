@@ -3,8 +3,10 @@
     public H3g_Swordsman()
     {
         Name = "Swordsman";
-        IconPath = "res://Assets/Creatures/Heaven/Grade/ico_Swordsman_128.dds";
+        Faction = "Haven";
         Grade = GradeType.Grade;
+
+        AutoSetIconPath();
 
         Stats.Attack = 5;
         Stats.Defense = 9;

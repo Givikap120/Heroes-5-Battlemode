@@ -24,11 +24,11 @@ public static class AIExtensions
 
     public static void AttackAverage(ICanAttack attacker, IAttackable target)
     {
-        var parameters = attacker.CalculateParameters(target);
+        var parameters = attacker.CalculateParameters(target, triggerEvents: false);
 
         if (attacker is IHasRandomDamage randomAttacker)
             parameters.BaseDamage = randomAttacker.AverageDamage;
 
-        attacker.AttackFromParameters(target, parameters, triggerEvents: false);
+        attacker.AttackFromParameters(target, parameters);
     }
 }

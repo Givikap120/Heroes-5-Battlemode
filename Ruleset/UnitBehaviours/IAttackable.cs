@@ -1,13 +1,16 @@
 ﻿public interface IAttackable : IPlayfieldUnit
 {
+    public double MaxHP { get; }
     public double TotalHP { get; }
     public double Defense { get; }
 
+    public int Tier { get; }
+
     public AttackResult CalculateAttackResult(double damage, AttackType attackType);
 
-    public void ApplyDamage(AttackResult result, bool triggerEvents = true);
+    public void ApplyDamage(AttackResult result, bool triggerEvents);
 
-    public AttackResult TakeDamage(double damage, AttackType attackType, bool triggerEvents = true)
+    public AttackResult TakeDamage(double damage, AttackType attackType, bool triggerEvents)
     {
         AttackResult result = CalculateAttackResult(damage, attackType);
         ApplyDamage(result, triggerEvents);

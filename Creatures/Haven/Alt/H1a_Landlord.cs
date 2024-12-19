@@ -3,8 +3,10 @@
     public H1a_Landlord()
     {
         Name = "Landlord";
-        IconPath = "res://Assets/Creatures/Heaven/Altgrade/Landlord.(Texture).dds";
+        Faction = "Haven";
         Grade = GradeType.Altgrade;
+
+        AutoSetIconPath();
 
         Stats.Attack = 2;
         Stats.MaxDamage = 2;

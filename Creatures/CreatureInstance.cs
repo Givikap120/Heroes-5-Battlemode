@@ -47,7 +47,7 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
             };
         }
     }
-    public override DrawableCreatureInstance CreateDrawableRepresentation() => SceneFactory.CreateDrawableCreatureInstance(this);
+    public override DrawableUnit CreateDrawableRepresentation() => SceneFactory.CreateDrawableCreatureInstance(this);
 
     private void handleTurnUpdate(Unit? unit)
     {
@@ -57,16 +57,15 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
         AttackedOnThisTurn = 0;
     }
 
+    public override string IconPath { get => Creature.IconPath; set => Creature.IconPath = value; }
     public Vector2I Coords { get => CoordsBindable.Value; set => CoordsBindable.Value = value; }
     public int Amount { get => AmountBindable.Value; set => AmountBindable.Value = value; }
-
     public override double Initiative => CurrentStats.Initiative;
     public double Speed => CurrentStats.Speed;
-
     public double Defense => CurrentStats.Defense;
-
+    public double MaxHP => Creature.Stats.HitPoints;
     public double TotalHP => Amount > 0 ? CurrentStats.HitPoints + (Amount - 1) * Creature.Stats.HitPoints : 0;
-
+    public int Tier => Creature.Tier;
     public double AverageDamage => (CurrentStats.MinDamage + CurrentStats.MaxDamage) / 2;
 
     public override int DecideTileChange(int tileType)
@@ -97,12 +96,13 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
         return !isBlocked;
     }
 
-    public AttackParameters CalculateParameters(IAttackable target, bool allowRanged, bool isCounterattack)
+    public AttackParameters CalculateParameters(IAttackable target, bool triggerEvents, bool allowRanged, bool isCounterattack)
     {
         var parameters = new AttackParameters
         {
             Amount = Amount,
             IsCounterAttack = isCounterattack,
+            TriggerEvents = triggerEvents,
             BaseDamage = GD.RandRange(CurrentStats.MinDamage, CurrentStats.MaxDamage),
             WillCounterAttack = !isCounterattack && target.WillCounterattack(this),
 
@@ -158,35 +158,35 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
         return damage;
     }
 
-    public void AttackFromParameters(IAttackable target, AttackParameters parameters, bool triggerEvents = true)
+    public void AttackFromParameters(IAttackable target, AttackParameters parameters)
     {
         double damage = CalculateDamageFromParameters(parameters);
 
-        if (parameters.AttackType.IsRanged())
+        if (parameters.AttackType.IsRangedShot())
             CurrentStats.Shots--;
 
         // Attack
-        var attackResult = target.TakeDamage(damage, parameters.AttackType, triggerEvents);
+        var attackResult = target.TakeDamage(damage, parameters.AttackType, parameters.TriggerEvents);
 
         // Counterattack
         if (parameters.WillCounterAttack && target is ICanAttack counterAttacker)
-            counterAttacker.Attack(this, isCounterattack: true, triggerEvents: triggerEvents);
+            counterAttacker.Attack(this, isCounterattack: true, triggerEvents: parameters.TriggerEvents);
 
         // Effects after attack
         foreach (var ability in ModifiersOfType<IApplicableAfterAttack>())
             ability.Apply(this, target, parameters, attackResult);
     }
 
-    public bool Attack(IAttackable target, bool allowRanged, bool isCounterattack, bool triggerEvents = true)
+    public bool Attack(IAttackable target, bool triggerEvents, bool allowRanged, bool isCounterattack)
     {
         if (Amount <= 0) return false;
 
-        AttackParameters parameters = CalculateParameters(target, allowRanged, isCounterattack);
+        AttackParameters parameters = CalculateParameters(target, triggerEvents, allowRanged, isCounterattack);
 
         if (parameters.AttackType == AttackType.None)
             return false;
 
-        AttackFromParameters(target, parameters, triggerEvents);
+        AttackFromParameters(target, parameters);
 
         return true;
     }
@@ -226,7 +226,7 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
         return result;
     }
 
-    public void ApplyDamage(AttackResult result, bool triggerEvents = true)
+    public void ApplyDamage(AttackResult result, bool triggerEvents)
     {
         CurrentStats.HitPoints += result.Killed * Creature.Stats.HitPoints;
         CurrentStats.HitPoints -= result.DamageDealt;

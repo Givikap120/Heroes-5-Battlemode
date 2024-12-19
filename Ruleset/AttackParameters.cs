@@ -1,8 +1,10 @@
 ﻿public struct AttackParameters
 {
-    public int Amount;
+    public int Amount = 1;
 
+    public bool TriggerEvents;
     public bool IsCounterAttack;
+
     public bool IsRanged;
     public bool WillCounterAttack;
 
