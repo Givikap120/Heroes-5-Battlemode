@@ -18,7 +18,8 @@ public partial class Hero : Unit, ICanAttack
 
     public void CalculateCurrentStats()
     {
-        CurrentStats = BaseStats;
+        baseStats.Mana = (int)(baseStats.Knowledge * 10);
+        CurrentStats = baseStats;
 
         // Skills
         // Artifacts
