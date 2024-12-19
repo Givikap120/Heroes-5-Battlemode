@@ -11,7 +11,14 @@ public static class PlayerFactory
         player.Hero = new Hero(player)
         {
             Level = 25,
-            IconPath = "res://Assets/Heroes/Haven/Heaven_Freyda_128x128.(Texture).dds"
+            IconPath = "res://Assets/Heroes/Haven/Heaven_Freyda_128x128.(Texture).dds",
+            BaseStats = new HeroStats
+            {
+                Attack = 12,
+                Defense = 11,
+                Spellpower = 6,
+                Knowledge = 15
+            }
         };
 
         player.AddCreatureToPlayer(new H2_Archer(), 727, new Vector2I(0, 11));
@@ -29,7 +36,14 @@ public static class PlayerFactory
         player.Hero = new Hero(player)
         {
             Level = 25,
-            IconPath = "res://Assets/Heroes/Haven/Heaven_Godric_128x128.(Texture).dds"
+            IconPath = "res://Assets/Heroes/Haven/Heaven_Godric_128x128.(Texture).dds",
+            BaseStats = new HeroStats
+            {
+                Attack = 9,
+                Defense = 13,
+                Spellpower = 5,
+                Knowledge = 9
+            }
         };
 
         player.AddCreatureToPlayer(new H2a_Crossbowman(), 120, new Vector2I(0, 0));

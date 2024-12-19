@@ -32,7 +32,9 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
 	{
         Creature = creature;
 		AmountBindable = new(amount);
+
 		CurrentStats = creature.Stats;
+        CurrentStats = player.Hero.CurrentStats.ApplyToCreatureStats(CurrentStats);
 
         creature.BindToInstance(this);
 

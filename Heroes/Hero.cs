@@ -3,15 +3,27 @@ using static Playfield;
 
 public partial class Hero : Unit, ICanAttack
 {
-    public int Level;
-
     public override string IconPath { get; set; } = "";
+    public int Level;
+    public HeroStats CurrentStats;
+
+    private HeroStats baseStats;
+    public HeroStats BaseStats { get => baseStats; set { baseStats = value; CalculateCurrentStats(); } }
 
     public Hero(Player player) : base(player)
     {
     }
 
     public override DrawableUnit CreateDrawableRepresentation() => SceneFactory.CreateDrawableUnit(this);
+
+    public void CalculateCurrentStats()
+    {
+        CurrentStats = BaseStats;
+
+        // Skills
+        // Artifacts
+        // Effects
+    }
 
     /// <summary>
     /// Hero always has initiative of 10
