@@ -60,7 +60,7 @@ public class InitiativeHandler
 
         MoveATBScale(remainingTurns[closestIndex], size, addATB, getInitiative);
 
-        Debug.Assert(getATB(closestIndex) == 1.0);
+        Debug.Assert(Math.Abs(getATB(closestIndex) - 1) < 0.0001);
 
         return closestIndex;
     }
