@@ -176,6 +176,7 @@ public class BattleHandler
 
     public void DefendAction()
     {
+        CurrentUnit.Value!.Defend();
         endTurn();
     }
 

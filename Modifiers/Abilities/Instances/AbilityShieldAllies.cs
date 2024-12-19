@@ -34,7 +34,7 @@ public class AbilityShieldAllies : AbilityApplicableAfterTurnBegin
         foreach (var creature in withoutEffect)
         {
             if (creature.IsNeighboring(owner))
-                creature.Effects.Add(new EffectShieldAllies());
+                creature.Effects.Add(new EffectShieldAllies(creature));
         }
     }
 

@@ -68,6 +68,11 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
     public int Tier => Creature.Tier;
     public double AverageDamage => (CurrentStats.MinDamage + CurrentStats.MaxDamage) / 2;
 
+    public override void Defend()
+    {
+        Effects.Add(new EffectDefense(this));
+    }
+
     public override int DecideTileChange(int tileType)
     {
         if (tileType == (int)TileType.Affected || tileType == (int)TileType.Aimable)

@@ -26,6 +26,12 @@ public abstract partial class Unit : GodotObject, IUnit
     public abstract double Initiative { get; }
 
     /// <summary>
+    /// Determines what happens when defend action is used.
+    /// By default - nothing happens.
+    /// </summary>
+    public virtual void Defend() { }
+
+    /// <summary>
     /// Tells UI how to change the tile depending on previous tile type. Returns -1 if tile won't be changed to a specific type
     /// </summary>
     /// <param name="tileType"></param>
