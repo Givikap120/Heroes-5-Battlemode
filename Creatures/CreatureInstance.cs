@@ -103,37 +103,6 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
         return !isBlocked;
     }
 
-    public AttackParameters CalculateParameters(IAttackable target, bool triggerEvents, bool allowRanged, bool isCounterattack)
-    {
-        var parameters = new AttackParameters
-        {
-            Amount = Amount,
-            IsCounterAttack = isCounterattack,
-            TriggerEvents = triggerEvents,
-            BaseDamage = GD.RandRange(CurrentStats.MinDamage, CurrentStats.MaxDamage),
-            WillCounterAttack = !isCounterattack && target.WillCounterattack(this),
-
-            Attack = CurrentStats.Attack,
-            Defense = target.Defense
-        };
-
-        if (Creature.IsShooter)
-        {
-            parameters.AttackType = GetAttackType(target);
-
-            if (!allowRanged && parameters.AttackType != AttackType.None)
-                parameters.AttackType = AttackType.MeleeWithPenalty;
-
-            parameters.IsRanged = parameters.AttackType.IsRanged();
-        }
-
-        // Effects before attack
-        foreach (var ability in ModifiersOfType<IApplicableBeforeAttack>())
-            parameters = ability.Apply(this, target, parameters);
-
-        return parameters;
-    }
-
     public AttackType GetAttackType(IAttackable attackable)
     {
         // Don't attack allies
@@ -152,6 +121,30 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
         AttackType result = distanceToTarget <= 6 ? AttackType.RangedStrong : AttackType.RangedWeak;
 
         return result;
+    }
+
+    public AttackParameters CalculateParameters(IAttackable target, bool triggerEvents, bool allowRanged, bool isCounterattack)
+    {
+        var parameters = new AttackParameters
+        {
+            Amount = Amount,
+            IsCounterAttack = isCounterattack,
+            TriggerEvents = triggerEvents,
+            BaseDamage = GD.RandRange(CurrentStats.MinDamage, CurrentStats.MaxDamage),
+            WillCounterAttack = !isCounterattack && target.WillCounterattack(this),
+
+            Attack = CurrentStats.Attack,
+            Defense = target.Defense,
+            AttackType = GetAttackType(target)
+        };
+
+        parameters.IsRanged = parameters.AttackType.IsRanged();
+
+        // Effects before attack
+        foreach (var ability in ModifiersOfType<IApplicableBeforeAttack>())
+            parameters = ability.Apply(this, target, parameters);
+
+        return parameters;
     }
 
     public double CalculateDamageFromParameters(AttackParameters parameters)
