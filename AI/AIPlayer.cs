@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 public class AIPlayer : Player
 {
-    public AIPlayer(BattleHandler battleHandler) : base(battleHandler)
+    public AIPlayer()
     {
-        battleHandler.NewTurnStarted += u =>
+        BattleHandler.Instance.NewTurnStarted += u =>
         {
             if (u?.Player == this)
                 makeMove(u);

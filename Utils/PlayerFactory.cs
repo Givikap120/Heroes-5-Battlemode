@@ -2,11 +2,11 @@
 
 public static class PlayerFactory
 {
-    public static Player CreatePlayer(BattleHandler battleHandler, bool isAI) => isAI ? new AIPlayer(battleHandler) : new Player(battleHandler);
+    public static Player CreatePlayer(bool isAI) => isAI ? new AIPlayer() : new Player();
     
-    public static Player Preset1(BattleHandler battleHandler, bool isAI = false)
+    public static Player Preset1(bool isAI = false)
     {
-        var player = CreatePlayer(battleHandler, isAI);
+        var player = CreatePlayer(isAI);
 
         player.Hero = new Hero(player)
         {
@@ -29,9 +29,9 @@ public static class PlayerFactory
         return player;
     }
 
-    public static Player Preset2(BattleHandler battleHandler, bool isAI = false)
+    public static Player Preset2(bool isAI = false)
     {
-        var player = CreatePlayer(battleHandler, isAI);
+        var player = CreatePlayer(isAI);
 
         player.Hero = new Hero(player)
         {

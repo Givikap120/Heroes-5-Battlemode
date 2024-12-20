@@ -14,13 +14,10 @@ public class Player
 
     public IEnumerable<CreatureInstance> AliveArmy => Army.Where(c => c != null && c.Amount > 0).Cast<CreatureInstance>();
 
-    protected readonly BattleHandler BattleHandler;
-
     public virtual bool UIDrawControls => true;
 
-    public Player(BattleHandler battleHandler)
+    public Player()
     {
-        BattleHandler = battleHandler;
     }
 
     /// <summary>
@@ -46,7 +43,7 @@ public class Player
 
         Debug.Assert(slot != -1 && Army[slot] == null);
 
-        var instance = new CreatureInstance(BattleHandler, this, creature, amount)
+        var instance = new CreatureInstance(BattleHandler.Instance, this, creature, amount)
         {
             Coords = coords
         };
@@ -62,6 +59,24 @@ public class Player
         initialArmy[slot] = instanceCopy;
 
         return instance;
+    }
+
+    public List<Vector2I> GetPossiblePrePlaningPositions()
+    {
+        List<Vector2I> result = [];
+
+        if (Id != 1 && Id != 2)
+            return result;
+
+        for (int i = 0; i < Playfield.SIZE_X; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                result.Add(new Vector2I(i, Id == 1 ? Playfield.SIZE_Y - j - 1 : j));
+            }
+        }
+
+        return result;
     }
 }
 

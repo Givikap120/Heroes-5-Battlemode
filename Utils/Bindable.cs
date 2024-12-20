@@ -23,7 +23,7 @@ public class Bindable<T>
 
     public void BindValueChanged(Action<ValueChangedEvent<T>> action, bool triggerImmediately = false)
     {
-        ValueChanged = action;
+        ValueChanged += action;
         if (triggerImmediately) action.Invoke(new ValueChangedEvent<T>(value, value));
     }
 

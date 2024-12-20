@@ -5,9 +5,7 @@ using System.Linq;
 
 public class BattleHandler
 {
-    public static BattleHandler Instance { get; private set; } = null!;
-
-    private readonly Main parent;
+    public static BattleHandler Instance { get; private set; } = new BattleHandler();
 
     public readonly Bindable<Unit?> CurrentUnit = new(null);
 
@@ -16,16 +14,14 @@ public class BattleHandler
     public event Action<Player> PlayerAdded = delegate { };
 
     public event Action GameStarted = delegate { };
-    public event Action GameEnded;
+    public event Action<string> GameEnded;
 
     public event Action<Unit?> NewTurnStarted = delegate { };
 
     public event Action<CreatureInstance> CreatureDied = delegate { };
 
-    public BattleHandler(Main parent)
+    private BattleHandler()
     {
-        this.parent = parent;
-
         InitiativeHandler = new(this);
         GameEnded = delegate 
         {
@@ -34,35 +30,36 @@ public class BattleHandler
         ;
 
         GD.Seed(0);
-
-        Instance = this;
     }
 
     public void StartGame()
     {
-        addPlayer(PlayerFactory.Preset1(this));
-        addPlayer(PlayerFactory.Preset2(this, true));
+        if (Player1 == null || Player2 == null)
+        {
+            GD.PrintErr("Can't start game. Not enough player");
+            return;
+        }
 
         GameStarted.Invoke();
         startNewTurn();
     }
 
-    private Player player1 = null!;
-    private Player player2 = null!;
+    public Player? Player1 { get; private set; } = null;
+    public Player? Player2 { get; private set; } = null;
 
-    private void addPlayer(Player player)
+    public void AddPlayer(Player player)
     {
-        if (player1 == null)
+        if (Player1 == null)
         {
             player.Id = 1;
             player.Color = Colors.Red;
-            player1 = player;
+            Player1 = player;
         }
-        else if (player2 == null)
+        else if (Player2 == null)
         {
             player.Id = 2;
             player.Color = Colors.Blue;
-            player2 = player;
+            Player2 = player;
         }
         else return;
 
@@ -70,14 +67,14 @@ public class BattleHandler
         PlayerAdded.Invoke(player);
     }
 
-    public bool IsTileOccupied(Vector2I tile) => player1.IsTileOccupiedByPlayer(tile) || player2.IsTileOccupiedByPlayer(tile);
+    public bool IsTileOccupied(Vector2I tile) => Player1!.IsTileOccupiedByPlayer(tile) || Player2!.IsTileOccupiedByPlayer(tile);
 
     public Player? GetEnemyPlayer(Player player)
     {
-        if (player == player1)
-            return player2;
-        else if (player == player2)
-            return player1;
+        if (player == Player1)
+            return Player2;
+        else if (player == Player2)
+            return Player1;
         return null;
     }
 
@@ -92,21 +89,21 @@ public class BattleHandler
     private void endTurn(bool isWait = false)
     {
         // Check if any player have won
-        int player1ArmyCount = player1.Army.Where(creature => creature != null && creature.Amount > 0).Count();
-        int player2ArmyCount = player2.Army.Where(creature => creature != null && creature.Amount > 0).Count();
+        int player1ArmyCount = Player1!.Army.Where(creature => creature != null && creature.Amount > 0).Count();
+        int player2ArmyCount = Player2!.Army.Where(creature => creature != null && creature.Amount > 0).Count();
 
         // Check win condition
         if (player1ArmyCount == 0 && player2ArmyCount == 0) // Draw
         {
-            callGameOverWindow("Draw");
+            GameEnded.Invoke("Draw");
         }
         else if (player2ArmyCount == 0) // Player 1 won
         {
-            callGameOverWindow("Player 1 Won");
+            GameEnded.Invoke("Player 1 Won");
         }
         else if (player1ArmyCount == 0) // Player 2 won
         {
-            callGameOverWindow("Player 2 Won");
+            GameEnded.Invoke("Player 2 Won");
         }
         else
         {
@@ -115,18 +112,6 @@ public class BattleHandler
         }
     }
 
-    private void callGameOverWindow(string text)
-    {
-        GD.Print($"Game Over. {text}");
-        GameEnded.Invoke();
-
-        var popup = parent.GetNode<PopupPanel>("GameOverPopup");
-
-        var label = popup.GetNode<Label>("GameOverPopupText");
-        label.Text = text;
-
-        popup.Show();
-    }
     #endregion
 
     #region actions
@@ -176,7 +161,7 @@ public class BattleHandler
 
     public void DefendAction()
     {
-        CurrentUnit.Value!.Defend();
+        CurrentUnit.Value?.Defend();
         endTurn();
     }
 

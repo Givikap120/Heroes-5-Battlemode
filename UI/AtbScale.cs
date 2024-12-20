@@ -13,7 +13,7 @@ public partial class AtbScale : Control
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-        Main parent = GetNode<Main>("/root/Main");
+        Battle parent = GetNode<Battle>("/root/Main");
 
         currentNode = GetNode<DrawableUnit>("CurrentUnitNode");
         futureNodes = GetNode<HBoxContainer>("ScrollContainer/FutureUnitsNode");

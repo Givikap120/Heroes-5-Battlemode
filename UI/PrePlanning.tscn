@@ -1,0 +1,114 @@
+[gd_scene load_steps=26 format=3 uid="uid://cuof14tcngnbq"]
+
+[ext_resource type="Script" path="res://UI/PrePlanning.cs" id="1_hbdhe"]
+[ext_resource type="PackedScene" uid="uid://cms542kto6fbw" path="res://UI/Base.tscn" id="1_p5fpv"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Inactive.dds" id="1_re7fy"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected.dds" id="2_b5qjg"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected_2.dds" id="3_80bcb"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-StartCombat/Normal.dds" id="3_m8wud"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-StartCombat/Pushed.dds" id="4_38lij"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Reset/Disabled.dds" id="4_gkslr"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Select.dds" id="4_ojg58"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/select_2.dds" id="5_t3rnm"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-StartCombat/Disabled.dds" id="5_x1vk5"]
+[ext_resource type="Script" path="res://UI/StartCombatButton.cs" id="6_6rsu1"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Aimable.dds" id="6_kjvi3"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/aimable_2.dds" id="7_7calh"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Intersection.(Texture).dds" id="8_otkid"]
+[ext_resource type="Script" path="res://UI/PrePlanningPlayfield.cs" id="10_ksjtr"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_v27ag"]
+resource_name = "Inactive"
+texture = ExtResource("1_re7fy")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tpmsh"]
+resource_name = "Affected"
+texture = ExtResource("2_b5qjg")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kv62x"]
+resource_name = "AffectedBig"
+texture = ExtResource("3_80bcb")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_q1y8v"]
+resource_name = "Select"
+texture = ExtResource("4_ojg58")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gani5"]
+resource_name = "SelectBig"
+texture = ExtResource("5_t3rnm")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qlyxr"]
+resource_name = "Aimable"
+texture = ExtResource("6_kjvi3")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sk53q"]
+resource_name = "AimableBig"
+texture = ExtResource("7_7calh")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5qu0m"]
+resource_name = "Intersection"
+texture = ExtResource("8_otkid")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_378ff"]
+tile_size = Vector2i(256, 256)
+sources/0 = SubResource("TileSetAtlasSource_v27ag")
+sources/1 = SubResource("TileSetAtlasSource_tpmsh")
+sources/2 = SubResource("TileSetAtlasSource_kv62x")
+sources/3 = SubResource("TileSetAtlasSource_q1y8v")
+sources/4 = SubResource("TileSetAtlasSource_gani5")
+sources/5 = SubResource("TileSetAtlasSource_qlyxr")
+sources/6 = SubResource("TileSetAtlasSource_sk53q")
+sources/7 = SubResource("TileSetAtlasSource_5qu0m")
+
+[node name="Base" instance=ExtResource("1_p5fpv")]
+script = ExtResource("1_hbdhe")
+
+[node name="WaitButton" parent="UICanvas/Jog" index="2"]
+disabled = true
+
+[node name="StartCombatButton" type="TextureButton" parent="UICanvas/Jog" index="5"]
+offset_left = 61.0
+offset_top = 89.0
+offset_right = 143.0
+offset_bottom = 171.0
+texture_normal = ExtResource("3_m8wud")
+texture_pressed = ExtResource("4_38lij")
+texture_disabled = ExtResource("5_x1vk5")
+script = ExtResource("6_6rsu1")
+
+[node name="ResetButton" type="TextureButton" parent="UICanvas/Jog" index="6"]
+offset_left = 7.0
+offset_top = 63.0
+offset_right = 64.0
+offset_bottom = 120.0
+texture_normal = ExtResource("4_gkslr")
+
+[node name="Playfield" type="TileMapLayer" parent="UICanvas/PlayfieldControl" index="0"]
+scale = Vector2(0.25, 0.25)
+tile_set = SubResource("TileSet_378ff")
+script = ExtResource("10_ksjtr")

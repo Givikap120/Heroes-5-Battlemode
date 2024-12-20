@@ -1,0 +1,85 @@
+[gd_scene load_steps=10 format=3 uid="uid://cms542kto6fbw"]
+
+[ext_resource type="Texture2D" uid="uid://bh81oxeo7ny3y" path="res://Assets/background.jpg" id="1_itktm"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/Jogdial.dds" id="2_f1hjs"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Flee/Disabled.dds" id="3_3v5pg"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Wait/OnJog-Wait-Normal.(Texture).dds" id="4_r7w8t"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Wait/OnJog-Wait-Pushed.(Texture).dds" id="5_ct8op"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Wait/OnJog-Wait-Disabled.(Texture).dds" id="6_1b8hl"]
+[ext_resource type="Script" path="res://UI/WaitButton.cs" id="7_p6gab"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-AutoCombat/Disabled.dds" id="8_esadj"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Menu/Disabled.dds" id="9_gevcd"]
+
+[node name="Base" type="Node2D"]
+
+[node name="Camera" type="Camera2D" parent="."]
+
+[node name="UICanvas" type="CanvasLayer" parent="."]
+
+[node name="Background" type="TextureRect" parent="UICanvas"]
+offset_right = 1600.0
+offset_bottom = 900.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("1_itktm")
+metadata/_edit_use_anchors_ = true
+
+[node name="Jog" type="Control" parent="UICanvas"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 803.0
+offset_top = 355.0
+offset_right = 1059.0
+offset_bottom = 611.0
+scale = Vector2(1.5, 1.5)
+metadata/_edit_use_anchors_ = true
+
+[node name="JogSprite" type="Sprite2D" parent="UICanvas/Jog"]
+texture = ExtResource("2_f1hjs")
+centered = false
+
+[node name="FleeButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 140.0
+offset_right = 63.0
+offset_bottom = 197.0
+texture_normal = ExtResource("3_3v5pg")
+
+[node name="WaitButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 74.0
+offset_top = 26.6667
+offset_right = 131.0
+offset_bottom = 83.6667
+texture_normal = ExtResource("4_r7w8t")
+texture_pressed = ExtResource("5_ct8op")
+texture_disabled = ExtResource("6_1b8hl")
+script = ExtResource("7_p6gab")
+
+[node name="AutoCombatButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 141.0
+offset_top = 64.0
+offset_right = 198.0
+offset_bottom = 121.0
+texture_normal = ExtResource("8_esadj")
+
+[node name="MenuButton" type="TextureButton" parent="UICanvas/Jog"]
+layout_mode = 0
+offset_left = 141.0
+offset_top = 141.0
+offset_right = 198.0
+offset_bottom = 198.0
+texture_normal = ExtResource("9_gevcd")
+
+[node name="PlayfieldControl" type="Control" parent="UICanvas"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true

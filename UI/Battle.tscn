@@ -1,0 +1,186 @@
+[gd_scene load_steps=30 format=3 uid="uid://byq2m7827ff4n"]
+
+[ext_resource type="PackedScene" uid="uid://cms542kto6fbw" path="res://UI/Base.tscn" id="1_6fucy"]
+[ext_resource type="Script" path="res://UI/AtbScale.cs" id="2_fibyc"]
+[ext_resource type="Script" path="res://UI/Battle.cs" id="2_m8a7t"]
+[ext_resource type="PackedScene" uid="uid://8n6ofgb5vvw4" path="res://UI/DrawableUnit.tscn" id="3_u841l"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Defend/Normal.dds" id="4_geuut"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Defend/Pushed.dds" id="5_jer40"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Defend/Disabled.dds" id="6_ecn70"]
+[ext_resource type="Script" path="res://UI/DefendButton.cs" id="7_3xv5s"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Special/Disabled.dds" id="8_rti7n"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Spellbook/Disabled.dds" id="9_d6bjk"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Inactive.dds" id="10_k8aiq"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected.dds" id="11_hvv68"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected_2.dds" id="12_3enfc"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Select.dds" id="13_hvicp"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/select_2.dds" id="14_wgkgj"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Aimable.dds" id="15_bt0vg"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/aimable_2.dds" id="16_prfw5"]
+[ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Intersection.(Texture).dds" id="17_8jvuc"]
+[ext_resource type="Script" path="res://UI/BattlePlayfield.cs" id="18_h5u0r"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8321f"]
+resource_name = "Inactive"
+texture = ExtResource("10_k8aiq")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4ikip"]
+resource_name = "Affected"
+texture = ExtResource("11_hvv68")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_i3yqn"]
+resource_name = "AffectedBig"
+texture = ExtResource("12_3enfc")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5wpxf"]
+resource_name = "Select"
+texture = ExtResource("13_hvicp")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vdcbv"]
+resource_name = "SelectBig"
+texture = ExtResource("14_wgkgj")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_uys05"]
+resource_name = "Aimable"
+texture = ExtResource("15_bt0vg")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_v28ln"]
+resource_name = "AimableBig"
+texture = ExtResource("16_prfw5")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_urvae"]
+resource_name = "Intersection"
+texture = ExtResource("17_8jvuc")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_or5xj"]
+tile_size = Vector2i(256, 256)
+sources/0 = SubResource("TileSetAtlasSource_8321f")
+sources/1 = SubResource("TileSetAtlasSource_4ikip")
+sources/2 = SubResource("TileSetAtlasSource_i3yqn")
+sources/3 = SubResource("TileSetAtlasSource_5wpxf")
+sources/4 = SubResource("TileSetAtlasSource_vdcbv")
+sources/5 = SubResource("TileSetAtlasSource_uys05")
+sources/6 = SubResource("TileSetAtlasSource_v28ln")
+sources/7 = SubResource("TileSetAtlasSource_urvae")
+
+[sub_resource type="LabelSettings" id="LabelSettings_vvjom"]
+font_size = 42
+
+[node name="Base" instance=ExtResource("1_6fucy")]
+script = ExtResource("2_m8a7t")
+
+[node name="ATBScale" type="Control" parent="UICanvas" index="1"]
+z_index = 3
+layout_mode = 3
+anchors_preset = 0
+offset_left = 802.385
+offset_top = 740.0
+offset_right = 1570.39
+offset_bottom = 868.0
+script = ExtResource("2_fibyc")
+metadata/_edit_use_anchors_ = true
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UICanvas/ATBScale" index="0"]
+clip_contents = false
+layout_mode = 0
+offset_left = 131.5
+offset_right = 931.5
+offset_bottom = 128.0
+scale = Vector2(0.8, 0.8)
+vertical_scroll_mode = 0
+
+[node name="FutureUnitsNode" type="HBoxContainer" parent="UICanvas/ATBScale/ScrollContainer" index="0"]
+layout_mode = 2
+
+[node name="Control" parent="UICanvas/ATBScale/ScrollContainer/FutureUnitsNode" index="0" instance=ExtResource("3_u841l")]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+
+[node name="Control2" parent="UICanvas/ATBScale/ScrollContainer/FutureUnitsNode" index="1" instance=ExtResource("3_u841l")]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+
+[node name="CurrentUnitNode" parent="UICanvas/ATBScale" index="1" instance=ExtResource("3_u841l")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 128.0
+offset_bottom = 128.0
+grow_horizontal = 1
+grow_vertical = 1
+metadata/BackgroundSize = 1.0
+
+[node name="DefendButton" type="TextureButton" parent="UICanvas/Jog" index="5"]
+layout_mode = 0
+offset_left = 61.0
+offset_top = 89.0
+offset_right = 143.0
+offset_bottom = 171.0
+texture_normal = ExtResource("4_geuut")
+texture_pressed = ExtResource("5_jer40")
+texture_disabled = ExtResource("6_ecn70")
+script = ExtResource("7_3xv5s")
+
+[node name="SpecialButton" type="TextureButton" parent="UICanvas/Jog" index="6"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 63.0
+offset_right = 64.0
+offset_bottom = 120.0
+texture_normal = ExtResource("8_rti7n")
+
+[node name="SpellbookButton" type="TextureButton" parent="UICanvas/Jog" index="7"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 63.0
+offset_right = 64.0
+offset_bottom = 120.0
+texture_normal = ExtResource("9_d6bjk")
+
+[node name="Playfield" type="TileMapLayer" parent="UICanvas/PlayfieldControl" index="0"]
+scale = Vector2(0.25, 0.25)
+tile_set = SubResource("TileSet_or5xj")
+script = ExtResource("18_h5u0r")
+
+[node name="GameOverPopup" type="PopupPanel" parent="." index="2"]
+auto_translate_mode = 1
+title = "Game Over"
+initial_position = 2
+size = Vector2i(800, 200)
+borderless = false
+metadata/Text = ""
+
+[node name="GameOverPopupText" type="Label" parent="GameOverPopup" index="1"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 796.0
+offset_bottom = 196.0
+text = "TEST TEXT TEST TEXT TEST TEXT"
+label_settings = SubResource("LabelSettings_vvjom")
+horizontal_alignment = 1
+vertical_alignment = 1

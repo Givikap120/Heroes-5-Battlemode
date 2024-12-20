@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Texture ObjectRecordID="4588">
-	<SrcName href="/UI/Tactics/startcombat_inactive.tga"/>
-	<DestName href="Disabled.dds"/>
+<Texture ObjectRecordID="4589">
+	<SrcName href="/UI/Tactics/autoplacing.TGA"/>
+	<DestName href="Normal.dds"/>
 	<Type>TEXTURE_2D</Type>
 	<ConversionType>CONVERT_TRANSPARENT</ConversionType>
 	<AddrType>CLAMP</AddrType>
 	<Format>TF_8888</Format>
-	<Width>82</Width>
-	<Height>82</Height>
+	<Width>57</Width>
+	<Height>57</Height>
 	<MappingSize>0</MappingSize>
 	<NMips>1</NMips>
 	<Gain>0</Gain>
-	<AverageColor>2104605</AverageColor>
+	<AverageColor>3155742</AverageColor>
 	<InstantLoad>false</InstantLoad>
 	<IsDXT>false</IsDXT>
 	<FlipY>false</FlipY>
