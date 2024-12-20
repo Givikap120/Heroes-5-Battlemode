@@ -7,7 +7,7 @@
         if (result.Killed > 0)
         {
             WasUsed = true;
-            owner.Attack(target, parameters.IsRanged, false, parameters.TriggerEvents);
+            owner.Attack(target, triggerEvents: parameters.TriggerEvents, isCounterattack: false);
             WasUsed = false;
         }
     }

@@ -46,7 +46,7 @@ public partial class Hero : Unit, ICanAttack
 
     public AttackType GetAttackType(IAttackable attackable) => AttackType.Hero;
 
-    public AttackParameters CalculateParameters(IAttackable target, bool triggerEvents, bool allowRanged = true, bool isCounterattack = false)
+    public AttackParameters CalculateParameters(IAttackable target, bool triggerEvents, bool isCounterattack = false)
     {
         Debug.Assert(target.Tier >= 1 && target.Tier <= 8);
 
@@ -74,7 +74,7 @@ public partial class Hero : Unit, ICanAttack
         target.TakeDamage(damage, parameters.AttackType, parameters.TriggerEvents);
     }
 
-    public bool Attack(IAttackable target, bool triggerEvents, bool allowRanged = true, bool isCounterattack = false)
+    public bool Attack(IAttackable target, bool triggerEvents, bool isCounterattack = false)
     {
         AttackParameters parameters = CalculateParameters(target, triggerEvents: triggerEvents);
         AttackFromParameters(target, parameters);
