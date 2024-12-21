@@ -129,7 +129,7 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
         return result;
     }
 
-    public AttackParameters CalculateParameters(IAttackable target, bool triggerEvents, bool isCounterattack)
+    public AttackParameters CalculateParameters(IAttackable target, bool triggerEvents, bool isCounterattack, MoveResult? moveBeforeAttack = null)
     {
         var parameters = new AttackParameters
         {
@@ -141,7 +141,8 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
 
             Attack = CurrentStats.Attack,
             Defense = target.Defense,
-            AttackType = GetAttackType(target)
+            AttackType = GetAttackType(target),
+            MoveBeforeAttack = moveBeforeAttack
         };
 
         parameters.IsRanged = parameters.AttackType.IsRanged();
@@ -183,11 +184,11 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
             ability.Apply(this, target, parameters, attackResult);
     }
 
-    public bool Attack(IAttackable target, bool triggerEvents, bool isCounterattack)
+    public bool Attack(IAttackable target, bool triggerEvents, bool isCounterattack, MoveResult? moveBeforeAttack = null)
     {
         if (Amount <= 0) return false;
 
-        AttackParameters parameters = CalculateParameters(target, triggerEvents, isCounterattack);
+        AttackParameters parameters = CalculateParameters(target, triggerEvents, isCounterattack, moveBeforeAttack);
 
         if (parameters.AttackType == AttackType.None)
             return false;

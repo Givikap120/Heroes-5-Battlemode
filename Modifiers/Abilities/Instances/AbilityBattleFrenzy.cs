@@ -11,4 +11,6 @@ public class AbilityBattleFrenzy : Ability, IApplicableBeforeAttack
 
         return parameters;
     }
+
+    public override double DefensePotentialMultiplier => 1.2;
 }

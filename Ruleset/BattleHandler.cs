@@ -107,8 +107,8 @@ public class BattleHandler : GameHandler
 
         if (CurrentUnit.Value is ICanMove movable)
         {
-            bool result = movable.MoveTo(cell);
-            if (result) endTurn();
+            var result = movable.MoveTo(cell);
+            if (result != null) endTurn();
         }
 
         return;

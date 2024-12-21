@@ -38,6 +38,8 @@ public class Player
         return initialArmy[index]!;
     }
 
+    public CreatureInstance? GetCreatureAt(Vector2I coords) => AliveArmy.Where(c => c.IsOnCoords(coords)).FirstOrDefault();
+
     public CreatureInstance AddCreatureToPlayer(Creature creature, int amount, Vector2I coords, int slot = -1)
     {
         if (slot == -1)

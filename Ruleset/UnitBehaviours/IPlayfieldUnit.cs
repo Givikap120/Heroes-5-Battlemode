@@ -60,4 +60,6 @@ public static class PlayfieldUnitExtensions
         var thisClosestPoint = unit.GetTheClosestPointTo(point);
         return (thisClosestPoint - point).Length();
     }
+
+    public static Vector2 GetCenter(this IPlayfieldUnit unit) => unit.IsLargeUnit ? unit.Coords + new Vector2(0.5f, 0.5f) : unit.Coords;
 }

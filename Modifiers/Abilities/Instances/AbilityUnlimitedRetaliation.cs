@@ -1,4 +1,4 @@
 ﻿public class AbilityUnlimitedRetaliation : Ability
 {
-    public override double OffensePotentialMultiplier => 1.3;
+    public override double DefensePotentialMultiplier => 1.3;
 }

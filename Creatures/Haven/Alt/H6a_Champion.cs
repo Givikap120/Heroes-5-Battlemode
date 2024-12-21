@@ -18,7 +18,7 @@
 
         Stats.Power = 2520;
 
-        //Abilities.Add(new AbilityChampionCharge());
+        Abilities.Add(new AbilityChampionCharge());
     }
 }
 

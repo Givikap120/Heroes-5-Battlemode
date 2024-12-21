@@ -14,6 +14,8 @@
 
     public AttackType AttackType = AttackType.Melee;
 
+    public MoveResult? MoveBeforeAttack;
+
     public AttackParameters()
     {
     }

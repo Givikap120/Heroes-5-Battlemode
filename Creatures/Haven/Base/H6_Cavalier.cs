@@ -23,8 +23,8 @@
 
         Abilities = 
         [
-            new AbilityLargeCreature()
-            // Jousing
+            new AbilityLargeCreature(),
+            new AbilityJousting()
         ];
     }
 }

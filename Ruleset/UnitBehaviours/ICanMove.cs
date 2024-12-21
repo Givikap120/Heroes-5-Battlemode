@@ -68,14 +68,20 @@ public interface ICanMove : IPlayfieldUnit
 
     public bool CanMoveTo(Vector2I target) => CanMoveTo(ref target);
 
-    public bool MoveTo(Vector2I target, bool triggerEvents = true)
+    public MoveResult? MoveTo(Vector2I target, bool triggerEvents = true)
     {
-        if (!CanMoveTo(ref target)) return false;
+        if (!CanMoveTo(ref target)) return null;
+
+        var result = new MoveResult
+        {
+            Before = Coords,
+            After = target
+        };
 
         if (triggerEvents) Coords = target;
         else CoordsBindable.SetSilent(target);
 
-        return true;
+        return result;
     }
 
     public List<Vector2I> GetPossibleMoveOptions()
