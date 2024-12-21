@@ -8,14 +8,14 @@ public interface IPlayfieldUnit : IUnit
 
     public bool CanBePlacedOnTile(Vector2I tile)
     {
-        if (GameHandler.AnyHandler.IsTileOccupied(tile))
+        if (GameHandler.AnyHandler.IsTileOccupied(tile, this))
             return false;
 
         if (IsLargeUnit)
         {
             foreach (var childTile in CoordExtensions.GetPartialSquare(tile))
             {
-                if (GameHandler.AnyHandler.IsTileOccupied(childTile))
+                if (GameHandler.AnyHandler.IsTileOccupied(childTile, this))
                     return false;
             }
         }

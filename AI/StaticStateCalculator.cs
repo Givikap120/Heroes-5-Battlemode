@@ -2,12 +2,31 @@
 
 public static class StaticStateCalculator
 {
+    public static double CalculateStateValue(IUnit unit, bool useDynamic = true)
+    {
+        double allyStateValue = CalculatePlayerStateValue(unit.Player);
+        double enemyStateValue = CalculatePlayerStateValue(BattleHandler.Instance.GetEnemyPlayer(unit.Player)!);
+        double stateValue = allyStateValue - enemyStateValue;
+        return stateValue;
+    }
+
+    public static double CalculatePlayerStateValue(Player player)
+    {
+        double value = 0;
+
+        foreach (var stack in player.AliveArmy)
+        {
+            value += CalculateStackValue(stack);
+        }
+
+        return Math.Log2(value);
+    }
     public static double CalculateStackValue(CreatureInstance stack)
     {
         double damagePotential = CalculateDamagePotential(stack);
         double effectiveHP = CalculateEffectiveHP(stack);
 
-        double stackValue = Math.Pow(damagePotential * damagePotential * effectiveHP, 0.8);
+        double stackValue = damagePotential * (effectiveHP + damagePotential);
         return stackValue;
     }
 

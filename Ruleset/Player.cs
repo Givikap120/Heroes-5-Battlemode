@@ -6,11 +6,13 @@ using System.Linq;
 
 public class Player
 {
+    public const int MAX_ARMY_SIZE = 8;
+
     public int Id = 0;
     public Color Color = Colors.Wheat;
     public Hero Hero = null!;
-    public readonly CreatureInstance?[] Army = new CreatureInstance?[8];
-    private readonly CreatureInstance?[] initialArmy = new CreatureInstance?[8];
+    public readonly CreatureInstance?[] Army = new CreatureInstance?[MAX_ARMY_SIZE];
+    private readonly CreatureInstance?[] initialArmy = new CreatureInstance?[MAX_ARMY_SIZE];
 
     public IEnumerable<CreatureInstance> AliveArmy => Army.Where(c => c != null && c.Amount > 0).Cast<CreatureInstance>();
 
@@ -88,6 +90,22 @@ public static class PlayerExtensions
 
         foreach (var unit in player.AliveArmy)
         {
+            if (unit.IsOnCoords(tile))
+                return true;
+        }
+
+        return false;
+    }
+
+    public static bool IsTileOccupiedByPlayer(this Player player, Vector2I tile, IPlayfieldUnit except)
+    {
+        if (!Playfield.IsInPlayfield(tile, false)) return true;
+
+        foreach (var unit in player.AliveArmy)
+        {
+            if (unit == except)
+                continue;
+
             if (unit.IsOnCoords(tile))
                 return true;
         }

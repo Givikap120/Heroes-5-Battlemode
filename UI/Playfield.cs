@@ -109,7 +109,7 @@ public abstract partial class Playfield : TileMapLayer
 
     protected virtual void HandleHoverOnUnit(Vector2I tile, Vector2 mousePos, IPlayfieldUnit? previousUnit)
     {
-        if (CurrentlySelectedUnit == null)
+        if (CurrentlySelectedUnit == null || CurrentlySelectedUnit == previousUnit)
             return;
 
         // If there's tile selected - we need to deselect it first

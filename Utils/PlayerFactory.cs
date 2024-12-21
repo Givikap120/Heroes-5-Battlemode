@@ -26,8 +26,8 @@ public static class PlayerFactory
         player.AddCreatureToPlayer(new H3_Footman(), 666, new Vector2I(0, 10));
         player.AddCreatureToPlayer(new H1_Peasant(), 1337, new Vector2I(1, 10));
 
-        player.AddCreatureToPlayer(new H4a_BattleGriffin(), 25, new Vector2I(6, 10));
-        player.AddCreatureToPlayer(new H4g_RoyalGriffin(), 25, new Vector2I(8, 10));
+        player.AddCreatureToPlayer(new H4a_BattleGriffin(), 50, new Vector2I(6, 10));
+        player.AddCreatureToPlayer(new H4g_RoyalGriffin(), 50, new Vector2I(8, 10));
 
         return player;
     }
@@ -51,12 +51,10 @@ public static class PlayerFactory
 
         player.AddCreatureToPlayer(new H2a_Crossbowman(), 120, new Vector2I(0, 0));
         player.AddCreatureToPlayer(new H2g_Marksman(), 228, new Vector2I(3, 0));
-        player.AddCreatureToPlayer(new H3g_Swordsman(), 100, new Vector2I(1, 1));
         player.AddCreatureToPlayer(new H3a_Vindicator(), 100, new Vector2I(2, 1));
-        //player.AddCreatureToPlayer(new H5g_Cleric(), 30, new Vector2I(1, 0));
-        //player.AddCreatureToPlayer(new H5a_Zealot(), 30, new Vector2I(2, 0));
-
-        player.AddCreatureToPlayer(new H4_Griffin(), 50, new Vector2I(5, 0));
+        player.AddCreatureToPlayer(new H5g_Cleric(), 30, new Vector2I(1, 0));
+        player.AddCreatureToPlayer(new H5a_Zealot(), 30, new Vector2I(2, 0));
+        player.AddCreatureToPlayer(new H4_Griffin(), 100, new Vector2I(4, 0));
 
         return player;
     }
