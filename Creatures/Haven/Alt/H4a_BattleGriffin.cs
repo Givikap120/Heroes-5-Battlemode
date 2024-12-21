@@ -18,7 +18,7 @@
 
         Stats.Power = 697;
 
-        //Abilities.Add(new AbilityBattleFrenze());
+        Abilities.Add(new AbilityBattleFrenzy());
         //Abilities.Add(new AbilityRushDive());
     }
 }

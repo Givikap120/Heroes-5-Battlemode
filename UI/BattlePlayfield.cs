@@ -41,7 +41,7 @@ public partial class BattlePlayfield : Playfield
             DeselectCurrentTile();
 
         bool isLarge = CurrentUnit.Value.IsLargeUnit;
-        var shifted = ICanMove.ShiftMoveTileIfNeeded(tile, isLarge);
+        var shifted = ICanMove.ShiftMoveTileIfOccupied(tile, isLarge);
 
         if (!IsInPlayfield(shifted.Full, isLarge))
             return;
@@ -64,13 +64,25 @@ public partial class BattlePlayfield : Playfield
 
         if (GetCellSourceId(tile) == (int)TileType.Inactive)
         {
-            Vector2 creatureCenter = CurrentlySelectedUnit.IsLargeUnit
+            bool isLarge = CurrentlySelectedUnit.IsLargeUnit;
+            Vector2 creatureCenter = isLarge
                 ? (MapToLocal(CurrentlySelectedUnit.Coords) + MapToLocal(CurrentlySelectedUnit.Coords + Vector2I.One)) / 2
                 : MapToLocal(CurrentlySelectedUnit.Coords);
 
             // Find the relative position of the closest cell except this
             Vector2I hoverDelta = (Vector2I)(mousePos - creatureCenter).Normalized().Round();
-            HandleHoverOnSpace(tile + hoverDelta);
+            tile += hoverDelta;
+
+            if (isLarge)
+            {
+                if (tile.X < CurrentlySelectedUnit.Coords.X)
+                    tile.X--;
+
+                if (tile.Y < CurrentlySelectedUnit.Coords.Y)
+                    tile.Y--;
+            }
+
+            HandleHoverOnSpace(tile);
             return;
         }
 

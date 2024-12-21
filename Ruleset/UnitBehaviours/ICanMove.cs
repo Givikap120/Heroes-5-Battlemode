@@ -1,12 +1,13 @@
 ﻿using Godot;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 public interface ICanMove : IPlayfieldUnit
 {
     public double Speed { get; }
 
-    public static (Vector2I Full, Vector2I Closest) ShiftMoveTileIfNeeded(Vector2I tile, bool isLarge)
+    public static (Vector2I Full, Vector2I Closest) ShiftMoveTileIfOccupied(Vector2I tile, bool isLarge)
     {
         if (!isLarge)
             return (tile, tile);
@@ -38,12 +39,25 @@ public interface ICanMove : IPlayfieldUnit
         return (shifted, tile);
     }
 
+    //public Vector2I ShiftMoveTileIfTooFar(Vector2I tile, bool isLarge)
+    //{
+    //    if (!isLarge)
+    //        return tile;
+
+    //    double distance = this.DistanceTo(tile);
+
+    //    if (distance > Speed)
+    //    {
+            
+    //    }
+    //}
+
     public bool CanMoveTo(ref Vector2I target)
     {
         if (BattleHandler.Instance.IsTileOccupied(target))
             return false;
 
-        target = ShiftMoveTileIfNeeded(target, IsLargeUnit).Full;
+        target = ShiftMoveTileIfOccupied(target, IsLargeUnit).Full;
 
         if (!CanBePlacedOnTile(target))
             return false;

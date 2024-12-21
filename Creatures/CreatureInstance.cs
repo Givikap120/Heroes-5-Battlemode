@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using static Playfield;
 
 public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasRandomDamage
 {
@@ -83,6 +82,11 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
     public override void Defend()
     {
         Effects.Add(new EffectDefense(this));
+    }
+
+    public bool CanCounterattack()
+    {
+        return AttackedOnThisTurn == 0 || Creature.HasAbility<AbilityUnlimitedRetaliation>();
     }
 
     public bool CanAttackRanged()

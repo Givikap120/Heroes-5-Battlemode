@@ -27,7 +27,7 @@ public static class PlayerFactory
         player.AddCreatureToPlayer(new H1_Peasant(), 1337, new Vector2I(1, 10));
 
         player.AddCreatureToPlayer(new H6a_Champion(), 20, new Vector2I(6, 10));
-        player.AddCreatureToPlayer(new H4g_RoyalGriffin(), 50, new Vector2I(8, 10));
+        player.AddCreatureToPlayer(new H4a_BattleGriffin(), 50, new Vector2I(8, 10));
 
         player.AddCreatureToPlayer(new H7g_Archangel(), 10, new Vector2I(4, 10));
 

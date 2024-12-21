@@ -92,6 +92,14 @@ public static class CoordExtensions
 
         return neighbors;
     }
+
+    public static Vector2I GetSquareClosestPointTo(Vector2I topLeftCorner, Vector2 point)
+    {
+        if (point.X > topLeftCorner.X) topLeftCorner.X++;
+        if (point.Y > topLeftCorner.Y) topLeftCorner.Y++;
+        return topLeftCorner;
+    }
+
     public static Vector2I[] GetSquare(Vector2I offset) => [
         offset,
         offset + new Vector2I(1, 0),

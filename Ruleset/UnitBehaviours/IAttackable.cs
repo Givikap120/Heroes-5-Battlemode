@@ -19,7 +19,7 @@
 
     public int AttackedOnThisTurn { get; set; }
 
-    public bool CanCounterattack() => AttackedOnThisTurn == 0;
+    public bool CanCounterattack();
 
     public bool WillCounterattack(ICanAttack attacker)
     {
