@@ -92,4 +92,16 @@ public static class CoordExtensions
 
         return neighbors;
     }
+    public static Vector2I[] GetSquare(Vector2I offset) => [
+        offset,
+        offset + new Vector2I(1, 0),
+        offset + new Vector2I(0, 1),
+        offset + new Vector2I(1, 1)
+    ];
+
+    public static Vector2I[] GetPartialSquare(Vector2I offset) => [
+        offset + new Vector2I(1, 0),
+        offset + new Vector2I(0, 1),
+        offset + new Vector2I(1, 1)
+    ];
 }

@@ -76,9 +76,11 @@ public partial class PrePlanningPlayfield : Playfield
         if (currentlyDraggedCreature == null)
             return;
 
-        if (CurrentlySelectedTile != null && CurrentlySelectedUnit == null)
+        var creature = (IPlayfieldUnit)currentlyDraggedCreature.Parent;
+
+        if (CurrentlySelectedTile != null && CurrentlySelectedUnit == null && creature.CanBePlacedOnTile(CurrentlySelectedTile.Value.Full))
         {
-            currentlyDraggedCreature.ParentCreature.Coords = (Vector2I)CurrentlySelectedTile;
+            creature.Coords = CurrentlySelectedTile.Value.Full;
         }
 
         UpdateCreaturePosition(currentlyDraggedCreature);
@@ -86,24 +88,29 @@ public partial class PrePlanningPlayfield : Playfield
         currentlyDraggedCreature = null;
     }
 
-    protected override void HighlightTile(Vector2I tile)
+    protected override void HighlightTile((Vector2I Full, Vector2I Closest) tile)
     {
-        CurrentlySelectedTileType = GetCellSourceId(tile);
+        int currentTileType = GetCellSourceId(tile.Full);
 
         // If tile doesn't exist - stop
-        if (CurrentlySelectedTileType == -1)
+        if (currentTileType == -1)
         {
             CurrentlySelectedTile = null;
             return;
         }
 
         // If tile is gonna be changed - do this
-        if (CurrentlySelectedTileType == (int)TileType.Affected)
+        if (currentTileType == (int)TileType.Affected)
         {
             CurrentlySelectedTile = tile;
-            SetCell(tile, (int)TileType.Select, Vector2I.Zero);
+
+            IPlayfieldUnit? currentCreature = (IPlayfieldUnit?)currentlyDraggedCreature ?? CurrentlySelectedUnit;
+            bool isLarge = currentCreature?.IsLargeUnit ?? false;
+
+            SetCellCustom(tile.Full, isLarge ? (int)TileType.SelectBig : (int)TileType.Select);
         }
     }
+
 
     private void resetChildren(Player player)
     {
@@ -118,13 +125,7 @@ public partial class PrePlanningPlayfield : Playfield
             if (item == null)
                 continue;
 
-            var newDrawableCreature = (DrawableCreatureInstance)item.CreateDrawableRepresentation();
-            newDrawableCreature.Scale = new Vector2(2, 2); // Asset of the tile have 2 times higher resolution than icons
-            newDrawableCreature.Centered = true;
-            newDrawableCreature.Position = MapToLocal(item.Coords);
-
-            Creatures.Add(newDrawableCreature);
-            AddChild(newDrawableCreature);
+            AddDrawableCreature(item);
         }
     }
 
@@ -132,7 +133,7 @@ public partial class PrePlanningPlayfield : Playfield
     {
         foreach (var tile in player.GetPossiblePrePlaningPositions())
         {
-            SetCell(tile, (int)TileType.Affected, Vector2I.Zero);
+            SetBaseCellCustom(tile, (int)TileType.Affected);
         }
     }
 }

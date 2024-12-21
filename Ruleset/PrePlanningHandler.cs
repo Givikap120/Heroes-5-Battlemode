@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-public class PrePlanningHandler
+public class PrePlanningHandler : GameHandler
 {
     public static PrePlanningHandler Instance { get; private set; } = new PrePlanningHandler();
 
@@ -8,8 +8,8 @@ public class PrePlanningHandler
 
     public void StartPrePlanning()
     {
-        addPlayer(PlayerFactory.Preset1());
-        addPlayer(PlayerFactory.Preset2(true));
+        AddPlayer(PlayerFactory.Preset1());
+        AddPlayer(PlayerFactory.Preset2(true));
         NextStep();
     }
 
@@ -18,14 +18,14 @@ public class PrePlanningHandler
         switch (currentPlayerIndex)
         {
             case 0:
-                CurrentPlayer.Value = player1;
+                CurrentPlayer.Value = Player1;
                 break;
             case 1:
-                BattleHandler.Instance.AddPlayer(player1);
-                CurrentPlayer.Value = player2;
+                BattleHandler.Instance.AddPlayer(Player1!);
+                CurrentPlayer.Value = Player2;
                 break;
             case 2:
-                BattleHandler.Instance.AddPlayer(player2);
+                BattleHandler.Instance.AddPlayer(Player2!);
                 break;
         }
 
@@ -34,23 +34,4 @@ public class PrePlanningHandler
     }
 
     private int currentPlayerIndex = 0;
-    private Player player1 = null!;
-    private Player player2 = null!;
-
-    private void addPlayer(Player player)
-    {
-        if (player1 == null)
-        {
-            player.Id = 1;
-            player.Color = Colors.Red;
-            player1 = player;
-        }
-        else if (player2 == null)
-        {
-            player.Id = 2;
-            player.Color = Colors.Blue;
-            player2 = player;
-        }
-        else return;
-    }
 }

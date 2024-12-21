@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using static Playfield;
 
 public abstract partial class Playfield : TileMapLayer
 {
@@ -20,10 +20,16 @@ public abstract partial class Playfield : TileMapLayer
         Intersection
     }
 
-    protected Vector2I? CurrentlySelectedTile;
-    protected int CurrentlySelectedTileType = -1;
+    /// <summary>
+    /// Full is the actual selected tile to work with.
+    /// Closest is the file that was hovered on before real selected tile was calculated.
+    /// </summary>
+    protected (Vector2I Full, Vector2I Closest)? CurrentlySelectedTile;
+
     protected IPlayfieldUnit? CurrentlySelectedUnit;
     protected readonly List<DrawableCreatureInstance> Creatures = [];
+
+    protected int[,] BaseSourceIds = new int[SIZE_X, SIZE_Y];
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -58,7 +64,7 @@ public abstract partial class Playfield : TileMapLayer
         {
             for (int j = 0; j < SIZE_Y; j++)
             {
-                SetCell(new Vector2I(i, j), (int)TileType.Inactive, Vector2I.Zero);
+                SetBaseCellCustom(new Vector2I(i, j), (int)TileType.Inactive);
             }
         }
         CurrentlySelectedTile = null;
@@ -71,47 +77,156 @@ public abstract partial class Playfield : TileMapLayer
         var tile = LocalToMap(mousePos);
 
         // Decide the branch
+        var previousUnit = CurrentlySelectedUnit;
         CurrentlySelectedUnit = GetPlayfieldEntityAt(tile);
-        if (CurrentlySelectedUnit == null) handleHoverOnSpace(tile);
-        else HandleHoverOnUnit(tile, mousePos, CurrentlySelectedUnit);
+        if (CurrentlySelectedUnit == null) HandleHoverOnSpace(tile);
+        else HandleHoverOnUnit(tile, mousePos, previousUnit);
     }
 
-    private void handleHoverOnSpace(Vector2I tile)
+    protected void DeselectCurrentTile()
+    {
+        if (CurrentlySelectedTile != null)
+        {
+            ResetCell(CurrentlySelectedTile.Value.Full);
+            CurrentlySelectedTile = null;
+        }
+    }
+
+    protected virtual void HandleHoverOnSpace(Vector2I tile)
     {
         // No need to update anything if tile is the same
-        if (tile == CurrentlySelectedTile)
+        if (tile == CurrentlySelectedTile?.Closest)
             return;
 
         // If there's tile selected - we need to deselect it first
-        if (CurrentlySelectedTile != null)
-        {
-            SetCell((Vector2I)CurrentlySelectedTile, CurrentlySelectedTileType, Vector2I.Zero);
-            CurrentlySelectedTile = null;
-        }
+        DeselectCurrentTile();
 
-        HighlightTile(tile);
+        if (!IsInPlayfield(tile, false))
+            return;
+
+        HighlightTile((tile, tile));
     }
 
-    protected virtual void HandleHoverOnUnit(Vector2I tile, Vector2 mousePos, IPlayfieldUnit unit)
+    protected virtual void HandleHoverOnUnit(Vector2I tile, Vector2 mousePos, IPlayfieldUnit? previousUnit)
     {
-        // If there's tile selected - we need to deselect it first
-        if (CurrentlySelectedTile != null)
-        {
-            SetCell((Vector2I)CurrentlySelectedTile, CurrentlySelectedTileType, Vector2I.Zero);
-            CurrentlySelectedTile = null;
-        }
+        if (CurrentlySelectedUnit == null)
+            return;
 
-        HighlightTile(tile);
+        // If there's tile selected - we need to deselect it first
+        DeselectCurrentTile();
+
+        // Highlight tile with delta
+        HighlightTile((CurrentlySelectedUnit.Coords, tile));
     }
 
     protected void UpdateCreaturePosition(DrawableCreatureInstance drawable)
     {
-        drawable.Position = MapToLocal(drawable.ParentCreature.Coords);
+        Vector2 newPosition = MapToLocal(drawable.ParentCreature.Coords);
+        if (drawable.ParentCreature.IsLargeUnit) newPosition += (Vector2)TileSet.TileSize * 0.5f;
+        drawable.Position = newPosition;
     }
 
-    protected abstract void HighlightTile(Vector2I tile);
+    protected void SetCellCustom(Vector2I coords, int sourceId)
+    {
+        bool isLargeTile = TileTypeExtensions.IsLargeTile(sourceId);
 
-    public CreatureInstance? GetPlayfieldEntityAt(Vector2I tile) => Creatures.FirstOrDefault(creature => creature.Coords == tile)?.ParentCreature;
+        if (!IsInPlayfield(coords, isLargeTile)) return;
 
-    public static bool IsInPlayfield(Vector2I coords) => coords.X >= 0 && coords.Y >= 0 && coords.X < SIZE_X && coords.Y < SIZE_Y;
+        SetCell(coords, sourceId, Vector2I.Zero);
+
+        if (isLargeTile)
+        {
+            void setCellWithOffset(Vector2I c, int sourceId, Vector2I offset) => SetCell(c + offset, sourceId, offset);
+
+            setCellWithOffset(coords, sourceId, new Vector2I(0, 1));
+            setCellWithOffset(coords, sourceId, new Vector2I(1, 0));
+            setCellWithOffset(coords, sourceId, new Vector2I(1, 1));
+        }
+    }
+
+    protected void ResetCell(Vector2I coords)
+    {
+        int sourceId = GetCellSourceId(coords);
+
+        bool isLarge = TileTypeExtensions.IsLargeTile(sourceId);
+        if (isLarge) coords -= GetCellAtlasCoords(coords);
+
+        void resetCell(Vector2I cell, Vector2I offset)
+        {
+            var cellWithOffset = cell + offset;
+            int sourceId = BaseSourceIds[cellWithOffset.X, cellWithOffset.Y];
+            SetCell(cellWithOffset, sourceId, TileTypeExtensions.IsLargeTile(sourceId) ? offset : Vector2I.Zero);
+        }
+
+        resetCell(coords, Vector2I.Zero);
+
+        if (isLarge)
+        {
+            resetCell(coords, new Vector2I(0, 1));
+            resetCell(coords, new Vector2I(1, 0));
+            resetCell(coords, new Vector2I(1, 1));
+        }
+    }
+
+    protected void SetBaseCellCustom(Vector2I coords, int sourceId)
+    {
+        bool isLargeTile = TileTypeExtensions.IsLargeTile(sourceId);
+
+        if (!IsInPlayfield(coords, isLargeTile)) return;
+
+        void setCellWithOffset(Vector2I cell, int sourceId, Vector2I offset)
+        {
+            var cellWithOffset = cell + offset;
+            SetCell(cellWithOffset, sourceId, offset);
+            BaseSourceIds[cellWithOffset.X, cellWithOffset.Y] = sourceId;
+        }
+
+        setCellWithOffset(coords, sourceId, Vector2I.Zero);
+
+        if (isLargeTile)
+        {
+            
+            setCellWithOffset(coords, sourceId, new Vector2I(0, 1));
+            setCellWithOffset(coords, sourceId, new Vector2I(1, 0));
+            setCellWithOffset(coords, sourceId, new Vector2I(1, 1));
+        }
+    }
+
+    protected DrawableCreatureInstance AddDrawableCreature(CreatureInstance creature)
+    {
+        var newDrawableCreature = (DrawableCreatureInstance)creature.CreateDrawableRepresentation();
+        newDrawableCreature.Scale = Vector2.One * (creature.IsLargeUnit ? 4 : 2); // Asset of the tile have 2 times higher resolution than icons
+        newDrawableCreature.Centered = true;
+        newDrawableCreature.BackgroundSize = creature.IsLargeUnit ? 0.91 : 0.81;
+        UpdateCreaturePosition(newDrawableCreature);
+
+
+        Creatures.Add(newDrawableCreature);
+        AddChild(newDrawableCreature);
+        return newDrawableCreature;
+    }
+
+    protected abstract void HighlightTile((Vector2I Full, Vector2I Closest) tile);
+
+    public CreatureInstance? GetPlayfieldEntityAt(Vector2I coords) 
+        => Creatures.FirstOrDefault(creature => creature.ParentCreature.IsOnCoords(coords))?.ParentCreature;
+
+    public static bool IsInPlayfield(Vector2I coords, bool isLarge)
+    {
+        if (isLarge)
+        {
+            return coords.X >= 0 && coords.Y >= 0 && coords.X < SIZE_X - 1 && coords.Y < SIZE_Y - 1;
+        }
+        else
+        {
+            return coords.X >= 0 && coords.Y >= 0 && coords.X < SIZE_X && coords.Y < SIZE_Y;
+        }
+    }
+}
+
+public static class TileTypeExtensions
+{
+    public static bool IsLargeTile(this TileType tileType) => tileType == TileType.AffectedBig || tileType == TileType.SelectBig || tileType == TileType.AimableBig;
+
+    public static bool IsLargeTile(int sourceId) => sourceId == (int)TileType.AffectedBig || sourceId == (int)TileType.SelectBig || sourceId == (int)TileType.AimableBig;
 }

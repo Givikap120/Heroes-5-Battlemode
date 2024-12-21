@@ -31,8 +31,6 @@ public partial class Hero : Unit, ICanAttack
     /// </summary>
     public override double Initiative => 10;
 
-    public override int DecideTileChange(int tileType) => tileType == (int)TileType.Aimable ? (int)TileType.Select : -1;
-
     public override UnitState SaveState()
     {
         return new UnitState();

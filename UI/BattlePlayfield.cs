@@ -27,50 +27,76 @@ public partial class BattlePlayfield : Playfield
         if (CurrentUnit?.Value != null && CurrentUnit.Value.Player.UIDrawControls) addUnitActions(CurrentUnit.Value);
     }
 
-    protected override void HandleHoverOnUnit(Vector2I tile, Vector2 mousePos, IPlayfieldUnit unit)
+    protected override void HandleHoverOnSpace(Vector2I tile)
     {
-        // If there's tile selected - we need to deselect it first
-        if (CurrentlySelectedTile != null)
-        {
-            SetCell((Vector2I)CurrentlySelectedTile, CurrentlySelectedTileType, Vector2I.Zero);
-            CurrentlySelectedTile = null;
-        }
-
-        if (CurrentUnit.Value!.IsAlly(unit))
+        if (CurrentUnit.Value == null)
             return;
 
-        CurrentlySelectedTileType = GetCellSourceId(tile);
+        // No need to update anything if tile is the same
+        if (tile == CurrentlySelectedTile?.Closest)
+            return;
 
-        if (CurrentlySelectedTileType == (int)TileType.Inactive)
+        // If there's tile selected - we need to deselect it first
+        if (CurrentlySelectedUnit == null)
+            DeselectCurrentTile();
+
+        bool isLarge = CurrentUnit.Value.IsLargeUnit;
+        var shifted = ICanMove.ShiftMoveTileIfNeeded(tile, isLarge);
+
+        if (!IsInPlayfield(shifted.Full, isLarge))
+            return;
+
+        HighlightTile(shifted);
+    }
+
+    protected override void HandleHoverOnUnit(Vector2I tile, Vector2 mousePos, IPlayfieldUnit? previousUnit)
+    {
+        if (CurrentlySelectedUnit == null)
+            return;
+
+        // If there's tile selected - we need to deselect it first
+        DeselectCurrentTile();
+
+        if (CurrentUnit.Value!.IsAlly(CurrentlySelectedUnit))
+            return;
+
+        var target = CurrentlySelectedUnit.Coords;
+
+        if (GetCellSourceId(tile) == (int)TileType.Inactive)
         {
+            Vector2 creatureCenter = CurrentlySelectedUnit.IsLargeUnit
+                ? (MapToLocal(CurrentlySelectedUnit.Coords) + MapToLocal(CurrentlySelectedUnit.Coords + Vector2I.One)) / 2
+                : MapToLocal(CurrentlySelectedUnit.Coords);
+
             // Find the relative position of the closest cell except this
-            Vector2I hoverDelta = (Vector2I)(mousePos - MapToLocal(tile)).Normalized().Round();
-            tile += hoverDelta;
+            Vector2I hoverDelta = (Vector2I)(mousePos - creatureCenter).Normalized().Round();
+            HandleHoverOnSpace(tile + hoverDelta);
+            return;
         }
 
         // Highlight tile with delta
-        HighlightTile(tile);
+        HighlightTile((target, tile));
     }
 
-    protected override void HighlightTile(Vector2I tile)
+    protected override void HighlightTile((Vector2I Full, Vector2I Closest) tile)
     {
-        CurrentlySelectedTileType = GetCellSourceId(tile);
+        int currentTileType = GetCellSourceId(tile.Closest);
 
         // If tile doesn't exist - stop
-        if (CurrentlySelectedTileType == -1 || CurrentUnit.Value == null)
+        if (currentTileType == -1 || CurrentUnit.Value == null)
         {
             CurrentlySelectedTile = null;
             return;
         }
 
         // Set Tile
-        int newTileType = CurrentUnit.Value.DecideTileChange(CurrentlySelectedTileType);
+        int newTileType = CurrentUnit.Value.DecideTileChange(currentTileType);
 
         // If tile is gonna be changed - do this
         if (newTileType > 0)
         {
             CurrentlySelectedTile = tile;
-            SetCell(tile, newTileType, Vector2I.Zero);
+            SetCellCustom(tile.Full, newTileType);
         }
     }
 
@@ -79,7 +105,7 @@ public partial class BattlePlayfield : Playfield
         if (@event is not InputEventMouseButton mouseEvent || mouseEvent.ButtonIndex != MouseButton.Left || !mouseEvent.Pressed)
             return;
 
-        Vector2I? selectedOrCurrent = CurrentlySelectedTile;
+        Vector2I? selectedOrCurrent = CurrentlySelectedTile?.Full;
 
         if (CurrentUnit.Value is IPlayfieldUnit playfieldUnit)
         {
@@ -118,15 +144,8 @@ public partial class BattlePlayfield : Playfield
             if (item == null)
                 continue;
 
-            var newDrawableCreature = (DrawableCreatureInstance)item.CreateDrawableRepresentation();
-            newDrawableCreature.Scale = new Vector2(2, 2); // Asset of the tile have 2 times higher resolution than icons
-            newDrawableCreature.Centered = true;
-            newDrawableCreature.Position = MapToLocal(item.Coords);
-
+            var newDrawableCreature = AddDrawableCreature(item);
             item.CoordsBindable.ValueChanged += _ => CallDeferred(nameof(UpdateCreaturePosition), newDrawableCreature);
-
-            Creatures.Add(newDrawableCreature);
-            AddChild(newDrawableCreature);
         }
 
         player.CreatureDied += creature => CallDeferred(nameof(handleCreatureDead), creature);
@@ -158,11 +177,11 @@ public partial class BattlePlayfield : Playfield
 
     private void addMoveVariants(ICanMove movable)
     {
-        SetCell(movable.Coords, (int)TileType.Select, Vector2I.Zero);
+        SetBaseCellCustom(movable.Coords, movable.IsLargeUnit ? (int)TileType.SelectBig : (int)TileType.Select);
 
         foreach (var emptyTile in movable.GetPossibleMoveOptions())
         {
-            SetCell(emptyTile, (int)TileType.Affected, Vector2I.Zero);
+            SetBaseCellCustom(emptyTile, (int)TileType.Affected);
         }
     }
 
@@ -172,7 +191,7 @@ public partial class BattlePlayfield : Playfield
         {
             if (shooter.GetAttackType(creature).IsRanged())
             {
-                SetCell(creature.Coords, (int)TileType.Aimable, Vector2I.Zero);
+                SetBaseCellCustom(creature.Coords, creature.IsLargeUnit ? (int)TileType.AimableBig : (int)TileType.Aimable);
             }
         }
     }

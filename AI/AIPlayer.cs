@@ -85,7 +85,7 @@ public class AIPlayer : Player
             var tilesAroundEnemy = target.Coords.GetNeighboring();
             foreach (var tile in tilesAroundEnemy)
             {
-                if (attacker.CanMoveTo(tile) && !BattleHandler.Instance.IsTileOccupied(tile))
+                if (attacker.CanMoveTo(tile))
                     actions.Add(new ActionMoveAndAttack(attacker, tile, target));
             }
         }

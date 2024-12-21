@@ -1,9 +1,8 @@
 using Godot;
 using System;
-using System.Collections;
 using System.Linq;
 
-public class BattleHandler
+public class BattleHandler : GameHandler
 {
     public static BattleHandler Instance { get; private set; } = new BattleHandler();
 
@@ -40,34 +39,10 @@ public class BattleHandler
             return;
         }
 
+        IsBattleStarted = true;
         GameStarted.Invoke();
         startNewTurn();
     }
-
-    public Player? Player1 { get; private set; } = null;
-    public Player? Player2 { get; private set; } = null;
-
-    public void AddPlayer(Player player)
-    {
-        if (Player1 == null)
-        {
-            player.Id = 1;
-            player.Color = Colors.Red;
-            Player1 = player;
-        }
-        else if (Player2 == null)
-        {
-            player.Id = 2;
-            player.Color = Colors.Blue;
-            Player2 = player;
-        }
-        else return;
-
-        player.CreatureDied += CreatureDied.Invoke;
-        PlayerAdded.Invoke(player);
-    }
-
-    public bool IsTileOccupied(Vector2I tile) => Player1!.IsTileOccupiedByPlayer(tile) || Player2!.IsTileOccupiedByPlayer(tile);
 
     public Player? GetEnemyPlayer(Player player)
     {
@@ -76,6 +51,17 @@ public class BattleHandler
         else if (player == Player2)
             return Player1;
         return null;
+    }
+
+    public override Player? AddPlayer(Player player)
+    {
+        var result = base.AddPlayer(player);
+        if (result == null) return null;
+
+        player.CreatureDied += CreatureDied.Invoke;
+        PlayerAdded.Invoke(player);
+
+        return player;
     }
 
     #region turn_handling

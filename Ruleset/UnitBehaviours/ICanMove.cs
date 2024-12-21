@@ -1,25 +1,62 @@
 ﻿using Godot;
 using System;
 using System.Collections.Generic;
-using static Playfield;
 
 public interface ICanMove : IPlayfieldUnit
 {
     public double Speed { get; }
 
-    public bool CanMoveTo(Vector2I target)
+    public static (Vector2I Full, Vector2I Closest) ShiftMoveTileIfNeeded(Vector2I tile, bool isLarge)
     {
-        if (!IsInPlayfield(target))
+        if (!isLarge)
+            return (tile, tile);
+
+        static bool shift(ref Vector2I tile, Vector2I shift)
+        {
+            if (BattleHandler.Instance.IsTileOccupied(tile + shift))
+            {
+                tile -= shift;
+                return true;
+            }
+
+            return false;
+        }
+
+        var shifted = tile;
+
+        bool wasShifted = shift(ref shifted, new Vector2I(1, 0));
+
+        if (wasShifted) shift(ref shifted, new Vector2I(0, 1));
+        else
+        {
+            wasShifted = shift(ref shifted, new Vector2I(0, 1));
+
+            if (wasShifted) shift(ref shifted, new Vector2I(1, 0));
+            else shift(ref shifted, new Vector2I(1, 1));
+        }
+
+        return (shifted, tile);
+    }
+
+    public bool CanMoveTo(ref Vector2I target)
+    {
+        if (BattleHandler.Instance.IsTileOccupied(target))
             return false;
 
-        double maxDistance = Speed * Speed;
-        double distanceSquared = target.DistanceSquaredTo(Coords);
-        return distanceSquared > 0 && distanceSquared <= maxDistance;
+        target = ShiftMoveTileIfNeeded(target, IsLargeUnit).Full;
+
+        if (!CanBePlacedOnTile(target))
+            return false;
+
+        double distance = this.DistanceTo(target);
+        return distance > 0 && distance <= Speed;
     }
+
+    public bool CanMoveTo(Vector2I target) => CanMoveTo(ref target);
 
     public bool MoveTo(Vector2I target, bool triggerEvents = true)
     {
-        if (!CanMoveTo(target)) return false;
+        if (!CanMoveTo(ref target)) return false;
 
         if (triggerEvents) Coords = target;
         else CoordsBindable.SetSilent(target);
@@ -41,11 +78,7 @@ public interface ICanMove : IPlayfieldUnit
         {
             for (currentTile.Y = Coords.Y - maxDistance; currentTile.Y <= lastTile.Y; currentTile.Y++)
             {
-                if (!IsInPlayfield(currentTile) || BattleHandler.Instance.IsTileOccupied(currentTile))
-                    continue;
-
-                int distanceSqr = currentTile.DistanceSquaredTo(Coords);
-                if (distanceSqr <= maxDistanceSqr && distanceSqr > 0)
+                if (CanMoveTo(currentTile))
                 {
                     result.Add(currentTile);
                 }

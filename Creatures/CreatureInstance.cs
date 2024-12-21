@@ -61,6 +61,8 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
 
     public override string IconPath { get => Creature.IconPath; set => Creature.IconPath = value; }
     public Vector2I Coords { get => CoordsBindable.Value; set => CoordsBindable.Value = value; }
+
+    public override bool IsLargeUnit => Creature.Abilities.OfType<AbilityLargeCreature>().Any();
     public int Amount { get => AmountBindable.Value; set => AmountBindable.Value = value; }
     public override double Initiative => CurrentStats.Initiative;
     public double Speed => CurrentStats.Speed;
@@ -70,17 +72,17 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
     public int Tier => Creature.Tier;
     public double AverageDamage => (CurrentStats.MinDamage + CurrentStats.MaxDamage) / 2;
 
+    public bool IsOnCoords(Vector2I coords)
+    {
+        if (!IsLargeUnit) return coords == Coords;
+
+        var delta = coords - Coords;
+        return Math.Min(delta.X, delta.Y) >= 0 && Math.Max(delta.X, delta.Y) <= 1;
+    }
+
     public override void Defend()
     {
         Effects.Add(new EffectDefense(this));
-    }
-
-    public override int DecideTileChange(int tileType)
-    {
-        if (tileType == (int)TileType.Affected || tileType == (int)TileType.Aimable)
-            return (int)TileType.Select;
-
-        return -1;
     }
 
     public bool CanAttackRanged()

@@ -1,5 +1,6 @@
 
 using Godot;
+using static Playfield;
 
 /// <summary>
 ///	Entity on the battlefield that can do action and participates in Initiative cycle
@@ -31,12 +32,26 @@ public abstract partial class Unit : GodotObject, IUnit
     /// </summary>
     public virtual void Defend() { }
 
+    public virtual bool IsLargeUnit => false;
+
     /// <summary>
     /// Tells UI how to change the tile depending on previous tile type. Returns -1 if tile won't be changed to a specific type
     /// </summary>
     /// <param name="tileType"></param>
     /// <returns></returns>
-    public abstract int DecideTileChange(int tileType);
+    public virtual int DecideTileChange(int tileType)
+    {
+        if (tileType == (int)TileType.Affected)
+            return IsLargeUnit ? (int)TileType.SelectBig : (int)TileType.Select;
+
+        if (tileType == (int)TileType.Aimable)
+            return (int)TileType.Select;
+
+        if (tileType == (int)TileType.AffectedBig || tileType == (int)TileType.AimableBig)
+            return (int)TileType.SelectBig;
+
+        return -1;
+    }
 
     public abstract UnitState SaveState();
     public abstract void LoadState(UnitState savedState, bool silent = true);

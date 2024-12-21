@@ -40,7 +40,7 @@ public abstract class Creature
     {
         string grade = Grade.ToString();
         string faction = Faction.Replace(" ", "");
-        string name = Name.Replace(" ", "");
+        string name = Name.Replace(" ", Grade == GradeType.Altgrade ? "_" : "");
 
         IconPath = Grade == GradeType.Altgrade
             ? $"res://Assets/Creatures/{faction}/{grade}/{name}.(Texture).dds"

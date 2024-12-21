@@ -84,9 +84,11 @@ public static class PlayerExtensions
 {
     public static bool IsTileOccupiedByPlayer(this Player player, Vector2I tile)
     {
+        if (!Playfield.IsInPlayfield(tile, false)) return true;
+
         foreach (var unit in player.AliveArmy)
         {
-            if (unit.Coords == tile)
+            if (unit.IsOnCoords(tile))
                 return true;
         }
 
