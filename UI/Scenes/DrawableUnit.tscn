@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://8n6ofgb5vvw4"]
 
-[ext_resource type="Script" path="res://UI/DrawableUnit.cs" id="1_djnll"]
+[ext_resource type="Script" path="res://UI/Source/DrawableUnit.cs" id="1_djnll"]
 [ext_resource type="Texture2D" path="res://Assets/Creatures/Haven/Grade/ico_ArchAngel_128.dds" id="1_t6y75"]
 
 [sub_resource type="Gradient" id="Gradient_14v0s"]

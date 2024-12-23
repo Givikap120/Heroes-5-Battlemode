@@ -1,13 +1,13 @@
 [gd_scene load_steps=30 format=3 uid="uid://byq2m7827ff4n"]
 
-[ext_resource type="PackedScene" uid="uid://cms542kto6fbw" path="res://UI/Base.tscn" id="1_6fucy"]
-[ext_resource type="Script" path="res://UI/AtbScale.cs" id="2_fibyc"]
-[ext_resource type="Script" path="res://UI/Battle.cs" id="2_m8a7t"]
-[ext_resource type="PackedScene" uid="uid://8n6ofgb5vvw4" path="res://UI/DrawableUnit.tscn" id="3_u841l"]
+[ext_resource type="PackedScene" uid="uid://cms542kto6fbw" path="res://UI/Scenes/Base.tscn" id="1_6fucy"]
+[ext_resource type="Script" path="res://UI/Source/AtbScale.cs" id="2_fibyc"]
+[ext_resource type="Script" path="res://UI/Source/Battle.cs" id="2_m8a7t"]
+[ext_resource type="PackedScene" uid="uid://8n6ofgb5vvw4" path="res://UI/Scenes/DrawableUnit.tscn" id="3_u841l"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Defend/Normal.dds" id="4_geuut"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Defend/Pushed.dds" id="5_jer40"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Defend/Disabled.dds" id="6_ecn70"]
-[ext_resource type="Script" path="res://UI/DefendButton.cs" id="7_3xv5s"]
+[ext_resource type="Script" path="res://UI/Source/DefendButton.cs" id="7_3xv5s"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Special/Disabled.dds" id="8_rti7n"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Spellbook/Disabled.dds" id="9_d6bjk"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Inactive.dds" id="10_k8aiq"]
@@ -18,7 +18,7 @@
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Aimable.dds" id="15_bt0vg"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/aimable_2.dds" id="16_prfw5"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Intersection.(Texture).dds" id="17_8jvuc"]
-[ext_resource type="Script" path="res://UI/BattlePlayfield.cs" id="18_h5u0r"]
+[ext_resource type="Script" path="res://UI/Source/BattlePlayfield.cs" id="18_h5u0r"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8321f"]
 resource_name = "Inactive"

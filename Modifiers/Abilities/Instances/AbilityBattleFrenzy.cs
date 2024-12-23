@@ -7,7 +7,7 @@ public class AbilityBattleFrenzy : Ability, IApplicableBeforeAttack
         if (!parameters.IsCounterAttack || owner.AttackedOnThisTurn == 0)
             return parameters;
 
-        parameters.BaseDamage *= Math.Pow(1.5, owner.AttackedOnThisTurn - 1);
+        parameters.DamageMultiplier *= Math.Pow(1.5, owner.AttackedOnThisTurn - 1);
 
         return parameters;
     }

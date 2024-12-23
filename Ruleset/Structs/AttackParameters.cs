@@ -11,6 +11,7 @@
     public double BaseDamage;
     public double Attack;
     public double Defense;
+    public double DamageMultiplier = 1.0;
 
     public AttackType AttackType = AttackType.Melee;
 

@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://c87qaue4yy03b"]
 
-[ext_resource type="Script" path="res://UI/DrawableCreatureInstance.cs" id="1_jptlw"]
-[ext_resource type="PackedScene" uid="uid://8n6ofgb5vvw4" path="res://UI/DrawableUnit.tscn" id="1_r8ftk"]
-[ext_resource type="PackedScene" uid="uid://bnnii5egdcupx" path="res://UI/LabelInBox.tscn" id="2_3pg62"]
+[ext_resource type="Script" path="res://UI/Source/DrawableCreatureInstance.cs" id="1_jptlw"]
+[ext_resource type="PackedScene" uid="uid://8n6ofgb5vvw4" path="res://UI/Scenes/DrawableUnit.tscn" id="1_r8ftk"]
+[ext_resource type="PackedScene" uid="uid://bnnii5egdcupx" path="res://UI/Scenes/LabelInBox.tscn" id="2_3pg62"]
 
 [node name="Control" instance=ExtResource("1_r8ftk")]
 script = ExtResource("1_jptlw")

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bnnii5egdcupx"]
 
-[ext_resource type="Script" path="res://UI/LabelInBox.cs" id="1_2kxeg"]
+[ext_resource type="Script" path="res://UI/Source/LabelInBox.cs" id="1_2kxeg"]
 [ext_resource type="FontFile" uid="uid://cun338nkg58qk" path="res://Assets/Monotype-Corsiva-Regular.ttf" id="2_tox5f"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_llhyg"]

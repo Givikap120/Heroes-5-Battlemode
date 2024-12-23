@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Wait/OnJog-Wait-Normal.(Texture).dds" id="4_r7w8t"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Wait/OnJog-Wait-Pushed.(Texture).dds" id="5_ct8op"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Wait/OnJog-Wait-Disabled.(Texture).dds" id="6_1b8hl"]
-[ext_resource type="Script" path="res://UI/WaitButton.cs" id="7_p6gab"]
+[ext_resource type="Script" path="res://UI/Source/WaitButton.cs" id="7_p6gab"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-AutoCombat/Disabled.dds" id="8_esadj"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-Menu/Disabled.dds" id="9_gevcd"]
 

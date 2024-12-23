@@ -8,7 +8,7 @@ public class AbilityJousting : Ability, IApplicableBeforeAttack
             return parameters;
 
         double distance = parameters.MoveBeforeAttack.Value.Before.DistanceTo(parameters.MoveBeforeAttack.Value.After);
-        parameters.BaseDamage *= Math.Pow(1.05, (int)distance);
+        parameters.DamageMultiplier *= Math.Pow(1.05, (int)distance);
 
         return parameters;
     }

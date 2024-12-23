@@ -161,7 +161,7 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
             (1 + 0.05 * (parameters.Attack - parameters.Defense)) :
             1.0 / (1 + 0.05 * (parameters.Defense - parameters.Attack));
 
-        double damage = parameters.BaseDamage * armorMultiplier * parameters.AttackType.GetMultiplier() * parameters.Amount;
+        double damage = parameters.BaseDamage * armorMultiplier * parameters.AttackType.GetMultiplier() * parameters.DamageMultiplier * parameters.Amount;
         return damage;
     }
 

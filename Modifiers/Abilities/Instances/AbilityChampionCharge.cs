@@ -28,7 +28,7 @@ public class AbilityChampionCharge : Ability, IApplicableBeforeAttack
 
         // Calculate attack params
         var penetrationParams = parameters;
-        penetrationParams.BaseDamage /= 2; // 2 times less damage for secondary target
+        penetrationParams.DamageMultiplier /= 2; // 2 times less damage for secondary target
         penetrationParams.WillCounterAttack = false; // Can't counterattack
         owner.AttackFromParameters(penetrationTarget, penetrationParams);
 

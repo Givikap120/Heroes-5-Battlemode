@@ -1,7 +1,7 @@
 [gd_scene load_steps=26 format=3 uid="uid://cuof14tcngnbq"]
 
-[ext_resource type="Script" path="res://UI/PrePlanning.cs" id="1_hbdhe"]
-[ext_resource type="PackedScene" uid="uid://cms542kto6fbw" path="res://UI/Base.tscn" id="1_p5fpv"]
+[ext_resource type="Script" path="res://UI/Source/PrePlanning.cs" id="1_hbdhe"]
+[ext_resource type="PackedScene" uid="uid://cms542kto6fbw" path="res://UI/Scenes/Base.tscn" id="1_p5fpv"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Inactive.dds" id="1_re7fy"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected.dds" id="2_b5qjg"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/affected_2.dds" id="3_80bcb"]
@@ -11,11 +11,11 @@
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Select.dds" id="4_ojg58"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/select_2.dds" id="5_t3rnm"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Jog/OnJog-StartCombat/Disabled.dds" id="5_x1vk5"]
-[ext_resource type="Script" path="res://UI/StartCombatButton.cs" id="6_6rsu1"]
+[ext_resource type="Script" path="res://UI/Source/StartCombatButton.cs" id="6_6rsu1"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Aimable.dds" id="6_kjvi3"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/aimable_2.dds" id="7_7calh"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Intersection.(Texture).dds" id="8_otkid"]
-[ext_resource type="Script" path="res://UI/PrePlanningPlayfield.cs" id="10_ksjtr"]
+[ext_resource type="Script" path="res://UI/Source/PrePlanningPlayfield.cs" id="10_ksjtr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_v27ag"]
 resource_name = "Inactive"

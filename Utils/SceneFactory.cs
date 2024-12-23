@@ -1,8 +1,8 @@
 ﻿using Godot;
 public static class SceneFactory
 {
-    private static readonly PackedScene drawableUnitScene = GD.Load<PackedScene>("res://UI/DrawableUnit.tscn");
-    private static readonly PackedScene drawableCreatureScene = GD.Load<PackedScene>("res://UI/DrawableCreatureInstance.tscn");
+    private static readonly PackedScene drawableUnitScene = GD.Load<PackedScene>("res://UI/Scenes/DrawableUnit.tscn");
+    private static readonly PackedScene drawableCreatureScene = GD.Load<PackedScene>("res://UI/Scenes/DrawableCreatureInstance.tscn");
     public static DrawableUnit CreateDrawableUnit(Unit unit)
     {
         var instance = (DrawableUnit)drawableUnitScene.Instantiate();
@@ -16,5 +16,8 @@ public static class SceneFactory
         instance.Parent = creatureInstance;
         return instance;
     }
+
+    public const string PrePlanningScene = "res://UI/Scenes/PrePlanning.tscn";
+    public const string BattleScene = "res://UI/Scenes/Battle.tscn";
 }
 

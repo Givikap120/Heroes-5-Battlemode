@@ -6,6 +6,6 @@ public partial class StartCombatButton : TextureButton
     {
         base._Pressed();
         bool isFinished = PrePlanningHandler.Instance.NextStep();
-        if (isFinished) GetTree().ChangeSceneToFile("res://UI/Battle.tscn");
+        if (isFinished) GetTree().ChangeSceneToFile(SceneFactory.BattleScene);
     }
 }
