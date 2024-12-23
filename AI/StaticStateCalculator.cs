@@ -2,7 +2,7 @@
 
 public static class StaticStateCalculator
 {
-    public static double CalculateStateValue(IUnit unit, bool useDynamic = true)
+    public static double CalculateStateValue(IUnit unit)
     {
         double allyStateValue = CalculatePlayerStateValue(unit.Player);
         double enemyStateValue = CalculatePlayerStateValue(BattleHandler.Instance.GetEnemyPlayer(unit.Player)!);

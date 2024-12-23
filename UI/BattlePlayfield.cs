@@ -38,7 +38,18 @@ public partial class BattlePlayfield : Playfield
 
         // If there's tile selected - we need to deselect it first
         if (CurrentlySelectedUnit == null)
+        {
             DeselectCurrentTile();
+            int sourceId = GetCellSourceId(tile);
+
+            if (sourceId == -1)
+                CursorHandler.Cursor = Cursor.Default;
+            else if (sourceId == 0)
+                CursorHandler.Cursor = Cursor.CantCast;
+            else
+                CursorHandler.Cursor = Cursor.Move;
+
+        }
 
         bool isLarge = CurrentUnit.Value.IsLargeUnit;
         var shifted = ICanMove.ShiftMoveTileIfOccupied(tile, isLarge);
@@ -75,15 +86,25 @@ public partial class BattlePlayfield : Playfield
 
             if (isLarge)
             {
-                if (tile.X < CurrentlySelectedUnit.Coords.X)
+                if (tile.X < CurrentlySelectedUnit.Coords.X && tile.X >= 1)
                     tile.X--;
 
-                if (tile.Y < CurrentlySelectedUnit.Coords.Y)
+                if (tile.Y < CurrentlySelectedUnit.Coords.Y && tile.Y >= 1)
                     tile.Y--;
             }
 
             HandleHoverOnSpace(tile);
+
+            bool wasHovered = GetCellSourceId(tile) > 0;
+            CursorHandler.Cursor = wasHovered ? AttackType.Melee.GetCursor(hoverDelta) : Cursor.CantCast;
+
             return;
+        }
+
+        if (CurrentUnit.Value is ICanAttack attacker && CurrentlySelectedUnit is IAttackable attackable)
+        {
+            var attackType = attacker.GetAttackType(attackable);
+            CursorHandler.Cursor = attackType.GetCursor();
         }
 
         // Highlight tile with delta
