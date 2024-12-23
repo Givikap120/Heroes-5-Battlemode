@@ -7,6 +7,8 @@ using static Playfield;
 /// </summary>
 public abstract partial class Unit : GodotObject, IUnit
 {
+    public abstract string Name { get; }
+
     public Player Player { get; private set; }
 
     public Unit(Player player)

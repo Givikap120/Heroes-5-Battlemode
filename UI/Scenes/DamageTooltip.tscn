@@ -14,16 +14,6 @@ layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_cgr04")
 
-[node name="Label2" type="RichTextLabel" parent="."]
-visible = false
-offset_right = 40.0
-offset_bottom = 40.0
-text = "Test Text"
-fit_content = true
-scroll_active = false
-autowrap_mode = 0
-shortcut_keys_enabled = false
-
 [node name="TooltipText" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 5

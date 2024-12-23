@@ -2,6 +2,7 @@
 
 public partial class Hero : Unit, ICanAttack
 {
+    private string name = "";
     public override string IconPath { get; set; } = "";
     public int Level;
     public HeroStats CurrentStats;
@@ -9,8 +10,9 @@ public partial class Hero : Unit, ICanAttack
     private HeroStats baseStats;
     public HeroStats BaseStats { get => baseStats; set { baseStats = value; CalculateCurrentStats(); } }
 
-    public Hero(Player player) : base(player)
+    public Hero(string name, Player player) : base(player)
     {
+        this.name = name;
     }
 
     public override DrawableUnit CreateDrawableRepresentation() => SceneFactory.CreateDrawableUnit(this);
@@ -35,6 +37,8 @@ public partial class Hero : Unit, ICanAttack
     public double MaxDamage => double.NaN;
 
     public double AverageDamage => double.NaN;
+
+    public override string Name => name;
 
     public override UnitState SaveState()
     {
@@ -62,7 +66,7 @@ public partial class Hero : Unit, ICanAttack
         double kills = minDamage[tierIndex] + (Level - 1) * killsPerLevel;
         double damage = kills * target.MaxHP;
 
-        return new AttackParameters
+        return new AttackParameters(this)
         {
             TriggerEvents = triggerEvents,
             BaseDamage = damage
@@ -74,7 +78,7 @@ public partial class Hero : Unit, ICanAttack
     public void AttackFromParameters(IAttackable target, AttackParameters parameters)
     {
         double damage = CalculateDamageFromParameters(parameters);
-        target.TakeDamage(damage, parameters.AttackType, parameters.TriggerEvents);
+        target.TakeDamage(damage, parameters);
     }
 
     public bool Attack(IAttackable target, bool triggerEvents, bool isCounterattack = false, MoveResult? moveBeforeAttack = null)

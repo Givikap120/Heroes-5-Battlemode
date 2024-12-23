@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3 uid="uid://bkajddggv3d35"]
+
+[ext_resource type="Script" path="res://UI/Source/Logger.cs" id="1_awwxa"]
+[ext_resource type="Texture2D" uid="uid://dto4ca1tqajb6" path="res://Assets/PanelBackground.png" id="2_hi7tb"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fp07n"]
+texture = ExtResource("2_hi7tb")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+
+[node name="Logger" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 155.0
+offset_bottom = 75.0
+script = ExtResource("1_awwxa")
+metadata/Margin = 15
+metadata/FontSize = 24
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_fp07n")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="InternalContainer" type="VBoxContainer" parent="Margin/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2

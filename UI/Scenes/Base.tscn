@@ -24,12 +24,23 @@ size_flags_vertical = 3
 texture = ExtResource("1_itktm")
 metadata/_edit_use_anchors_ = true
 
+[node name="PlayfieldControl" type="Control" parent="UICanvas"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
 [node name="Jog" type="Control" parent="UICanvas"]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 803.0
+offset_left = 800.0
 offset_top = 355.0
-offset_right = 1059.0
+offset_right = 1056.0
 offset_bottom = 611.0
 scale = Vector2(1.5, 1.5)
 metadata/_edit_use_anchors_ = true
@@ -72,14 +83,3 @@ offset_top = 141.0
 offset_right = 198.0
 offset_bottom = 198.0
 texture_normal = ExtResource("9_gevcd")
-
-[node name="PlayfieldControl" type="Control" parent="UICanvas"]
-layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-grow_horizontal = 2
-grow_vertical = 2
-metadata/_edit_use_anchors_ = true

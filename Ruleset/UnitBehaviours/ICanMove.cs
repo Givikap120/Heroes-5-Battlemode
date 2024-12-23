@@ -1,7 +1,6 @@
 ﻿using Godot;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 
 public interface ICanMove : IPlayfieldUnit
 {
@@ -39,19 +38,6 @@ public interface ICanMove : IPlayfieldUnit
         return (shifted, tile);
     }
 
-    //public Vector2I ShiftMoveTileIfTooFar(Vector2I tile, bool isLarge)
-    //{
-    //    if (!isLarge)
-    //        return tile;
-
-    //    double distance = this.DistanceTo(tile);
-
-    //    if (distance > Speed)
-    //    {
-            
-    //    }
-    //}
-
     public bool CanMoveTo(ref Vector2I target)
     {
         if (BattleHandler.Instance.IsTileOccupied(target))
@@ -86,6 +72,7 @@ public interface ICanMove : IPlayfieldUnit
 
         var result = new MoveResult
         {
+            Actor = this,
             Before = Coords,
             After = target
         };

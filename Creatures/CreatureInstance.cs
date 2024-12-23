@@ -58,9 +58,9 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable
         AttackedOnThisTurn = 0;
     }
 
+    public override string Name => Creature.Name;
     public override string IconPath { get => Creature.IconPath; set => Creature.IconPath = value; }
     public Vector2I Coords { get => CoordsBindable.Value; set => CoordsBindable.Value = value; }
-
     public override bool IsLargeUnit => Creature.Abilities.OfType<AbilityLargeCreature>().Any();
     public int Amount { get => AmountBindable.Value; set => AmountBindable.Value = value; }
     public override double Initiative => CurrentStats.Initiative;
@@ -137,7 +137,7 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable
     {
         Vector2I thisCoord = moveBeforeAttack == null ? Coords : moveBeforeAttack.Value.After;
 
-        var parameters = new AttackParameters
+        var parameters = new AttackParameters(this)
         {
             Amount = Amount,
             IsCounterAttack = isCounterattack,
@@ -178,8 +178,13 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable
         if (parameters.AttackType.IsRangedShot())
             CurrentStats.Shots--;
 
+        if (parameters.TriggerEvents && parameters.MoveBeforeAttack != null)
+        {
+            BattleHandler.Instance.MoveEvent((MoveResult)parameters.MoveBeforeAttack);
+        }
+
         // Attack
-        var attackResult = target.TakeDamage(damage, parameters.AttackType, parameters.TriggerEvents);
+        var attackResult = target.TakeDamage(damage, parameters);
 
         // Counterattack
         if (parameters.WillCounterAttack && target is ICanAttack counterAttacker)
@@ -204,13 +209,18 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable
         return true;
     }
 
-    public AttackResult CalculateAttackResult(double damage, AttackType attackType)
+    public AttackResult CalculateAttackResult(double damage, AttackParameters parameters)
     {
         // Effects on damage
         foreach (var ability in ModifiersOfType<IApplicableToRecievedDamage>())
-            damage = ability.Apply(damage, attackType);
+            damage = ability.Apply(damage, parameters.AttackType);
 
-        var result = new AttackResult();
+        var result = new AttackResult
+        {
+            Attacker = parameters.Actor,
+            Target = this,
+            AttackParameters = parameters,
+        };
 
         double incomingDamage = damage;
 
@@ -247,15 +257,17 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable
         if (triggerEvents) Amount -= result.Killed;
         else AmountBindable.SetSilent(Amount - result.Killed);
 
-
         Debug.Assert(Amount >= 0);
 
-        if (triggerEvents && Amount == 0)
-        {
-            CreatureDead.Invoke(this);
-        }
-
         AttackedOnThisTurn++;
+
+        if (triggerEvents)
+        {
+            BattleHandler.Instance.AttackEvent(result);
+
+            if (Amount == 0)
+                CreatureDead.Invoke(this);
+        }
     }
 
     public override UnitState SaveState()

@@ -46,8 +46,8 @@ public partial class DamageTooltip : Control
         var maxParameters = baseParameters;
         maxParameters.BaseDamage = double.IsNaN(attacker.MaxDamage) ? minParameters.BaseDamage : attacker.MaxDamage;
 
-        var minResult = target.CalculateAttackResult(attacker.CalculateDamageFromParameters(minParameters), minParameters.AttackType);
-        var maxResult = target.CalculateAttackResult(attacker.CalculateDamageFromParameters(maxParameters), maxParameters.AttackType);
+        var minResult = target.CalculateAttackResult(attacker.CalculateDamageFromParameters(minParameters), minParameters);
+        var maxResult = target.CalculateAttackResult(attacker.CalculateDamageFromParameters(maxParameters), maxParameters);
 
         static string getValueRangeDisplay(int a, int b) => a == b ? $"{a}" : $"{a} - {b}";
 

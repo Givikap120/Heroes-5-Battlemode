@@ -1,5 +1,7 @@
 ﻿public struct AttackParameters
 {
+    public ICanAttack Actor;
+
     public int Amount = 1;
 
     public bool TriggerEvents;
@@ -17,7 +19,8 @@
 
     public MoveResult? MoveBeforeAttack;
 
-    public AttackParameters()
+    public AttackParameters(ICanAttack actor)
     {
+        Actor = actor;
     }
 }

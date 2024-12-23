@@ -140,14 +140,6 @@ public partial class BattlePlayfield : Playfield
         HighlightTile((CurrentlySelectedUnit!.Coords, tile));
     }
 
-    private void displayTooltip()
-    {
-        if (CurrentUnit.Value is not ICanAttack attacker && CurrentlySelectedUnit is not IAttackable attackable)
-            return;
-
-
-    }
-
     protected override void HighlightTile((Vector2I Full, Vector2I Closest) tile)
     {
         int currentTileType = GetCellSourceId(tile.Closest);

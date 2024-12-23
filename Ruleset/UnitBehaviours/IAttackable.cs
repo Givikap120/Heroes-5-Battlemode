@@ -8,14 +8,14 @@ public interface IAttackable : IPlayfieldUnit
 
     public int Tier { get; }
 
-    public AttackResult CalculateAttackResult(double damage, AttackType attackType);
+    public AttackResult CalculateAttackResult(double damage, AttackParameters parameters);
 
     public void ApplyDamage(AttackResult result, bool triggerEvents);
 
-    public AttackResult TakeDamage(double damage, AttackType attackType, bool triggerEvents)
+    public AttackResult TakeDamage(double damage, AttackParameters parameters)
     {
-        AttackResult result = CalculateAttackResult(damage, attackType);
-        ApplyDamage(result, triggerEvents);
+        AttackResult result = CalculateAttackResult(damage, parameters);
+        ApplyDamage(result, parameters.TriggerEvents);
         return result;
     }
 

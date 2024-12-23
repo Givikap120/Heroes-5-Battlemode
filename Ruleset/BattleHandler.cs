@@ -10,6 +10,8 @@ public class BattleHandler : GameHandler
 
     public readonly InitiativeHandler InitiativeHandler;
 
+    // Main events
+
     public event Action<Player> PlayerAdded = delegate { };
 
     public event Action GameStarted = delegate { };
@@ -85,11 +87,11 @@ public class BattleHandler : GameHandler
         }
         else if (player2ArmyCount == 0) // Player 1 won
         {
-            GameEnded.Invoke("Player 1 Won");
+            GameEnded.Invoke("Red Player Won");
         }
         else if (player1ArmyCount == 0) // Player 2 won
         {
-            GameEnded.Invoke("Player 2 Won");
+            GameEnded.Invoke("Blue Player Won");
         }
         else
         {
@@ -103,15 +105,15 @@ public class BattleHandler : GameHandler
     #region actions
     public void EmptyCellAction(Vector2I cell)
     {
-        if (CurrentUnit.Value == null) return;
-
         if (CurrentUnit.Value is ICanMove movable)
         {
             var result = movable.MoveTo(cell);
-            if (result != null) endTurn();
+            if (result != null)
+            {
+                MoveEvent(result.Value);
+                endTurn();
+            }
         }
-
-        return;
     }
 
     public void UnitAction(IPlayfieldUnit unit)
@@ -147,14 +149,30 @@ public class BattleHandler : GameHandler
 
     public void DefendAction()
     {
-        CurrentUnit.Value?.Defend();
+        if (CurrentUnit.Value == null) return;
+
+        CurrentUnit.Value.Defend();
+        OnDefense(CurrentUnit.Value);
         endTurn();
     }
 
     public void WaitAction()
     {
+        if (CurrentUnit.Value == null) return;
+
+        OnWait(CurrentUnit.Value);
         endTurn(true);
     }
+
+    // Event dispatchers
+
+    public event Action<MoveResult> OnMove = delegate { };
+    public event Action<AttackResult> OnAttack = delegate { };
+    public event Action<Unit> OnDefense = delegate { };
+    public event Action<Unit> OnWait = delegate { };
+
+    public void MoveEvent(MoveResult move) => OnMove(move);
+    public void AttackEvent(AttackResult attack) => OnAttack(attack);
 
     #endregion
 }

@@ -8,7 +8,7 @@ public static class PlayerFactory
     {
         var player = CreatePlayer(isAI);
 
-        player.Hero = new Hero(player)
+        player.Hero = new Hero("Freyda", player)
         {
             Level = 25,
             IconPath = "res://Assets/Heroes/Haven/Heaven_Freyda_128x128.(Texture).dds",
@@ -38,7 +38,7 @@ public static class PlayerFactory
     {
         var player = CreatePlayer(isAI);
 
-        player.Hero = new Hero(player)
+        player.Hero = new Hero("Godric", player)
         {
             Level = 25,
             IconPath = "res://Assets/Heroes/Haven/Heaven_Godric_128x128.(Texture).dds",
