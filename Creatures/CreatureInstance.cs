@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasRandomDamage
+public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable
 {
     public readonly Creature Creature;
     public CreatureStats CurrentStats;
@@ -69,6 +69,8 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
     public double MaxHP => Creature.Stats.HitPoints;
     public double TotalHP => Amount > 0 ? CurrentStats.HitPoints + (Amount - 1) * Creature.Stats.HitPoints : 0;
     public int Tier => Creature.Tier;
+    public double MinDamage => CurrentStats.MinDamage;
+    public double MaxDamage => CurrentStats.MaxDamage;
     public double AverageDamage => (CurrentStats.MinDamage + CurrentStats.MaxDamage) / 2;
 
     public bool IsOnCoords(Vector2I coords)
@@ -109,13 +111,13 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
         return !isBlocked;
     }
 
-    public AttackType GetAttackType(IAttackable attackable)
+    private AttackType getAttackType(IAttackable attackable, Vector2I thisCoord)
     {
         // Don't attack allies
         if (this.IsAlly(attackable))
             return AttackType.None;
 
-        double distanceToTarget = attackable.DistanceTo(this);
+        double distanceToTarget = PlayfieldUnitExtensions.DistanceBetween(thisCoord, IsLargeUnit, attackable.Coords, attackable.IsLargeUnit);
 
         // If it's an enemy - it should be at least 1 tile away
         if (distanceToTarget < 2)
@@ -129,19 +131,23 @@ public partial class CreatureInstance : Unit, ICanMoveAttack, IAttackable, IHasR
         return result;
     }
 
+    public AttackType GetAttackType(IAttackable attackable) => getAttackType(attackable, Coords);
+
     public AttackParameters CalculateParameters(IAttackable target, bool triggerEvents, bool isCounterattack, MoveResult? moveBeforeAttack = null)
     {
+        Vector2I thisCoord = moveBeforeAttack == null ? Coords : moveBeforeAttack.Value.After;
+
         var parameters = new AttackParameters
         {
             Amount = Amount,
             IsCounterAttack = isCounterattack,
             TriggerEvents = triggerEvents,
             BaseDamage = GD.RandRange(CurrentStats.MinDamage, CurrentStats.MaxDamage),
-            WillCounterAttack = !isCounterattack && target.WillCounterattack(this),
+            WillCounterAttack = !isCounterattack && target.WillCounterattackToPosition(thisCoord, IsLargeUnit),
 
             Attack = CurrentStats.Attack,
             Defense = target.Defense,
-            AttackType = GetAttackType(target),
+            AttackType = getAttackType(target, thisCoord),
             MoveBeforeAttack = moveBeforeAttack
         };
 

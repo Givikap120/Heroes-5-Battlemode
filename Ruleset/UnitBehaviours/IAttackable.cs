@@ -1,4 +1,6 @@
-﻿public interface IAttackable : IPlayfieldUnit
+﻿using Godot;
+
+public interface IAttackable : IPlayfieldUnit
 {
     public double MaxHP { get; }
     public double TotalHP { get; }
@@ -21,22 +23,27 @@
 
     public bool CanCounterattack();
 
-    public bool WillCounterattack(ICanAttack attacker)
+    public bool WillCounterattackToPosition(Vector2I position, bool isLarge)
     {
         // Can't attack - can't counterattack
         if (this is not ICanAttack)
             return false;
 
-        // Only can counterattack to playfield units
-        if (attacker is not IPlayfieldUnit playfieldUnit)
-            return false;
-
-        bool isNeighbor = playfieldUnit.IsNeighboring(this);
+        bool isNeighbor = PlayfieldUnitExtensions.IsNeighboring(Coords, IsLargeUnit, position, isLarge);
 
         // Can only counterattack neighbors and only once in the turn
         bool result = isNeighbor && CanCounterattack();
 
         // For Abilities OfType<IApplicableToCounterAttack> .Apply(result)
         return result;
+    }
+
+    public bool WillCounterattack(ICanAttack attacker)
+    {
+        // Only can counterattack to playfield units
+        if (attacker is not IPlayfieldUnit playfieldUnit)
+            return false;
+
+        return WillCounterattackToPosition(playfieldUnit.Coords, playfieldUnit.IsLargeUnit);
     }
 }

@@ -1,5 +1,9 @@
 ﻿public interface ICanAttack : IUnit
 {
+    double MinDamage { get; }
+    double MaxDamage { get; }
+    double AverageDamage { get; }
+
     public bool CanAttackRanged();
 
     public AttackType GetAttackType(IAttackable attackable);

@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://byq2m7827ff4n"]
+[gd_scene load_steps=31 format=3 uid="uid://byq2m7827ff4n"]
 
 [ext_resource type="PackedScene" uid="uid://cms542kto6fbw" path="res://UI/Scenes/Base.tscn" id="1_6fucy"]
 [ext_resource type="Script" path="res://UI/Source/AtbScale.cs" id="2_fibyc"]
@@ -19,6 +19,7 @@
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/aimable_2.dds" id="16_prfw5"]
 [ext_resource type="Texture2D" path="res://Assets/Arena/Grid/Intersection.(Texture).dds" id="17_8jvuc"]
 [ext_resource type="Script" path="res://UI/Source/BattlePlayfield.cs" id="18_h5u0r"]
+[ext_resource type="PackedScene" uid="uid://bgx0rmfmww650" path="res://UI/Scenes/DamageTooltip.tscn" id="20_gec28"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8321f"]
 resource_name = "Inactive"
@@ -166,6 +167,11 @@ texture_normal = ExtResource("9_d6bjk")
 scale = Vector2(0.25, 0.25)
 tile_set = SubResource("TileSet_or5xj")
 script = ExtResource("18_h5u0r")
+
+[node name="Tooltip" parent="UICanvas/PlayfieldControl/Playfield" index="0" instance=ExtResource("20_gec28")]
+z_index = 3
+position = Vector2(-3200, -1800)
+scale = Vector2(4, 4)
 
 [node name="GameOverPopup" type="PopupPanel" parent="." index="2"]
 auto_translate_mode = 1

@@ -1,4 +1,5 @@
 ﻿using Godot;
+using System.Drawing;
 
 public interface IPlayfieldUnit : IUnit
 {
@@ -26,11 +27,11 @@ public interface IPlayfieldUnit : IUnit
 
 public static class PlayfieldUnitExtensions
 {
-    public static Vector2I GetTheClosestPointTo(this IPlayfieldUnit unit, Vector2I point)
+    public static Vector2I GetTheClosestPointTo(Vector2I coords, bool isLargeCoords, Vector2I point)
     {
-        if (!unit.IsLargeUnit) return unit.Coords;
+        if (!isLargeCoords) return coords;
 
-        Vector2I unitPos = unit.Coords;
+        Vector2I unitPos = coords;
 
         if (point.X > unitPos.X) unitPos.X++;
         if (point.Y > unitPos.Y) unitPos.Y++;
@@ -38,22 +39,29 @@ public static class PlayfieldUnitExtensions
         return unitPos;
     }
 
-    public static bool IsNeighboring(this IPlayfieldUnit unit, IPlayfieldUnit other)
+    public static double DistanceBetween(Vector2I point1, bool isLarge1, Vector2I point2, bool isLarge2)
     {
-        var thisClosestPoint = unit.GetTheClosestPointTo(other.Coords);
-        var otherClosestPoint = other.GetTheClosestPointTo(thisClosestPoint);
-        thisClosestPoint = unit.GetTheClosestPointTo(otherClosestPoint);
-
-        return thisClosestPoint.IsNeighboring(otherClosestPoint);
-    }
-    public static double DistanceTo(this IPlayfieldUnit unit, IPlayfieldUnit other)
-    {
-        var thisClosestPoint = unit.GetTheClosestPointTo(other.Coords);
-        var otherClosestPoint = other.GetTheClosestPointTo(thisClosestPoint);
-        thisClosestPoint = unit.GetTheClosestPointTo(otherClosestPoint);
+        var thisClosestPoint = GetTheClosestPointTo(point1, isLarge1, point2);
+        var otherClosestPoint = GetTheClosestPointTo(point2, isLarge2, thisClosestPoint);
+        thisClosestPoint = GetTheClosestPointTo(point1, isLarge1, otherClosestPoint);
 
         return (thisClosestPoint - otherClosestPoint).Length();
     }
+
+    public static bool IsNeighboring(Vector2I point1, bool isLarge1, Vector2I point2, bool isLarge2)
+    {
+        var thisClosestPoint = GetTheClosestPointTo(point1, isLarge1, point2);
+        var otherClosestPoint = GetTheClosestPointTo(point2, isLarge2, thisClosestPoint);
+        thisClosestPoint = GetTheClosestPointTo(point1, isLarge1, otherClosestPoint);
+
+        return thisClosestPoint.IsNeighboring(otherClosestPoint);
+    }
+
+    public static Vector2I GetTheClosestPointTo(this IPlayfieldUnit unit, Vector2I point) => GetTheClosestPointTo(unit.Coords, unit.IsLargeUnit, point);
+
+    public static bool IsNeighboring(this IPlayfieldUnit unit, IPlayfieldUnit other) => IsNeighboring(unit.Coords, unit.IsLargeUnit, other.Coords, other.IsLargeUnit);
+
+    public static double DistanceTo(this IPlayfieldUnit unit, IPlayfieldUnit other) => DistanceBetween(unit.Coords, unit.IsLargeUnit, other.Coords, other.IsLargeUnit);
 
     public static double DistanceTo(this IPlayfieldUnit unit, Vector2I point)
     {

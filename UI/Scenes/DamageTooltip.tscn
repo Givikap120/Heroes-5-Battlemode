@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=3 uid="uid://bgx0rmfmww650"]
+
+[ext_resource type="Script" path="res://UI/Source/DamageTooltip.cs" id="1_cgr04"]
+[ext_resource type="FontFile" uid="uid://cun338nkg58qk" path="res://Assets/Monotype-Corsiva-Regular.ttf" id="2_tpsla"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_e21v5"]
+font = ExtResource("2_tpsla")
+font_size = 32
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[node name="DamageTooltip" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_cgr04")
+
+[node name="Label2" type="RichTextLabel" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+text = "Test Text"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="TooltipText" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -52.5
+offset_right = 52.5
+offset_bottom = 36.0
+grow_horizontal = 2
+text = "Test Text"
+label_settings = SubResource("LabelSettings_e21v5")

@@ -4,8 +4,7 @@
     {
         var parameters = attacker.CalculateParameters(target, triggerEvents: false);
 
-        if (attacker is IHasRandomDamage randomAttacker)
-            parameters.BaseDamage = randomAttacker.AverageDamage;
+        parameters.BaseDamage = double.IsNaN(attacker.AverageDamage) ? parameters.BaseDamage : attacker.AverageDamage;
 
         attacker.AttackFromParameters(target, parameters);
     }

@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using static Playfield;
 
 public partial class Hero : Unit, ICanAttack
 {
@@ -30,6 +29,12 @@ public partial class Hero : Unit, ICanAttack
     /// Hero always has initiative of 10
     /// </summary>
     public override double Initiative => 10;
+
+    public double MinDamage => double.NaN;
+
+    public double MaxDamage => double.NaN;
+
+    public double AverageDamage => double.NaN;
 
     public override UnitState SaveState()
     {

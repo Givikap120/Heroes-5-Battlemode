@@ -5,10 +5,14 @@ public partial class BattlePlayfield : Playfield
 {
     public Bindable<Unit?> CurrentUnit = null!;
 
+    private DamageTooltip damageTooltip = null!;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         base._Ready();
+
+        damageTooltip = GetNode<DamageTooltip>("Tooltip");
 
         var battleHandler = BattleHandler.Instance;
 
@@ -49,6 +53,7 @@ public partial class BattlePlayfield : Playfield
             else
                 CursorHandler.Cursor = Cursor.Move;
 
+            damageTooltip.Hide();
         }
 
         bool isLarge = CurrentUnit.Value.IsLargeUnit;
@@ -71,44 +76,76 @@ public partial class BattlePlayfield : Playfield
         if (CurrentUnit.Value!.IsAlly(CurrentlySelectedUnit))
             return;
 
-        var target = CurrentlySelectedUnit.Coords;
-
         if (GetCellSourceId(tile) == (int)TileType.Inactive)
         {
-            bool isLarge = CurrentlySelectedUnit.IsLargeUnit;
-            Vector2 creatureCenter = isLarge
-                ? (MapToLocal(CurrentlySelectedUnit.Coords) + MapToLocal(CurrentlySelectedUnit.Coords + Vector2I.One)) / 2
-                : MapToLocal(CurrentlySelectedUnit.Coords);
+            handleAttackAndMove(tile, mousePos);
+        }
+        else
+        {
+            handleRangedAttack(tile);
+        }
+    }
 
-            // Find the relative position of the closest cell except this
-            Vector2I hoverDelta = (Vector2I)(mousePos - creatureCenter).Normalized().Round();
-            tile += hoverDelta;
+    private void handleAttackAndMove(Vector2I tile, Vector2 mousePos)
+    {
+        bool isLarge = CurrentlySelectedUnit!.IsLargeUnit;
+        Vector2 creatureCenter = isLarge
+            ? (MapToLocal(CurrentlySelectedUnit.Coords) + MapToLocal(CurrentlySelectedUnit.Coords + Vector2I.One)) / 2
+            : MapToLocal(CurrentlySelectedUnit.Coords);
 
-            if (isLarge)
-            {
-                if (tile.X < CurrentlySelectedUnit.Coords.X && tile.X >= 1)
-                    tile.X--;
+        // Find the relative position of the closest cell except this
+        Vector2I hoverDelta = (Vector2I)(mousePos - creatureCenter).Normalized().Round();
+        tile += hoverDelta;
 
-                if (tile.Y < CurrentlySelectedUnit.Coords.Y && tile.Y >= 1)
-                    tile.Y--;
-            }
+        if (isLarge)
+        {
+            if (tile.X < CurrentlySelectedUnit.Coords.X && tile.X >= 1)
+                tile.X--;
 
-            HandleHoverOnSpace(tile);
-
-            bool wasHovered = GetCellSourceId(tile) > 0;
-            CursorHandler.Cursor = wasHovered ? AttackType.Melee.GetCursor(hoverDelta) : Cursor.CantCast;
-
-            return;
+            if (tile.Y < CurrentlySelectedUnit.Coords.Y && tile.Y >= 1)
+                tile.Y--;
         }
 
+        HandleHoverOnSpace(tile);
+
+        bool wasHovered = GetCellSourceId(tile) > 0;
+
+        if (wasHovered && CurrentUnit.Value is ICanMoveAttack attacker && CurrentlySelectedUnit is IAttackable attackable)
+        {
+            CursorHandler.Cursor = AttackType.Melee.GetCursor(hoverDelta);
+            var moveResult = attacker.GetMoveResult(tile);
+            damageTooltip.Show(attacker, attackable, moveResult);
+        }
+        else
+        {
+            CursorHandler.Cursor = Cursor.CantCast;
+            damageTooltip.Hide();
+        }
+    }
+
+    private void handleRangedAttack(Vector2I tile)
+    {
         if (CurrentUnit.Value is ICanAttack attacker && CurrentlySelectedUnit is IAttackable attackable)
         {
             var attackType = attacker.GetAttackType(attackable);
             CursorHandler.Cursor = attackType.GetCursor();
+            damageTooltip.Show(attacker, attackable, null);
+        }
+        else
+        {
+            damageTooltip.Hide();
         }
 
         // Highlight tile with delta
-        HighlightTile((target, tile));
+        HighlightTile((CurrentlySelectedUnit!.Coords, tile));
+    }
+
+    private void displayTooltip()
+    {
+        if (CurrentUnit.Value is not ICanAttack attacker && CurrentlySelectedUnit is not IAttackable attackable)
+            return;
+
+
     }
 
     protected override void HighlightTile((Vector2I Full, Vector2I Closest) tile)
